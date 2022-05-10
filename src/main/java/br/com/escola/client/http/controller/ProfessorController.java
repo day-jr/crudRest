@@ -37,6 +37,7 @@ public class ProfessorController {
     @ResponseStatus(HttpStatus.CREATED)
     public Professor SaveProfessor(@RequestBody Professor professor){
 
+
         return professorService.Save(professor);
 
     }
