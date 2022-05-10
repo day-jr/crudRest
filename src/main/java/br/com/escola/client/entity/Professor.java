@@ -35,7 +35,7 @@ public class Professor implements Serializable {
     private String email;
 
 ///////////////VVVV FK KEY VVVV//////////////
-    @OneToMany(mappedBy = "cpf")
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "cpf")
     @Column(name = "FK_TURMAS")
     private List<ProfTurma> turmas;
 
@@ -48,6 +48,12 @@ public class Professor implements Serializable {
         professor.setEmail(p.getEmail());
         professor.setTurmas(p.getTurmas());
         return professor;
+    }
+
+
+    public static String profCpfToString(Professor p){
+
+        return String.valueOf(p.getCpf());
     }
 
 

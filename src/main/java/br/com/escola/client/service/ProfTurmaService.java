@@ -4,6 +4,7 @@ package br.com.escola.client.service;
 import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Professor;
 import br.com.escola.client.repository.ProfTurmaRepository;
+import br.com.escola.client.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,16 @@ public class ProfTurmaService {
     @Autowired
     public ProfTurmaRepository profTurmaRepository;
 
+
+
+
     public ProfTurma Save(ProfTurma profTurma){
         return profTurmaRepository.save(profTurma);
+    }
+
+    public void saveCpf(Professor professor){
+
+        profTurmaRepository.saveCpf(professor.getCpf());
     }
 
     public List<ProfTurma> GetProfTurma(){

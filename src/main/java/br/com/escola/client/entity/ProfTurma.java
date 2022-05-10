@@ -20,8 +20,8 @@ public class ProfTurma implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "FK_CPF")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "FK_CPF",referencedColumnName = "CPF")
     private  Professor cpf;
 
     @OneToOne

@@ -46,15 +46,7 @@ public class ProfTurmaController {
 
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void DeleteById(@PathVariable("id") Long id){
-        profTurmaService.FindProfTurma(id)
-                .map(profTurma -> {
-                    profTurmaService.DeleteProfTurmaById(profTurma.getId());
-                    return Void.TYPE;
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
+
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

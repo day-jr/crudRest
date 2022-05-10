@@ -35,9 +35,12 @@ public class ProfessorController {
     ////////////////////////////////////////////////////////////////////
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Professor SaveProfessor(@RequestBody Professor professor){
+    public void SaveProfessor(@RequestBody Professor professor){
 
-        return professorService.Save(professor);
+        professorService.Save(professor);
+        profTurmaService.saveCpf(professor);
+
+        //return professorService.Save(professor);
 
     }
 
