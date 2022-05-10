@@ -1,0 +1,308 @@
+body {
+    width: 90vw;
+    margin: auto;
+    background: url(images/bg.jpg);
+    background-size: cover;
+}
+
+.content {
+
+    margin: auto;
+    background-color: #ff000059;
+    background-size: cover;
+    height: 650px;
+}
+
+
+
+
+.displayProfessor {
+    background-color: #ffffffba;
+    width: 1000px;
+    height: 450px;
+    position: fixed;
+    top: 55px;
+    left: 185px;
+
+
+}
+
+.atrib1 {
+    position: absolute;
+    width: 150px;
+    height: 40px;
+    top: -20px;
+    left: 0px;
+    border-left-style: solid;
+    border-top-style: solid;
+}
+
+.atrib2 {
+    position: absolute;
+    width: 300px;
+    height: 40px;
+    top: -20px;
+    left: 150px;
+    border-top-style: solid;
+}
+
+.atrib3 {
+    position: absolute;
+    width: 350px;
+    height: 40px;
+    top: -20px;
+    left: 450px;
+    border-top-style: solid;
+}
+
+.atrib4 {
+    position: absolute;
+    width: 197px;
+    height: 40px;
+    top: -20px;
+    left: 800px;
+    border-top-style: solid;
+    border-right-style: solid;
+}
+
+.texto1 {
+    position: absolute;
+    width: 144px;
+    height: 420px;
+    top: 25px;
+    left: 0px;
+    border:solid;
+}
+
+.texto2 {
+    position: absolute;
+    width: 297px;
+    height: 420px;
+    top: 25px;
+    left: 150px;
+    border:solid;
+    border-left-style: hidden;
+}
+
+.texto3 {
+    position: absolute;
+    width: 347px;
+    height: 420px;
+    top: 25px;
+    left: 450px;
+    border:solid;
+    border-left-style: hidden;
+    
+}
+
+.texto4 {
+    position: absolute;
+    width: 197px;
+    height: 420px;
+    top: 25px;
+    left: 800px;
+    border:solid;
+    border-left-style: hidden;
+}
+
+
+
+
+.entitiesContainer {
+    position: fixed;
+    top: 520px;
+    left: 75px;
+    width: 150px;
+    height: 200px;
+
+}
+
+.containerCrud {
+    position: fixed;
+    top: 520px;
+    left: 400px;
+    width: 550px;
+    height: 90px;
+
+}
+
+.topNav {
+    width: 425px;
+    height: 20px;
+    position: fixed;
+    top: 30px;
+    left: 50px;
+}
+
+.iconSrc {
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: 3px;
+    left: 410px;
+}
+
+.searchBar {
+    width: 400px;
+    height: 15px;
+    position: absolute;
+    top: 0px;
+    left: 20px;
+
+}
+
+
+
+
+
+.bList {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+
+
+    text-decoration: none;
+    letter-spacing: 3.12px;
+    font-size: 40.4px;
+    color: #FFFFFF;
+    font-family: arial;
+    background: linear-gradient(to bottom, #FF0000, #D0B02F);
+    border: solid #7CAFFF 3.4px;
+    border-radius: 5px;
+    padding: 12.3px;
+    text-shadow: 0px 1px 9px #000000;
+    box-shadow: 0px 1px 5px #0D2444;
+    -webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+
+}
+
+.bAdd {
+    position: absolute;
+    top: 0px;
+    left: 110px;
+
+
+    text-decoration: none;
+    letter-spacing: 3.12px;
+    font-size: 40.4px;
+    color: #FFFFFF;
+    font-family: arial;
+    background: linear-gradient(to bottom, #FF0000, #D0B02F);
+    border: solid #7CAFFF 3.4px;
+    border-radius: 5px;
+    padding: 12.3px;
+    text-shadow: 0px 1px 9px #000000;
+    box-shadow: 0px 1px 5px #0D2444;
+    -webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+
+}
+
+.bMod {
+    position: absolute;
+    top: 0px;
+    left: 396px;
+
+
+    text-decoration: none;
+    letter-spacing: 3.12px;
+    font-size: 40.4px;
+    color: #FFFFFF;
+    font-family: arial;
+    background: linear-gradient(to bottom, #FF0000, #D0B02F);
+    border: solid #7CAFFF 3.4px;
+    border-radius: 5px;
+    padding: 12.3px;
+    text-shadow: 0px 1px 9px #000000;
+    box-shadow: 0px 1px 5px #0D2444;
+    -webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+
+}
+
+.bDel {
+    position: absolute;
+    p: 0px;
+    left: 226px;
+
+    text-decoration: none;
+    letter-spacing: 3.12px;
+    font-size: 40.4px;
+    color: #FFFFFF;
+    font-family: arial;
+    background: linear-gradient(to bottom, #FF0000, #D0B02F);
+    border: solid #7CAFFF 3.4px;
+    border-radius: 5px;
+    padding: 12.3px;
+    text-shadow: 0px 1px 9px #000000;
+    box-shadow: 0px 1px 5px #0D2444;
+    -webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+
+}
+
+.bProf {
+    position: relative;
+    top: 0px;
+    left: 0px;
+    text-decoration: none;
+    letter-spacing: 2px;
+    font-size: 25px;
+    color: black;
+    font-family: arial;
+    background: white;
+    border-radius: 2.5px;
+    padding: 7px;
+    -webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+
+}
+
+.bTurma {
+    position: relative;
+    top: 0px;
+    left: 0px;
+    text-decoration: none;
+    letter-spacing: 11.5px;
+    font-size: 25px;
+    color: #363636;
+    font-family: arial;
+    background-color: black;
+    border-radius: 2.5px;
+    padding: 7px;
+    -webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+}
+
+.bAluno {
+    position: relative;
+    top: 0px;
+    left: 0px;
+    text-decoration: none;
+    letter-spacing: 12px;
+    font-size: 25px;
+    color: #363636;
+    font-family: arial;
+    background-color: #000000;
+
+    border-radius: 2.5px;
+    padding: 7px;
+
+    -webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+}
