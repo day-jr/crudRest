@@ -51,4 +51,13 @@ public class Professor implements Serializable {
     }
 
 
+
+    public static Professor profTurmaConverter(Professor p){
+        Professor professor = new Professor();
+        professor.setNome(p.getNome());
+        return professor;
+    }
+
+
+
 }
