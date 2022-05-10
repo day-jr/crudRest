@@ -17,12 +17,12 @@ import java.util.List;
 @Table(name = "PROF_TURMA")
 public class ProfTurma implements Serializable {
     @Id
-    @Column(name="PK_ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
     @JoinColumn(name = "FK_CPF")
-    private Professor cpf;
+    private  Professor cpf;
 
     @OneToOne
     @JoinColumn(name = "FK_CODIGO")

@@ -23,15 +23,20 @@ public class ProfessorService {
         return professorRepository.findAll();
     }
 
+
     public Optional<Professor> FindProfessor(Long id){
+
         return professorRepository.findById(id);
     }
+
 
     public void DeleteProfessorById(Long id){
         professorRepository.deleteById(id);
     }
 
 
+    public List<Professor> findByCpfContains(String cpf) {
 
-
+        return professorRepository.findByCpfContains(cpf);
+    }
 }

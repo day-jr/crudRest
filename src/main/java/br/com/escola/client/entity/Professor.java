@@ -7,10 +7,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 
 
@@ -21,8 +19,12 @@ import java.util.Set;
 @Entity
 public class Professor implements Serializable {
     @Id
-    @Column(name = "PK_CPF")
-    private  Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+
+    @Column(name = "CPF", unique = true)
+    private String cpf;
 
 
     @Column(name = "NOME",nullable = true)
@@ -32,11 +34,21 @@ public class Professor implements Serializable {
     @Column(name = "EMAIL",nullable = true)
     private String email;
 
-
-
-
-
+///////////////VVVV FK KEY VVVV//////////////
     @OneToMany(mappedBy = "cpf")
     @Column(name = "FK_TURMAS")
     private List<ProfTurma> turmas;
+
+
+    //////////////////////////////////////
+    public static Professor profConverter(Professor p){
+        Professor professor = new Professor();
+        professor.setCpf(p.getCpf());
+        professor.setNome(p.getNome());
+        professor.setEmail(p.getEmail());
+        professor.setTurmas(p.getTurmas());
+        return professor;
+    }
+
+
 }

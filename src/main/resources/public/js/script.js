@@ -121,16 +121,7 @@ async function Add(choice) {
                 }
             );
 
-            await fetch(
-                "http://localhost:8080/turma/prof",
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        id: CPF
-                    })
-                }
-            );
+           
             break;
 
 
@@ -291,7 +282,7 @@ async function Mod(choice, id, field) {
     if (field == "turmas" && choice == 1) {
         choice = 4;
         var turma = prompt("turma");
-        var body = await {
+        var body = {
             "id": id,
             "cpf": { "id": id },
             "codigo": { "id": turma }
@@ -301,7 +292,7 @@ async function Mod(choice, id, field) {
         if (field == "turmas" && choice == 2) {
             choice = 5;
             var turma = prompt("turma");
-            var body = await {
+            var body = {
                 "id": id,
                 "matricula": { "id": id },
                 "codigo": { "id": turma }
@@ -311,7 +302,7 @@ async function Mod(choice, id, field) {
         }
 
 
-    fetch(
+    await fetch(
         "http://localhost:8080/" + mapChoice[choice] + id,
         {
             method: "PUT",
