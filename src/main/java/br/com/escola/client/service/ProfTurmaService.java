@@ -20,9 +20,11 @@ public class ProfTurmaService {
 
 
 
-    public void save(ProfTurma profTurma){
+    public void saveComposite(ProfTurma profTurma){
+        var cpf = profTurma.getCpf();
+        var codigo = profTurma.getCodigo();
 
-        profTurmaRepository.save(profTurma);
+        profTurmaRepository.saveComposite(cpf,codigo);
     }
 
     //////////////////////////////////////////TO DO

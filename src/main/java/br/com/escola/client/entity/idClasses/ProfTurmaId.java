@@ -5,28 +5,21 @@ import br.com.escola.client.entity.Professor;
 import br.com.escola.client.entity.Turma;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.ManyToOne;
 import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 
 
-@Embeddable
 public class ProfTurmaId implements Serializable {
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    private  Professor cpf;
 
-
-    @ManyToOne(cascade = CascadeType.ALL)
+    private Professor cpf;
     private Turma codigo;
 
-
-    public ProfTurmaId(){}
 }

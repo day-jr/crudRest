@@ -27,9 +27,10 @@ public class ProfTurmaController {
     ////////////////////////////////SAVE////////////////////////////////////
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void save(@RequestBody ProfTurma profTurma){
+    public void saveComposite(@RequestBody ProfTurma profTurma){
 
-        profTurmaService.save(profTurma);
+
+        profTurmaService.saveComposite(profTurma);
     }
 
 

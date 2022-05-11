@@ -1,10 +1,10 @@
 package br.com.escola.client.entity;
 
-
+import br.com.escola.client.entity.idClasses.ProfTurmaId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,6 +12,7 @@ import java.util.List;
 
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Data
 @Entity
@@ -49,7 +50,7 @@ public class Professor implements Serializable {
     }
 
 
-    public Professor(){}
+
 
 
 }
