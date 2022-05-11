@@ -1,21 +1,21 @@
 package br.com.escola.client.entity;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
+
 import java.util.List;
-import java.util.Set;
+
 
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+
 @Builder
 @Entity
 public class Turma implements Serializable {
@@ -41,7 +41,8 @@ public class Turma implements Serializable {
 
 
     /////////////////
-    @OneToMany(mappedBy = "codigo")
+
+    @OneToMany(mappedBy = "codigo",cascade = CascadeType.ALL,orphanRemoval = true)
     @Column(name = "TURMAS")
     private List<ProfTurma> turmaCodigo;
 
@@ -50,4 +51,16 @@ public class Turma implements Serializable {
     @Column(name = "TURMAS")
     private List<AlunoTurma> turmaCodigoAlun;
 
+
+    //////////////////////////////////////
+    public static Turma turmaConverter(Turma t){
+        Turma turma = new Turma();
+        turma.setCodigo(t.getCodigo());
+        turma.setTurno(t.getTurno());
+        turma.setInicio(t.getInicio());
+        turma.setDuracao(t.getDuracao());
+        return turma;
+    }
+
+    public Turma(){}
 }

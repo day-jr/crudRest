@@ -3,13 +3,12 @@ package br.com.escola.client.http.controller;
 
 
 import br.com.escola.client.entity.ProfTurma;
-import br.com.escola.client.entity.Professor;
 import br.com.escola.client.service.ProfTurmaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.List;
 
@@ -24,40 +23,49 @@ public class ProfTurmaController {
     ModelMapper modelMapper;
 
 
+
+    ////////////////////////////////SAVE////////////////////////////////////
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProfTurma SaveProfTurma(@RequestBody ProfTurma profTurma){
-        return profTurmaService.Save(profTurma);
-    }
+    public void save(@RequestBody ProfTurma profTurma){
 
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<ProfTurma> GetProfTurma(){
-        return profTurmaService.GetProfTurma();
+        profTurmaService.save(profTurma);
     }
 
 
-
-    @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public  ProfTurma FindProfTurma(@PathVariable("id") Long id){
-        return profTurmaService.FindProfTurma(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-    }
-
-
-
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void UpdateProfTurma(@PathVariable("id") Long id, @RequestBody ProfTurma profTurma){
-        profTurmaService.FindProfTurma(id)
-                .map(profTurmaBase-> {
-                    modelMapper.map(profTurma, profTurmaBase);
-                    profTurmaService.Save(profTurmaBase);
-                    return Void.TYPE;
-
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
+//
+//
+//
+//    ////////////////////////////////SHOW ALL////////////////////////////////////
+//    @GetMapping
+//    @ResponseStatus(HttpStatus.OK)
+//    public List<ProfTurma> GetProfTurma(){
+//
+//        return profTurmaService.getProfTurma();
+//    }
+//
+//
+//
+//    @GetMapping("/{id}")
+//    @ResponseStatus(HttpStatus.OK)
+//    public  ProfTurma FindProfTurma(@PathVariable("id") String id){
+//        return profTurmaService.findProfTurma(id)
+//                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//
+//    }
+//
+//
+//
+//    @PutMapping("/{id}")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    public void UpdateProfTurma(@PathVariable("id") String id, @RequestBody ProfTurma profTurma){
+//        profTurmaService.findProfTurma(id)
+//                .map(profTurmaBase-> {
+//                    modelMapper.map(profTurma, profTurmaBase);
+//                    profTurmaService.saveP(profTurmaBase);
+//                    return Void.TYPE;
+//
+//                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//    }
 
 }

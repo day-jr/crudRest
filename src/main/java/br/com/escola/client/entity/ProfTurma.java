@@ -1,57 +1,38 @@
 package br.com.escola.client.entity;
 
 
+
+import br.com.escola.client.entity.idClasses.ProfTurmaId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import br.com.escola.client.entity.Professor;
+import br.com.escola.client.entity.Turma;
+import lombok.NoArgsConstructor;
+
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+
 @Entity
 @Table(name = "PROF_TURMA")
+@IdClass(ProfTurmaId.class)
 public class ProfTurma implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @Id
     @JoinColumn(name = "FK_CPF",referencedColumnName = "CPF")
     private  Professor cpf;
 
-    @OneToOne
-    @JoinColumn(name = "FK_CODIGO")
+    @Id
+    @JoinColumn(name = "FK_CODIGO", referencedColumnName = "CODIGO")
     private Turma codigo;
 
 
 
-
-
-    public Professor getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(Professor cpf) {
-        this.cpf = cpf;
-    }
-
-    public Turma getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(Turma codigo) {
-        this.codigo = codigo;
-    }
-
-    public ProfTurma(Professor cpf, Turma codigo) {
-        this.cpf = cpf;
-        this.codigo = codigo;
-    }
 
 
 }

@@ -1,19 +1,17 @@
 package br.com.escola.client.entity;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 
-
-
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @Data
 @Entity
@@ -23,11 +21,11 @@ public class Professor implements Serializable {
     private Long id;
 
 
-    @Column(name = "CPF", unique = true)
+    @Column(name = "CPF", unique = true, nullable = false)
     private String cpf;
 
 
-    @Column(name = "NOME",nullable = true)
+    @Column(name = "NOME",nullable = false)
     private String nome;
 
 
@@ -35,7 +33,7 @@ public class Professor implements Serializable {
     private String email;
 
 ///////////////VVVV FK KEY VVVV//////////////
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "cpf")
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "cpf",orphanRemoval = true)
     @Column(name = "FK_TURMAS")
     private List<ProfTurma> turmas;
 
@@ -51,10 +49,7 @@ public class Professor implements Serializable {
     }
 
 
-    public static String profCpfToString(Professor p){
-
-        return String.valueOf(p.getCpf());
-    }
+    public Professor(){}
 
 
 }

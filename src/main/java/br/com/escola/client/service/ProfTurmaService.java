@@ -3,8 +3,8 @@ package br.com.escola.client.service;
 
 import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Professor;
+import br.com.escola.client.entity.Turma;
 import br.com.escola.client.repository.ProfTurmaRepository;
-import br.com.escola.client.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,24 +20,23 @@ public class ProfTurmaService {
 
 
 
-    public ProfTurma Save(ProfTurma profTurma){
-        return profTurmaRepository.save(profTurma);
+    public void save(ProfTurma profTurma){
+
+        profTurmaRepository.save(profTurma);
     }
 
-    public void saveCpf(Professor professor){
-
-        profTurmaRepository.saveCpf(professor.getCpf());
-    }
-
-    public List<ProfTurma> GetProfTurma(){
-        return profTurmaRepository.findAll();
-    }
-
-    public Optional<ProfTurma> FindProfTurma(Long id){
-        return profTurmaRepository.findById(id);
-    }
-
-    public void DeleteProfTurmaById(Long id){
-        profTurmaRepository.deleteById(id);
-    }
+    //////////////////////////////////////////TO DO
+//    public List<ProfTurma> getProfTurma(){
+//        return profTurmaRepository.findAll();
+//    }
+//
+//    public Optional<ProfTurma> findProfTurma(String id){
+//        return profTurmaRepository.findById(id);
+//    }
+//    ////////////////////////////////////////////
+//
+//
+//    public void DeleteProfTurmaById(String id){
+//        profTurmaRepository.deleteById(id);
+//    }
 }

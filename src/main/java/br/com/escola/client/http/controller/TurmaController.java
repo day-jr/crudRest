@@ -1,8 +1,6 @@
 package br.com.escola.client.http.controller;
 
 
-import br.com.escola.client.entity.AlunoTurma;
-import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Turma;
 
 import br.com.escola.client.service.TurmaService;

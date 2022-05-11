@@ -1,6 +1,5 @@
 package br.com.escola.client.http.controller;
 
-import br.com.escola.client.entity.Aluno;
 import br.com.escola.client.entity.AlunoTurma;
 import br.com.escola.client.service.AlunoTurmaService;
 import org.modelmapper.ModelMapper;

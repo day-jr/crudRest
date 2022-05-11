@@ -1,8 +1,6 @@
 package br.com.escola.client.http.controller;
 
 
-import br.com.escola.client.entity.Aluno;
-import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Professor;
 import br.com.escola.client.service.ProfTurmaService;
 import br.com.escola.client.service.ProfessorService;
@@ -12,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,13 +31,10 @@ public class ProfessorController {
     ////////////////////////////////////////////////////////////////////
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void SaveProfessor(@RequestBody Professor professor){
+    public Professor SaveProfessor(@RequestBody Professor professor){
 
-        professorService.Save(professor);
-        profTurmaService.saveCpf(professor);
 
-        //return professorService.Save(professor);
-
+        return professorService.Save(professor);
     }
 
 
@@ -52,6 +45,12 @@ public class ProfessorController {
     public List<Professor> GetProfessor(){
         return professorService.GetProfessor();
     }
+
+
+    ///////////////////////////////////GET TURMAS
+    ////////////////////////////////////////////////////////////////////
+
+
 
 
     ///////////////////////////////////GET BY ID
