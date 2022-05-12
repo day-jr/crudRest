@@ -8,8 +8,8 @@ import br.com.escola.client.repository.ProfTurmaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import javax.persistence.EntityManager;
+import java.util.*;
 
 @Service
 public class ProfTurmaService {
@@ -17,25 +17,49 @@ public class ProfTurmaService {
     @Autowired
     public ProfTurmaRepository profTurmaRepository;
 
-
-
+    private EntityManager em;
+    public ProfTurmaService (EntityManager em){
+        this.em = em;
+    }
 
     public void saveComposite(ProfTurma profTurma){
-        var cpf = profTurma.getCpf();
-        var codigo = profTurma.getCodigo();
+        String query="select P from Professor as P where P.cpf = :cpf";
 
-        profTurmaRepository.saveComposite(cpf,codigo);
+        var a= em.createQuery(query,Professor.class);
+        a.setParameter("cpf",profTurma.getCpf().getCpf());
+        var professor=  a.getResultList();
+
+
+        query="select T from Turma as T where T.codigo = :codigo";
+
+        var b = em.createQuery(query, Turma.class);
+        b.setParameter("codigo",profTurma.getCodigo().getCodigo());
+        var turma=  b.getResultList();
+
+
+
+        var idTurma = turma.get(0).getId();
+        var idProf = professor.get(0).getId();
+
+
+
+        profTurmaRepository.saveComposite(idProf,idTurma);
+
     }
 
     //////////////////////////////////////////TO DO
-//    public List<ProfTurma> getProfTurma(){
-//        return profTurmaRepository.findAll();
-//    }
-//
-//    public Optional<ProfTurma> findProfTurma(String id){
-//        return profTurmaRepository.findById(id);
-//    }
-//    ////////////////////////////////////////////
+    public List<ProfTurma> getProfTurma(){
+
+
+        return profTurmaRepository.findAll();
+    }
+
+
+
+    public Optional<ProfTurma> findProfTurma(Long id){
+        return profTurmaRepository.findById(id);
+    }
+    ////////////////////////////////////////////
 //
 //
 //    public void DeleteProfTurmaById(String id){

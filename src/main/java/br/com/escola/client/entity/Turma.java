@@ -1,6 +1,7 @@
 package br.com.escola.client.entity;
 
 
+import br.com.escola.client.entity.idClasses.ProfTurmaId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,6 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @Entity
 public class Turma implements Serializable {
@@ -44,8 +44,10 @@ public class Turma implements Serializable {
     /////////////////
 
     @OneToMany(mappedBy = "codigo",cascade = CascadeType.ALL,orphanRemoval = true)
-    @Column(name = "TURMAS")
+    @Column(name = "PROFESSORES")
     private List<ProfTurma> turmaCodigo;
+
+
 
 
     @OneToMany(mappedBy = "codigo")
@@ -63,5 +65,34 @@ public class Turma implements Serializable {
         return turma;
     }
 
+    public Turma(){}
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Turma)) return false;
+
+        Turma turma = (Turma) o;
+
+        if (!id.equals(turma.id)) return false;
+        if (!codigo.equals(turma.codigo)) return false;
+        if (turno != null ? !turno.equals(turma.turno) : turma.turno != null) return false;
+        if (inicio != null ? !inicio.equals(turma.inicio) : turma.inicio != null) return false;
+        if (duracao != null ? !duracao.equals(turma.duracao) : turma.duracao != null) return false;
+        if (turmaCodigo != null ? !turmaCodigo.equals(turma.turmaCodigo) : turma.turmaCodigo != null) return false;
+        return turmaCodigoAlun != null ? turmaCodigoAlun.equals(turma.turmaCodigoAlun) : turma.turmaCodigoAlun == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + codigo.hashCode();
+        result = 31 * result + (turno != null ? turno.hashCode() : 0);
+        result = 31 * result + (inicio != null ? inicio.hashCode() : 0);
+        result = 31 * result + (duracao != null ? duracao.hashCode() : 0);
+        result = 31 * result + (turmaCodigo != null ? turmaCodigo.hashCode() : 0);
+        result = 31 * result + (turmaCodigoAlun != null ? turmaCodigoAlun.hashCode() : 0);
+        return result;
+    }
 }

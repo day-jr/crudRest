@@ -12,7 +12,6 @@ import java.io.Serializable;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "ALUNO_TURMA")
 public class AlunoTurma implements Serializable {
@@ -51,4 +50,6 @@ public class AlunoTurma implements Serializable {
     public void setCodigo(Turma codigo) {
         this.codigo = codigo;
     }
+
+    public AlunoTurma(){}
 }

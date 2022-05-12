@@ -16,10 +16,18 @@ import java.util.List;
 
 
 public interface ProfTurmaRepository extends JpaRepository <ProfTurma, Long> {
+    @Transactional
+    @Modifying
     @Query(
-            value = "INSERT INTO PROF_TURMA (FK_CPF,FK_CODIGO) VALUES (:cpf,:codigo)",
+            value = "INSERT INTO PROF_TURMA (FK_CPF,FK_CODIGO) " +
+                    "VALUES (:cpf,:codigo)",
             nativeQuery = true)
-    void saveComposite(@Param("cpf") Professor cpf,@Param("codigo") Turma codigo);
+    void saveComposite(@Param("cpf") Long cpf,@Param("codigo") Long codigo);
+
+
+
+
+
 
 
 }
