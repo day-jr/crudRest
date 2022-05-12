@@ -28,14 +28,14 @@ public class ProfTurmaService {
         String query="select P from Professor as P where P.cpf = :cpf";
 
         var a= em.createQuery(query,Professor.class);
-        a.setParameter("cpf",profTurma.getCpf().getCpf());
+        a.setParameter("cpf",profTurma.getProfessor().getCpf());
         var professor=  a.getResultList();
 
 
         query="select T from Turma as T where T.codigo = :codigo";
 
         var b = em.createQuery(query, Turma.class);
-        b.setParameter("codigo",profTurma.getCodigo().getCodigo());
+        b.setParameter("codigo",profTurma.getTurma().getCodigo());
         var turma=  b.getResultList();
 
 
@@ -60,17 +60,17 @@ public class ProfTurmaService {
         for (ProfTurma pt:profTurma) {
             switch(elemento){
                 case "nome":
-                    elementos.add(pt.getCpf().getNome());
+                    elementos.add(pt.getProfessor().getNome());
                     break;
 
 
-                case "cpf":
-                    elementos.add(pt.getCpf().getCpf());
+                case "professor":
+                    elementos.add(pt.getProfessor().getCpf());
                     break;
 
 
-                case "codigo":
-                    elementos.add(pt.getCodigo().getCodigo());
+                case "turma":
+                    elementos.add(pt.getTurma().getCodigo());
                     break;
 
             }
@@ -91,14 +91,14 @@ public class ProfTurmaService {
         professor.setId(id1);
         turma.setId(id2);
 
-        profTurmaId.setCodigo(turma);
-        profTurmaId.setCpf(professor);
+        profTurmaId.setTurma(turma);
+        profTurmaId.setProfessor(professor);
 
 
-        String query = "SELECT * FROM ProfTurma WHERE (:cpf,:codigo)";
+        String query = "SELECT * FROM ProfTurma WHERE (:professor,:turma)";
         var a = em.createQuery(query,ProfTurma.class);
-        a.setParameter(":cpf", profTurmaId.getCpf());
-        a.setParameter(":codigo", profTurmaId.getCodigo());
+        a.setParameter(":professor", profTurmaId.getProfessor());
+        a.setParameter(":turma", profTurmaId.getTurma());
 
 
         Optional<ProfTurma> result;

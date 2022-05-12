@@ -28,7 +28,7 @@ public class Aluno implements Serializable {
     @Column(name = "EMAIL", nullable = true, unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "codigo")
+    @OneToMany(mappedBy = "turma")
     @Column(name = "TURMA")
     private List<AlunoTurmas> turma;
 }

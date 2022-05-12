@@ -1,6 +1,7 @@
 package br.com.escola.client.entity;
 
 
+import br.com.escola.client.entity.idClasses.AlunoTurmaId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,42 +15,35 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "ALUNO_TURMA")
+@IdClass(AlunoTurmaId.class)
 public class AlunoTurma implements Serializable {
     @Id
-    @Column(name="PK_ID")
-    private Long id;
+    @JoinColumn(referencedColumnName = "FK_TURMAS")
+    private Aluno aluno;
 
-    @OneToOne
-    @JoinColumn(name = "FK_MATRICULA")
-    private Aluno matricula;
-
-    @OneToOne
-    @JoinColumn(name = "FK_CODIGO")
-    private Turma codigo;
+    @Id
+    @JoinColumn(referencedColumnName = "FK_ALUNOS")
+    private Turma turma;
 
 
-
-
-    public AlunoTurma(Aluno matricula, Turma codigo) {
-        this.matricula = matricula;
-        this.codigo = codigo;
-    }
-
-    public Aluno getMatricula() {
-        return matricula;
-    }
-
-    public void setMatricula(Aluno matricula) {
-        this.matricula = matricula;
-    }
-
-    public Turma getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(Turma codigo) {
-        this.codigo = codigo;
-    }
 
     public AlunoTurma(){}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AlunoTurma)) return false;
+
+        AlunoTurma that = (AlunoTurma) o;
+
+        if (!aluno.equals(that.aluno)) return false;
+        return turma.equals(that.turma);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = aluno.hashCode();
+        result = 31 * result + turma.hashCode();
+        return result;
+    }
 }

@@ -34,8 +34,8 @@ public class Professor implements Serializable {
     private String email;
 
 ///////////////VVVV FK KEY VVVV//////////////
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "cpf",orphanRemoval = true)
-    @Column(name = "TURMAS")
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "professor",orphanRemoval = true)
+    @Column(name = "FK_TURMAS")
     private List<ProfTurma> turmas;
 
 

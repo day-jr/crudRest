@@ -69,7 +69,7 @@ public class ProfessorController {
 
     @GetMapping("/")
     @ResponseStatus(HttpStatus.OK)
-    public List<Professor> FindProfessorByCpf(@RequestParam("cpf") String cpf){
+    public List<Professor> FindProfessorByCpf(@RequestParam("professor") String cpf){
 
         return this.professorService.findByCpfContains(cpf).
                 stream().
@@ -99,7 +99,7 @@ public class ProfessorController {
     ////////////////////////////////////////////////////////////////////
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void UpdateProfessor(@PathVariable("cpf") Long id, @RequestBody Professor professor){
+    public void UpdateProfessor(@PathVariable("professor") Long id, @RequestBody Professor professor){
         professorService.FindProfessor(id)
                 .map(professorBase-> {
                     modelMapper.map(professor, professorBase);

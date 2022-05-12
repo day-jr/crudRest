@@ -23,12 +23,12 @@ public class ProfTurma implements Serializable {
 
 
     @Id
-    @JoinColumn(referencedColumnName = "TURMAS")
-    private Professor cpf;
+    @JoinColumn(referencedColumnName = "FK_TURMAS")
+    private Professor professor;
 
     @Id
-    @JoinColumn(referencedColumnName = "PROFESSORES")
-    private Turma codigo;
+    @JoinColumn(referencedColumnName = "FK_PROFESSORES")
+    private Turma turma;
 
 
     @Override
@@ -38,14 +38,14 @@ public class ProfTurma implements Serializable {
 
         ProfTurma profTurma = (ProfTurma) o;
 
-        if (!cpf.equals(profTurma.cpf)) return false;
-        return codigo.equals(profTurma.codigo);
+        if (!professor.equals(profTurma.professor)) return false;
+        return turma.equals(profTurma.turma);
     }
 
     @Override
     public int hashCode() {
-        int result = cpf.hashCode();
-        result = 31 * result + codigo.hashCode();
+        int result = professor.hashCode();
+        result = 31 * result + turma.hashCode();
         return result;
     }
 }

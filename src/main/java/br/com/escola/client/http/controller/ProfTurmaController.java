@@ -31,7 +31,7 @@ public class ProfTurmaController {
     ////////////////////////////////SAVE////////////////////////////////////
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveComposite(@RequestBody ProfTurma profTurma){
+    public void saveCompositeProf(@RequestBody ProfTurma profTurma){
 
 
          profTurmaService.saveComposite(profTurma);
@@ -50,6 +50,8 @@ public class ProfTurmaController {
 
         return profTurmaService.getProfTurma(elemento);
     }
+
+
 
 
 

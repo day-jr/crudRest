@@ -43,15 +43,15 @@ public class Turma implements Serializable {
 
     /////////////////
 
-    @OneToMany(mappedBy = "codigo",cascade = CascadeType.ALL,orphanRemoval = true)
-    @Column(name = "PROFESSORES")
+    @OneToMany(mappedBy = "turma",cascade = CascadeType.ALL,orphanRemoval = true)
+    @Column(name = "FK_PROFESSORES")
     private List<ProfTurma> turmaCodigo;
 
 
 
 
-    @OneToMany(mappedBy = "codigo")
-    @Column(name = "TURMAS")
+    @OneToMany(mappedBy = "turma",cascade = CascadeType.ALL,orphanRemoval = true)
+    @Column(name = "FK_ALUNOS")
     private List<AlunoTurma> turmaCodigoAlun;
 
 
