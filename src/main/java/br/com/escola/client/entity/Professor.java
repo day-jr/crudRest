@@ -51,6 +51,7 @@ public class Professor implements Serializable {
 
 
 
+
     public Professor(){}
 
 
@@ -78,4 +79,5 @@ public class Professor implements Serializable {
         result = 31 * result + (turmas != null ? turmas.hashCode() : 0);
         return result;
     }
+
 }

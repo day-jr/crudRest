@@ -4,11 +4,13 @@ package br.com.escola.client.http.controller;
 
 import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Professor;
+import br.com.escola.client.entity.Turma;
 import br.com.escola.client.service.ProfTurmaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.ArrayList;
@@ -42,46 +44,22 @@ public class ProfTurmaController {
     ////////////////////////////////SHOW ALL////////////////////////////////////
     @GetMapping("/filter/{elemento}")
     @ResponseStatus(HttpStatus.OK)
-    public List<String> GetProfTurma(@PathVariable("elemento") String elemento){
-        var profTurma = profTurmaService.getProfTurma();
-        List<String> elementos = new ArrayList<>();
-        var cont =0;
+    public List<String> getProfTurma(@PathVariable("elemento") String elemento){
 
 
-        for (ProfTurma pt:profTurma) {
-            switch(elemento){
-                case "nome":
-                    elementos.add(pt.getCpf().getNome());
-                    cont++;
-                    break;
 
-
-                case "cpf":
-                    elementos.add(pt.getCpf().getCpf());
-                    cont++;
-                    break;
-
-
-                case "codigo":
-                    elementos.add(pt.getCodigo().getCodigo());
-                    cont++;
-                    break;
-
-            }
-        }
-
-        return elementos;
+        return profTurmaService.getProfTurma(elemento);
     }
 
 
-//
-//    @GetMapping("/{id}")
-//    @ResponseStatus(HttpStatus.OK)
-//    public  ProfTurma FindProfTurma(@PathVariable("id") String id){
-//        return profTurmaService.findProfTurma(id)
-//                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-//
-//    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public  ProfTurma findProfTurma(@PathVariable("id"+"id") Long id1, Long id2){// "id1,id2"
+        return profTurmaService.findProfTurma(id1,id2)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    }
 //
 //
 //
