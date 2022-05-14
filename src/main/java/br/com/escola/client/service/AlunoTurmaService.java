@@ -22,6 +22,10 @@ public class AlunoTurmaService {
         this.em = em;
     }
 
+    public  AlunoTurma save(AlunoTurma alunoTurma){
+        return alunoTurmaRepository.save(alunoTurma);
+    }
+
     public void saveComposite(AlunoTurma alunoTurma){
         String query="select A from Aluno as A where A.matricula = :matricula";
 
@@ -42,21 +46,17 @@ public class AlunoTurmaService {
         var idAluno = aluno.get(0).getId();
 
 
-
-        alunoTurmaRepository.saveComposite(idAluno,idTurma);
+         alunoTurmaRepository.saveComposite(idAluno,idTurma);
     }
 
-
-
-
-    public List<String> getAlunoTurma(String elemento){
-        var profTurma = alunoTurmaRepository.findAll();
+    public List<String> getAlunoTurmaBy(String elemento){
+        var AlunoTurma = alunoTurmaRepository.findAll();
 
         List<String> elementos = new ArrayList<>();
 
 
 
-        for (AlunoTurma at:profTurma) {
+        for (AlunoTurma at:AlunoTurma) {
             switch(elemento){
                 case "nome":
                     elementos.add(at.getAluno().getNome());
@@ -79,6 +79,62 @@ public class AlunoTurmaService {
         return elementos;
     }
 
+    public AlunoTurma getAlunoTurma(String matricula){
 
+        return alunoTurmaRepository.getByMatricula(matricula);
+    }
+
+    public Optional<List<String>> findAlunoTurma(String elemento, String atributo, String value){
+
+
+        String query;
+
+        if(!atributo.equals("codigo")) {
+
+            if (elemento.equals("codigo")) {
+
+                query = "SELECT turma." + elemento + " FROM AlunoTurma as t " +
+                        "WHERE  t.aluno." + atributo + " =" + value;
+
+            } else {
+
+                query = "SELECT aluno." + elemento + " FROM AlunoTurma as a " +
+                        "WHERE a.aluno." + atributo + "=" + value;
+            }
+        }
+
+        else{
+            query = "SELECT aluno."+ elemento +" FROM AlunoTurma as a " +
+                    "WHERE  a.turma.codigo  = " + value;
+        }
+
+        var a = em.createQuery(query,String.class);
+
+
+        Optional<List<String>> result;
+
+        result = Optional.ofNullable(a.getResultList());
+        return result;
+    }
+
+    public void deleteAlunoTurma(Long alunoId,Long turmaId ){
+        alunoTurmaRepository.deleteTurma(alunoId, turmaId);
+    }
+
+    public AlunoTurma findById(Long idAluno, Long idTurma){
+        return alunoTurmaRepository.findById(idAluno,idTurma);
+    }
+
+    public void modify(Long idAluno, Long idTurma, Long value){
+
+        alunoTurmaRepository.modify(idAluno,idTurma,value);
+    }
+
+
+    public AlunoTurma find(String matricula, String codigo){
+
+        return alunoTurmaRepository.find(matricula, codigo);
+
+    }
 
 }

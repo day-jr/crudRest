@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class AlunoService {
@@ -15,20 +15,20 @@ public class AlunoService {
     @Autowired
     public AlunoRepository alunoRepository;
 
-    public Aluno Save(Aluno aluno){
+    public Aluno save(Aluno aluno){
         return alunoRepository.save(aluno);
     }
 
-    public List<Aluno> GetAluno(){
+    public List<Aluno> getAluno(){
         return alunoRepository.findAll();
     }
 
-    public Optional<Aluno> FindAluno(Long id){
-        return alunoRepository.findById(id);
+    public Aluno findByMatricula(String matricula){
+        return alunoRepository.findByMatricula(matricula);
     }
 
-    public void DeleteAlunoById(Long id){
-        alunoRepository.deleteById(id);
+    public void deleteAlunoByMatricula(String matricula){
+        alunoRepository.deleteByMatricula(matricula);
     }
 
 

@@ -1,5 +1,6 @@
 package br.com.escola.client.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,11 +10,18 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
-@Data
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Data
 @Entity
+
+//////////////////////////////////////////////////////
+//FAZER O MESMO PROCESSO Q FIZ NO PROFESSOR AQ
+/////////////////////////////////////////////////////
+
+
 public class Aluno implements Serializable {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
@@ -27,13 +35,14 @@ public class Aluno implements Serializable {
     @Column(name = "NOME", nullable = true, unique = false)
     private String nome;
 
-    @Column(name = "EMAIL", nullable = true, unique = true)
+    @Column(name = "EMAIL", nullable = true, unique = false)
     private String email;
 
 
 
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "aluno",orphanRemoval = true)
+    @JsonIgnore
     @Column(name = "FK_TURMAS")
     private List<AlunoTurma> turmas;
 
@@ -59,4 +68,6 @@ public class Aluno implements Serializable {
         result = 31 * result + (turmas != null ? turmas.hashCode() : 0);
         return result;
     }
+
+
 }

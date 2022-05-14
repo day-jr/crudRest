@@ -12,8 +12,10 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 
+
 @NoArgsConstructor
 @AllArgsConstructor
+
 @Data
 @Builder
 @Entity
@@ -47,5 +49,16 @@ public class ProfTurma implements Serializable {
         int result = professor.hashCode();
         result = 31 * result + turma.hashCode();
         return result;
+    }
+
+    public Professor getProfessor() {
+        return professor;
+    }
+
+
+
+    public void setProfessor(Professor professor) {
+
+        this.professor = professor;
     }
 }

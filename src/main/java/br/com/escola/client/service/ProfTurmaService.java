@@ -1,15 +1,18 @@
 package br.com.escola.client.service;
 
 
+import br.com.escola.client.entity.AlunoTurma;
 import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Professor;
 import br.com.escola.client.entity.Turma;
-import br.com.escola.client.entity.idClasses.ProfTurmaId;
 import br.com.escola.client.repository.ProfTurmaRepository;
+import br.com.escola.client.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+
 import java.util.*;
 
 
@@ -19,10 +22,15 @@ public class ProfTurmaService {
     @Autowired
     public ProfTurmaRepository profTurmaRepository;
 
+    @Autowired
+    public ProfessorRepository professorRepository;
+
     private EntityManager em;
     public ProfTurmaService (EntityManager em){
         this.em = em;
     }
+
+
 
     public void saveComposite(ProfTurma profTurma){
         String query="select P from Professor as P where P.cpf = :cpf";
@@ -46,8 +54,10 @@ public class ProfTurmaService {
 
 
         profTurmaRepository.saveComposite(idProf,idTurma);
-
     }
+
+
+
 
     //////////////////////////////////////////
     public List<String> getProfTurma(String elemento){
@@ -82,34 +92,56 @@ public class ProfTurmaService {
 
 
 
-    public Optional<ProfTurma> findProfTurma(Long id1, Long id2){
 
-        ProfTurmaId profTurmaId = new ProfTurmaId();
-        Professor professor = new Professor();
-        Turma turma = new Turma();
+    public Optional<List<String>> findProfTurma(String elemento, String atributo, String value){
 
-        professor.setId(id1);
-        turma.setId(id2);
+        String query;
 
-        profTurmaId.setTurma(turma);
-        profTurmaId.setProfessor(professor);
+        if(!atributo.equals("codigo")) {
+
+            if (elemento.equals("codigo")) {
+
+                query = "SELECT turma." + elemento + " FROM ProfTurma as t " +
+                        "WHERE  t.professor." + atributo + " =" + value;
+
+            } else {
+
+                query = "SELECT professor." + elemento + " FROM ProfTurma as p " +
+                        "WHERE p.professor." + atributo + "=" + value;
+            }
+        }
+
+        else{
+            query = "SELECT professor."+ elemento +" FROM ProfTurma as p " +
+                    "WHERE  p.turma.codigo  = " + value;
+        }
+
+        var a = em.createQuery(query,String.class);
 
 
-        String query = "SELECT * FROM ProfTurma WHERE (:professor,:turma)";
-        var a = em.createQuery(query,ProfTurma.class);
-        a.setParameter(":professor", profTurmaId.getProfessor());
-        a.setParameter(":turma", profTurmaId.getTurma());
+        Optional<List<String>> result;
 
-
-        Optional<ProfTurma> result;
-
-        result = Optional.ofNullable(a.getSingleResult());
+        result = Optional.ofNullable(a.getResultList());
         return result;
     }
-    //////////////////////////////////////////
-//
-//
-//    public void DeleteProfTurmaById(String id){
-//        profTurmaRepository.deleteById(id);
-//    }
+
+    public void modify(Long idProf, Long idTurma, Long value){
+
+        profTurmaRepository.modify(idProf,idTurma,value);
+    }
+
+
+    public ProfTurma find(String cpf, String codigo){
+
+        return profTurmaRepository.find(cpf, codigo);
+
+    }
+
+    public ProfTurma findById(Long idProf, Long idTurma){
+        return profTurmaRepository.findById(idProf,idTurma);
+    }
+
+    public void deleteProfTurma(Long profId,Long turmaId ){
+        profTurmaRepository.deleteTurma(profId, turmaId);
+    }
 }

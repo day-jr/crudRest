@@ -3,16 +3,17 @@ package br.com.escola.client.http.controller;
 
 import br.com.escola.client.entity.Aluno;
 import br.com.escola.client.entity.AlunoTurma;
+import br.com.escola.client.entity.Professor;
 import br.com.escola.client.service.AlunoService;
 import br.com.escola.client.service.AlunoTurmaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/aluno")
@@ -28,47 +29,74 @@ public class AlunoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Aluno SaveAluno(@RequestBody Aluno aluno, AlunoTurma alunoTurma){
+    public Aluno saveAluno(@RequestBody Aluno aluno, AlunoTurma alunoTurma){
 
-        return alunoService.Save(aluno);
+        return alunoService.save(aluno);
     }
+
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Aluno> GetAluno(){
-        return alunoService.GetAluno();
+    public List<Aluno> getAluno(){
+        return alunoService.getAluno();
     }
 
 
 
-    @GetMapping("/{id}")
+
+
+
+
+
+    ///////////////////////////////////GET BY CPF
+    ////////////////////////////////////////////////////////////////////
+    @GetMapping("/search/{matricula}")
     @ResponseStatus(HttpStatus.OK)
-    public  Aluno FindAluno(@PathVariable("id") Long id){
-        return alunoService.FindAluno(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public Aluno findAluno(@PathVariable("matricula") String matricula){
+
+        return alunoService.findByMatricula(matricula);
 
     }
 
-    @DeleteMapping("/{id}")
+
+
+
+
+    ///////////////////////////////////DELETE BY CPF
+    ////////////////////////////////////////////////////////////////////
+    @DeleteMapping("/{matricula}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void DeleteAlunoById(@PathVariable("id") Long id){
-        alunoService.FindAluno(id)
-                .map(aluno -> {
-                    alunoService.DeleteAlunoById(aluno.getId());
-                    return Void.TYPE;
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public void DeleteById(@PathVariable("matricula") String matricula){
+        alunoService.deleteAlunoByMatricula(matricula);
     }
 
-    @PutMapping("/{id}")
+
+
+
+    ///////////////////////////////////MODIFY BY ID
+    ////////////////////////////////////////////////////////////////////
+    @PutMapping("/{matricula}/{element}={value}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void UpdateAluno(@PathVariable("id") Long id, @RequestBody Aluno aluno){
-        alunoService.FindAluno(id)
-                .map(alunoBase-> {
-                    modelMapper.map(aluno, alunoBase);
-                    alunoService.Save(alunoBase);
-                    return Void.TYPE;
+    public Aluno updateAluno(@PathVariable("matricula") String matricula, @PathVariable("element") String element,
+                                     @PathVariable("value") String value, @RequestBody Aluno aluno){
+        Aluno a = alunoService.findByMatricula(matricula);
+        switch(element){
+            case "matricula":
+                a.setMatricula(value);
+                break;
 
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            case "nome":
+                a.setNome(value);
+                break;
+
+            case "email":
+                a.setEmail(value);
+                break;
+
+        }
+
+        return alunoService.save(a);
     }
+
 
 }
