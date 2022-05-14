@@ -1,68 +1,102 @@
 package br.com.escola.client.http.controller;
 
 import br.com.escola.client.entity.AlunoTurma;
+import br.com.escola.client.entity.Turma;
 import br.com.escola.client.service.AlunoTurmaService;
+import br.com.escola.client.service.TurmaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/turma/aluno")
 public class AlunoTurmaController {
 
+    /////////////////////////////////////////////////////
+    ///////DELETE E FAZER AS FUNÇÕES NO PROF_TURMA TAMBEM
+    //////////////////////////////////////////////////////
+
+
     @Autowired
     AlunoTurmaService alunoTurmaService;
+
+    @Autowired
+    TurmaService turmaService;
 
     @Autowired
     ModelMapper modelMapper;
 
 
+
+
+    ////////////////////////////////SAVE////////////////////////////////////
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AlunoTurma SaveAlunoTurma(@RequestBody AlunoTurma alunoTurma){
-        return alunoTurmaService.Save(alunoTurma);
+    public void saveCompositeAluno(@RequestBody AlunoTurma alunoTurma){
+
+        alunoTurmaService.saveComposite(alunoTurma);
     }
 
-    @GetMapping
+
+
+    ////////////////////////////////FILTER ALL BY////////////////////////////////////
+    @GetMapping("/filter/{elemento}")
     @ResponseStatus(HttpStatus.OK)
-    public List<AlunoTurma> GetAlunoTurma(){
-        return alunoTurmaService.GetAlunoTurma();
+    public List<String> getAlunoTurma(@PathVariable("elemento") String elemento){
+
+
+
+        return alunoTurmaService.getAlunoTurmaBy(elemento);
     }
 
 
-
-    @GetMapping("/{id}")
+    ////////////////////////////////SEARCH X WHERE Y = Z////////////////////////////////////
+    @GetMapping("/search/{elemento}By{atributo}={value}")
     @ResponseStatus(HttpStatus.OK)
-    public  AlunoTurma FindAlunoTurma(@PathVariable("id") Long id){
-        return alunoTurmaService.FindAlunoTurma(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public Optional<List<String>> findAlunoTurma(@PathVariable("elemento") String elemento,
+                                                @PathVariable("atributo") String atributo,
+                                                @PathVariable("value") String value)
+    {return alunoTurmaService.findAlunoTurma(elemento,atributo,value);}
+
+
+
+
+    ///////////////////////////////////MODIFY CODIGO BY MATRICULA
+    ////////////////////////////////////////////////////////////////////
+    @PutMapping("/{matricula}/{codigo}={value}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateAlunoTurma(@PathVariable("matricula") String matricula, @PathVariable("codigo")
+            String codigo, @PathVariable("value") String value){
+
+        var parsedValue = turmaService.FindTurmaBycodigo(value);
+        var alunoTurma = alunoTurmaService.find(matricula,codigo);
+        var alunoId= alunoTurma.getAluno().getId();
+        var turmaId = alunoTurma.getTurma().getId();
+
+        alunoTurmaService.modify(alunoId,turmaId,parsedValue);
+
 
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void DeleteById(@PathVariable("id") Long id){
-        alunoTurmaService.FindAlunoTurma(id)
-                .map(alunoTurma -> {
-                    alunoTurmaService.DeleteAlunoTurmaById(alunoTurma.getId());
-                    return Void.TYPE;
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
 
-    @PutMapping("/{id}")
+    ///////////////////////////////////DELETE CODIGO BY MATRICULA
+    ////////////////////////////////////////////////////////////////////
+    @DeleteMapping("/{matricula}&{codigo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void UpdateAlunoTurma(@PathVariable("id") Long id, @RequestBody AlunoTurma alunoTurma){
-        alunoTurmaService.FindAlunoTurma(id)
-                .map(alunoTurmaBase-> {
-                    modelMapper.map(alunoTurma, alunoTurmaBase);
-                    alunoTurmaService.Save(alunoTurmaBase);
-                    return Void.TYPE;
+    public void deleteAlunoTurma(@PathVariable("matricula") String matricula, @PathVariable("codigo") String codigo){
 
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var alunoTurma = alunoTurmaService.find(matricula,codigo);
+        var alunoId= alunoTurma.getAluno().getId();
+        var turmaId = alunoTurma.getTurma().getId();
+
+        alunoTurmaService.deleteAlunoTurma(alunoId,turmaId);
+
+
     }
 
 }

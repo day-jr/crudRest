@@ -27,6 +27,10 @@ public class TurmaService {
         return turmaRepository.findById(id);
     }
 
+    public Long FindTurmaBycodigo(String codigo){
+        return turmaRepository.findByCodigo(codigo);
+    }
+
     public void DeleteTurmaById(Long id){
         turmaRepository.deleteById(id);
     }

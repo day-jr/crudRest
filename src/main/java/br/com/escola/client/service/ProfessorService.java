@@ -6,7 +6,7 @@ import br.com.escola.client.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -16,30 +16,28 @@ public class ProfessorService {
     @Autowired
     public ProfessorRepository professorRepository;
 
-    public Professor Save(Professor professor){
+    public Professor save(Professor professor){
         return professorRepository.save(professor);
     }
 
-    public List<Professor> GetProfessor(){
-        return professorRepository.findAll();
+    public List<Professor> getProfessor(){
+        return professorRepository.findAllProf();
     }
 
 
-    public Optional<Professor> FindProfessor(Long id){
 
-        return professorRepository.findById(id);
+    public void deleteProfessorByCpf(String cpf){
+        professorRepository.deleteByCpf(cpf);
     }
 
 
-    public void DeleteProfessorById(Long id){
-        professorRepository.deleteById(id);
+    public Professor findByCpf(String cpf) {
+
+         return professorRepository.findByCpf(cpf);
     }
 
 
-    public List<Professor> findByCpfContains(String cpf) {
 
-        return professorRepository.findByCpfContains(cpf);
-    }
 
 
 

@@ -28,11 +28,11 @@ public class Turma implements Serializable {
     private String codigo;
 
 
-    @OneToMany(mappedBy = "codigo")
+    @OneToMany(mappedBy = "turma")
     private List<ProfTurma> codigoTurmaProf;// = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "codigo")
+    @OneToMany(mappedBy = "turma")
     private List<AlunoTurmas> codigoTurma;// = new ArrayList<>();
 
 

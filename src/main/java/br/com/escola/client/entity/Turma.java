@@ -1,12 +1,8 @@
 package br.com.escola.client.entity;
-
-
-import br.com.escola.client.entity.idClasses.ProfTurmaId;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -18,6 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Builder
+
 @Entity
 public class Turma implements Serializable {
 
@@ -43,15 +40,17 @@ public class Turma implements Serializable {
 
     /////////////////
 
-    @OneToMany(mappedBy = "codigo",cascade = CascadeType.ALL,orphanRemoval = true)
-    @Column(name = "PROFESSORES")
+    @OneToMany(mappedBy = "turma",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnore
+    @Column(name = "FK_PROFESSORES")
     private List<ProfTurma> turmaCodigo;
 
 
 
 
-    @OneToMany(mappedBy = "codigo")
-    @Column(name = "TURMAS")
+    @OneToMany(mappedBy = "turma",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnore
+    @Column(name = "FK_ALUNOS")
     private List<AlunoTurma> turmaCodigoAlun;
 
 
@@ -68,6 +67,12 @@ public class Turma implements Serializable {
     public Turma(){}
 
 
+
+
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -95,4 +100,6 @@ public class Turma implements Serializable {
         result = 31 * result + (turmaCodigoAlun != null ? turmaCodigoAlun.hashCode() : 0);
         return result;
     }
+
+
 }

@@ -1,20 +1,23 @@
 package br.com.escola.client.entity;
 
-import br.com.escola.client.entity.idClasses.ProfTurmaId;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+
 
 
 import javax.persistence.*;
 import java.io.Serializable;
+
+import java.util.Collections;
 import java.util.List;
+
 
 
 @AllArgsConstructor
 
 @Builder
-@Data
+
 @Entity
 public class Professor implements Serializable {
     @Id
@@ -34,8 +37,8 @@ public class Professor implements Serializable {
     private String email;
 
 ///////////////VVVV FK KEY VVVV//////////////
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "cpf",orphanRemoval = true)
-    @Column(name = "TURMAS")
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "professor",orphanRemoval = true)
+    @Column(name = "FK_TURMAS")
     private List<ProfTurma> turmas;
 
 
@@ -45,7 +48,6 @@ public class Professor implements Serializable {
         professor.setCpf(p.getCpf());
         professor.setNome(p.getNome());
         professor.setEmail(p.getEmail());
-        professor.setTurmas(p.getTurmas());
         return professor;
     }
 
@@ -80,4 +82,46 @@ public class Professor implements Serializable {
         return result;
     }
 
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
+    public List<ProfTurma> getTurmas() {
+        return turmas;
+    }
+
+    public void setTurmas(List<ProfTurma> turmas) {
+        this.turmas = turmas;
+    }
 }

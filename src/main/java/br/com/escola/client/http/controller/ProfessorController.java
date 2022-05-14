@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/professor")
@@ -20,8 +19,6 @@ public class ProfessorController {
     @Autowired
     ProfessorService professorService;
 
-    @Autowired
-    ProfTurmaService profTurmaService;
 
     @Autowired
     ModelMapper modelMapper;
@@ -31,11 +28,11 @@ public class ProfessorController {
     ////////////////////////////////////////////////////////////////////
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Professor SaveProfessor(@RequestBody Professor professor){
+    public Professor saveProfessor(@RequestBody Professor professor){
 
 
 
-        return professorService.Save(professor);
+        return professorService.save(professor);
     }
 
 
@@ -43,70 +40,63 @@ public class ProfessorController {
     ////////////////////////////////////////////////////////////////////
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Professor> GetProfessor(){
-        return professorService.GetProfessor();
+    public List<Professor> getProfessor(){
+        return professorService.getProfessor();
     }
 
 
-    ///////////////////////////////////GET TURMAS
+
+    ///////////////////////////////////GET BY CPF
     ////////////////////////////////////////////////////////////////////
-
-
-
-
-    ///////////////////////////////////GET BY ID
-    ////////////////////////////////////////////////////////////////////
-    @GetMapping("/{id}")
+    @GetMapping("/search/{cpf}")
     @ResponseStatus(HttpStatus.OK)
-    public Professor FindProfessor(@PathVariable("id") Long id){
-        return professorService.FindProfessor(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public Professor findProfessor(@PathVariable("cpf") String cpf){
+
+        return professorService.findByCpf(cpf);
 
     }
 
 
 
 
-    @GetMapping("/")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Professor> FindProfessorByCpf(@RequestParam("cpf") String cpf){
-
-        return this.professorService.findByCpfContains(cpf).
-                stream().
-                map(Professor::profConverter).
-                collect(Collectors.toList());
-    }
-
-
-
-
-    ///////////////////////////////////DELETE BY ID
+    ///////////////////////////////////DELETE BY CPF
     ////////////////////////////////////////////////////////////////////
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{cpf}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void DeleteById(@PathVariable("id") Long id){
-        professorService.FindProfessor(id)
-                .map(professor -> {
-                    professorService.DeleteProfessorById(professor.getId());
-                return Void.TYPE;
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public void DeleteById(@PathVariable("cpf") String cpf){
+        professorService.deleteProfessorByCpf(cpf);
     }
 
 
 
 
-    ///////////////////////////////////MODIFY BY ID
+    ///////////////////////////////////MODIFY BY CPF
     ////////////////////////////////////////////////////////////////////
-    @PutMapping("/{id}")
+    @PutMapping("/{cpf}/{element}={value}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void UpdateProfessor(@PathVariable("cpf") Long id, @RequestBody Professor professor){
-        professorService.FindProfessor(id)
-                .map(professorBase-> {
-                    modelMapper.map(professor, professorBase);
-                    professorService.Save(professorBase);
-                    return Void.TYPE;
+    public Professor updateProfessor(@PathVariable("cpf") String cpf, @PathVariable("element") String element,
+                                @PathVariable("value") String value){
+        Professor p = professorService.findByCpf(cpf);
+        switch(element){
+            case "cpf":
+                p.setCpf(value);
+                break;
 
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
+            case "nome":
+                p.setNome(value);
+                break;
+
+            case "email":
+                p.setEmail(value);
+                break;
+
+        }
+
+            return professorService.save(p);
+        }
+
+
 
 }
+
+
