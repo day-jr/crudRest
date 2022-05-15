@@ -2,18 +2,18 @@ package br.com.escola.client.http.controller;
 
 
 import br.com.escola.client.entity.Professor;
-import br.com.escola.client.service.ProfTurmaService;
 import br.com.escola.client.service.ProfessorService;
+import org.hibernate.annotations.Parameter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/professor")
+
 public class ProfessorController {
 
     @Autowired
@@ -61,9 +61,12 @@ public class ProfessorController {
 
     ///////////////////////////////////DELETE BY CPF
     ////////////////////////////////////////////////////////////////////
-    @DeleteMapping("/{cpf}")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void DeleteById(@PathVariable("cpf") String cpf){
+    public void deleteById(@RequestParam("cpf") String cpf){
+        var p = professorService.findByCpf(cpf).getId();
+        professorService.deleteDependency(p);
+
         professorService.deleteProfessorByCpf(cpf);
     }
 
@@ -72,27 +75,14 @@ public class ProfessorController {
 
     ///////////////////////////////////MODIFY BY CPF
     ////////////////////////////////////////////////////////////////////
-    @PutMapping("/{cpf}/{element}={value}")
+    @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Professor updateProfessor(@PathVariable("cpf") String cpf, @PathVariable("element") String element,
-                                @PathVariable("value") String value){
+    public void updateProfessor(@RequestParam("cpf") String cpf, @RequestBody Professor incomingBody){
+
         Professor p = professorService.findByCpf(cpf);
-        switch(element){
-            case "cpf":
-                p.setCpf(value);
-                break;
+        modelMapper.map(incomingBody, p);
+        professorService.save(p);
 
-            case "nome":
-                p.setNome(value);
-                break;
-
-            case "email":
-                p.setEmail(value);
-                break;
-
-        }
-
-            return professorService.save(p);
         }
 
 

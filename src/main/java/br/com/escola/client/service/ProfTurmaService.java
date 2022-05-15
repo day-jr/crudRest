@@ -58,7 +58,6 @@ public class ProfTurmaService {
 
 
 
-
     //////////////////////////////////////////
     public List<String> getProfTurma(String elemento){
         var profTurma = profTurmaRepository.findAll();

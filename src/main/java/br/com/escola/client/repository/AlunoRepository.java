@@ -19,4 +19,12 @@ public interface AlunoRepository extends JpaRepository<Aluno,Long> {
     @Query(
             value = "DELETE Aluno WHERE matricula = :matricula")
     void deleteByMatricula(@Param("matricula") String matricula);
+
+    @Transactional
+    @Modifying
+    @Query(
+            value = "DELETE ALUNO_TURMA WHERE ALUNO_TURMA.FK_MATRICULA = :matricula", nativeQuery = true)
+    void deleteDependency(@Param("matricula") Long matricula);
+
+
 }

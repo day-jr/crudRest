@@ -4,13 +4,14 @@ package br.com.escola.client.http.controller;
 import br.com.escola.client.entity.Turma;
 
 import br.com.escola.client.service.TurmaService;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/turma")
@@ -24,44 +25,50 @@ public class TurmaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Turma SaveTurma(@RequestBody Turma turma){
+    public Turma saveTurma(@RequestBody Turma turma){
 
-        return turmaService.Save(turma);
+        return turmaService.save(turma);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Turma> GetTurma(){
-        return turmaService.GetTurma();
+    public List<Turma> getTurma(){
+        return turmaService.getTurma();
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public  Turma FindTurma(@PathVariable("id") Long id){
-        return turmaService.FindTurma(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public Optional<Turma> findTurma(@PathVariable("id") Long id){
+        return turmaService.findTurma(id);
+
     }
 
-    @DeleteMapping("/{id}")
+    ///////////////////////////////////DELETE BY CPF
+    ////////////////////////////////////////////////////////////////////
+    @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void DeleteById(@PathVariable("id") Long id){
-        turmaService.FindTurma(id)
-                .map(turma -> {
-                    turmaService.DeleteTurmaById(turma.getId());
-                    return Void.TYPE;
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public void deleteByCodigo(@RequestParam("codigo") String codigo){
+        var t = turmaService.findTurmaBycodigo(codigo);
+
+
+        turmaService.deleteDependency(t);
+
+        turmaService.deleteTurmaById(t);
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void UpdateTurma(@PathVariable("id") Long id, @RequestBody Turma turma){
-        turmaService.FindTurma(id)
-                .map(turmaBase-> {
-                    modelMapper.map(turma, turmaBase);
-                    turmaService.Save(turmaBase);
-                    return Void.TYPE;
 
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+
+    ///////////////////////////////////MODIFY BY CPF
+    ////////////////////////////////////////////////////////////////////
+    @PutMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateTurma(@RequestParam("codigo") String codigo, @RequestBody Turma incomingBody){
+
+        var t = turmaService.returnTurma(codigo);
+        modelMapper.map(incomingBody, t);
+        turmaService.save(t);
+
     }
 
 }

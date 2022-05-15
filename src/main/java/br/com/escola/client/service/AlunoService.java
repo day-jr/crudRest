@@ -23,6 +23,10 @@ public class AlunoService {
         return alunoRepository.findAll();
     }
 
+    public void deleteDependency(Long matricula){
+        alunoRepository.deleteDependency(matricula);
+    }
+
     public Aluno findByMatricula(String matricula){
         return alunoRepository.findByMatricula(matricula);
     }

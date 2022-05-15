@@ -43,7 +43,7 @@ public class Turma implements Serializable {
     @OneToMany(mappedBy = "turma",cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnore
     @Column(name = "FK_PROFESSORES")
-    private List<ProfTurma> turmaCodigo;
+    private transient List<ProfTurma> turmaCodigo;
 
 
 
@@ -51,7 +51,7 @@ public class Turma implements Serializable {
     @OneToMany(mappedBy = "turma",cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnore
     @Column(name = "FK_ALUNOS")
-    private List<AlunoTurma> turmaCodigoAlun;
+    private transient List<AlunoTurma> turmaCodigoAlun;
 
 
     //////////////////////////////////////

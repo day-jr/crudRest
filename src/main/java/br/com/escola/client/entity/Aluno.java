@@ -44,7 +44,7 @@ public class Aluno implements Serializable {
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "aluno",orphanRemoval = true)
     @JsonIgnore
     @Column(name = "FK_TURMAS")
-    private List<AlunoTurma> turmas;
+    private transient  List<AlunoTurma> turmas;
 
 
     @Override

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/aluno")
@@ -43,11 +43,6 @@ public class AlunoController {
 
 
 
-
-
-
-
-
     ///////////////////////////////////GET BY CPF
     ////////////////////////////////////////////////////////////////////
     @GetMapping("/search/{matricula}")
@@ -59,43 +54,29 @@ public class AlunoController {
     }
 
 
-
-
-
-    ///////////////////////////////////DELETE BY CPF
+    ///////////////////////////////////DELETE BY MATRICULA
     ////////////////////////////////////////////////////////////////////
-    @DeleteMapping("/{matricula}")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void DeleteById(@PathVariable("matricula") String matricula){
+    public void deleteByMatricula(@RequestParam("matricula") String matricula){
+        var a = alunoService.findByMatricula(matricula).getId();
+
+        alunoService.deleteDependency(a);
         alunoService.deleteAlunoByMatricula(matricula);
     }
 
 
 
-
-    ///////////////////////////////////MODIFY BY ID
+    ///////////////////////////////////MODIFY BY MATRICULA
     ////////////////////////////////////////////////////////////////////
-    @PutMapping("/{matricula}/{element}={value}")
+    @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Aluno updateAluno(@PathVariable("matricula") String matricula, @PathVariable("element") String element,
-                                     @PathVariable("value") String value, @RequestBody Aluno aluno){
+    public void updateAluno(@RequestParam("matricula") String matricula, @RequestBody Aluno incomingBody){
+
         Aluno a = alunoService.findByMatricula(matricula);
-        switch(element){
-            case "matricula":
-                a.setMatricula(value);
-                break;
+        modelMapper.map(incomingBody, a);
+        alunoService.save(a);
 
-            case "nome":
-                a.setNome(value);
-                break;
-
-            case "email":
-                a.setEmail(value);
-                break;
-
-        }
-
-        return alunoService.save(a);
     }
 
 

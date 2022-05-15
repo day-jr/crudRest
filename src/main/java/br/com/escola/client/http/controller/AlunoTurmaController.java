@@ -1,7 +1,7 @@
 package br.com.escola.client.http.controller;
 
 import br.com.escola.client.entity.AlunoTurma;
-import br.com.escola.client.entity.Turma;
+import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.service.AlunoTurmaService;
 import br.com.escola.client.service.TurmaService;
 import org.modelmapper.ModelMapper;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityManager;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -68,32 +68,30 @@ public class AlunoTurmaController {
 
     ///////////////////////////////////MODIFY CODIGO BY MATRICULA
     ////////////////////////////////////////////////////////////////////
-    @PutMapping("/{matricula}/{codigo}={value}")
+    @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateAlunoTurma(@PathVariable("matricula") String matricula, @PathVariable("codigo")
-            String codigo, @PathVariable("value") String value){
+    public void updateAlunoTurma(@RequestParam("matricula") String matricula,@RequestParam("codigo") String codigo ,
+                                @RequestBody ProfTurma incomingBody){
 
-        var parsedValue = turmaService.FindTurmaBycodigo(value);
-        var alunoTurma = alunoTurmaService.find(matricula,codigo);
-        var alunoId= alunoTurma.getAluno().getId();
-        var turmaId = alunoTurma.getTurma().getId();
-
-        alunoTurmaService.modify(alunoId,turmaId,parsedValue);
-
+        AlunoTurma at = alunoTurmaService.find(matricula,codigo);
+        alunoTurmaService.deleteAlunoTurma(at.getAluno().getId(), at.getTurma().getId());
+        modelMapper.map(incomingBody, at);
+        alunoTurmaService.saveComposite(at);
 
     }
 
 
+
     ///////////////////////////////////DELETE CODIGO BY MATRICULA
     ////////////////////////////////////////////////////////////////////
-    @DeleteMapping("/{matricula}&{codigo}")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAlunoTurma(@PathVariable("matricula") String matricula, @PathVariable("codigo") String codigo){
+    public void deleteAlunoTurma(@RequestParam("matricula") String matricula,
+                                 @RequestParam("codigo") String codigo){
 
-        var alunoTurma = alunoTurmaService.find(matricula,codigo);
-        var alunoId= alunoTurma.getAluno().getId();
-        var turmaId = alunoTurma.getTurma().getId();
-
+        var at = alunoTurmaService.find(matricula,codigo);
+        var alunoId= at.getAluno().getId();
+        var turmaId = at.getTurma().getId();
         alunoTurmaService.deleteAlunoTurma(alunoId,turmaId);
 
 

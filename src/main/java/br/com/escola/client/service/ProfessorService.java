@@ -36,6 +36,10 @@ public class ProfessorService {
          return professorRepository.findByCpf(cpf);
     }
 
+    public void deleteDependency(Long cpf){
+        professorRepository.deleteDependency(cpf);
+    }
+
 
 
 

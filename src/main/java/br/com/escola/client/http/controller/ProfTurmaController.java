@@ -3,17 +3,19 @@ package br.com.escola.client.http.controller;
 
 
 import br.com.escola.client.entity.ProfTurma;
+import br.com.escola.client.entity.Professor;
 import br.com.escola.client.service.ProfTurmaService;
 import br.com.escola.client.service.TurmaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
 
 
 import java.util.List;
 import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/turma/prof")
@@ -67,32 +69,30 @@ public class ProfTurmaController {
 
     ///////////////////////////////////MODIFY CODIGO BY CPF
     ////////////////////////////////////////////////////////////////////
-    @PutMapping("/{cpf}/{codigo}={value}")
+    @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateProfTurma(@PathVariable("cpf") String matricula, @PathVariable("codigo")
-            String codigo, @PathVariable("value") String value){
+    public void updateProfTurma(@RequestParam("cpf") String cpf,@RequestParam("codigo") String codigo ,
+                                @RequestBody ProfTurma incomingBody){
 
-        var parsedValue = turmaService.FindTurmaBycodigo(value);
-        var profTurma = profTurmaService.find(matricula,codigo);
-        var profId= profTurma.getProfessor().getId();
-        var turmaId = profTurma.getTurma().getId();
-
-        profTurmaService.modify(profId,turmaId,parsedValue);
-
+        ProfTurma pt = profTurmaService.find(cpf,codigo);
+        profTurmaService.deleteProfTurma(pt.getProfessor().getId(), pt.getTurma().getId());
+        modelMapper.map(incomingBody, pt);
+        profTurmaService.saveComposite(pt);
 
     }
 
 
+
+
     ///////////////////////////////////DELETE CODIGO BY MATRICULA
     ////////////////////////////////////////////////////////////////////
-    @DeleteMapping("/{cpf}&{codigo}")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteProfTurma(@PathVariable("cpf") String cpf, @PathVariable("codigo") String codigo){
+    public void deleteProfTurma(@RequestParam("cpf") String cpf, @RequestParam("codigo") String codigo){
 
         var profTurma = profTurmaService.find(cpf,codigo);
         var profId= profTurma.getProfessor().getId();
         var turmaId = profTurma.getTurma().getId();
-
         profTurmaService.deleteProfTurma(profId,turmaId);
 
 
