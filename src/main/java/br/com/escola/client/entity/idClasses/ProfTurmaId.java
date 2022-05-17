@@ -1,9 +1,6 @@
 package br.com.escola.client.entity.idClasses;
 
 
-
-
-
 import br.com.escola.client.entity.Professor;
 import br.com.escola.client.entity.Turma;
 import lombok.AllArgsConstructor;

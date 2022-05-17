@@ -15,19 +15,19 @@ public class TurmaService {
     @Autowired
     public TurmaRepository turmaRepository;
 
-    public Turma Save(Turma turma){
+    public Turma Save(Turma turma) {
         return turmaRepository.save(turma);
     }
 
-    public List<Turma> GetTurma(){
+    public List<Turma> GetTurma() {
         return turmaRepository.findAll();
     }
 
-    public Optional<Turma> FindTurma(Long id){
+    public Optional<Turma> FindTurma(Long id) {
         return turmaRepository.findById(id);
     }
 
-    public void DeleteById(Long id){
+    public void DeleteById(Long id) {
         turmaRepository.deleteById(id);
     }
-    }
+}

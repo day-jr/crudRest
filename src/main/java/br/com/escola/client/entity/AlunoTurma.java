@@ -26,8 +26,8 @@ public class AlunoTurma implements Serializable {
     private Turma turma;
 
 
-
-    public AlunoTurma(){}
+    public AlunoTurma() {
+    }
 
     @Override
     public boolean equals(Object o) {

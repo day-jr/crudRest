@@ -3,23 +3,21 @@ package br.com.escola.client.http.controller;
 
 import br.com.escola.client.entity.Aluno;
 import br.com.escola.client.entity.AlunoTurma;
-import br.com.escola.client.entity.Professor;
 import br.com.escola.client.service.AlunoService;
-import br.com.escola.client.service.AlunoTurmaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.List;
 import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/aluno")
 public class AlunoController {
-    @Autowired
-    AlunoTurmaService alunoTurmaService;
+
 
     @Autowired
     AlunoService alunoService;
@@ -29,73 +27,58 @@ public class AlunoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Aluno saveAluno(@RequestBody Aluno aluno, AlunoTurma alunoTurma){
-
+    public Aluno saveAluno(@RequestBody Aluno aluno, AlunoTurma alunoTurma) {
         return alunoService.save(aluno);
     }
 
 
+    ///////////////////////////////////GET BY MATRICULA
+    ////////////////////////////////////////////////////////////////////
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Aluno> getAluno(){
-        return alunoService.getAluno();
-    }
+    public ResponseEntity getAluno(@RequestParam(required = false, name = "matricula")
+                                           Optional<String> matricula) {
+        if (matricula.isPresent()) {
+            var found = alunoService.findByMatricula(matricula.get());
+            System.out.println(matricula);
+            if (found.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+            return new ResponseEntity(found, HttpStatus.OK);
 
 
-
-
-
-
-
-
-    ///////////////////////////////////GET BY CPF
-    ////////////////////////////////////////////////////////////////////
-    @GetMapping("/search/{matricula}")
-    @ResponseStatus(HttpStatus.OK)
-    public Aluno findAluno(@PathVariable("matricula") String matricula){
-
-        return alunoService.findByMatricula(matricula);
-
-    }
-
-
-
-
-
-    ///////////////////////////////////DELETE BY CPF
-    ////////////////////////////////////////////////////////////////////
-    @DeleteMapping("/{matricula}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void DeleteById(@PathVariable("matricula") String matricula){
-        alunoService.deleteAlunoByMatricula(matricula);
-    }
-
-
-
-
-    ///////////////////////////////////MODIFY BY ID
-    ////////////////////////////////////////////////////////////////////
-    @PutMapping("/{matricula}/{element}={value}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Aluno updateAluno(@PathVariable("matricula") String matricula, @PathVariable("element") String element,
-                                     @PathVariable("value") String value, @RequestBody Aluno aluno){
-        Aluno a = alunoService.findByMatricula(matricula);
-        switch(element){
-            case "matricula":
-                a.setMatricula(value);
-                break;
-
-            case "nome":
-                a.setNome(value);
-                break;
-
-            case "email":
-                a.setEmail(value);
-                break;
-
+        } else {
+            var found = alunoService.getAluno();
+            if (found.isEmpty()) return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(found, HttpStatus.OK);
         }
 
-        return alunoService.save(a);
+    }
+
+
+    ///////////////////////////////////DELETE BY MATRICULA
+    ////////////////////////////////////////////////////////////////////
+    @DeleteMapping
+    public ResponseEntity deleteByMatricula(@RequestParam("matricula") String matricula){
+        var found = alunoService.findByMatricula(matricula);
+        if (found.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+
+        alunoService.deleteDependency(found.get().getId());
+        alunoService.deleteAlunoByMatricula(matricula);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+
+    }
+
+
+    ///////////////////////////////////MODIFY BY MATRICULA
+    ////////////////////////////////////////////////////////////////////
+    @PutMapping
+    public ResponseEntity updateAluno(@RequestParam("matricula") String matricula, @RequestBody Aluno incomingBody) {
+
+        var found = alunoService.findByMatricula(matricula);
+        if (found.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+
+        modelMapper.map(incomingBody, found);
+        alunoService.save(found.get());
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 

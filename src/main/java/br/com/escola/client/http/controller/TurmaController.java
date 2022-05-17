@@ -2,15 +2,16 @@ package br.com.escola.client.http.controller;
 
 
 import br.com.escola.client.entity.Turma;
-
 import br.com.escola.client.service.TurmaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/turma")
@@ -24,44 +25,55 @@ public class TurmaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Turma SaveTurma(@RequestBody Turma turma){
-
-        return turmaService.Save(turma);
+    public Turma saveTurma(@RequestBody Turma turma) {
+        return turmaService.save(turma);
     }
+
 
     @GetMapping
+    public ResponseEntity getTurma(@RequestParam(required = false, name = "codigo")
+                                            Optional<String> codigo) {
+
+        if (codigo.isEmpty()) {
+            var found = turmaService.getTurma();
+            if (found.isEmpty()) return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(found, HttpStatus.OK);
+        }
+
+        var t = turmaService.findTurmaBycodigo(codigo.get());
+        if (t.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+        var found = turmaService.findTurma(t.get());
+        return new ResponseEntity(found, HttpStatus.OK);
+    }
+
+    ///////////////////////////////////DELETE BY CODIGO
+    ////////////////////////////////////////////////////////////////////
+    @DeleteMapping
+    public ResponseEntity deleteByCodigo(@RequestParam("codigo") String codigo) throws Exception {
+        var t = turmaService.findTurmaBycodigo(codigo);
+
+        if (t.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+
+        turmaService.deleteDependency(t.get());
+        turmaService.deleteTurmaById(t.get());
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+
+    }
+
+
+    ///////////////////////////////////MODIFY BY CODIGO
+    ////////////////////////////////////////////////////////////////////
+    @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Turma> GetTurma(){
-        return turmaService.GetTurma();
-    }
+    public ResponseEntity updateTurma(@RequestParam("codigo") String codigo,
+                                      @RequestBody Turma incomingBody) throws Exception {
 
-    @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public  Turma FindTurma(@PathVariable("id") Long id){
-        return turmaService.FindTurma(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
+        var found = turmaService.returnTurma(codigo);
+        if (found == null) return new ResponseEntity(HttpStatus.NOT_FOUND);
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void DeleteById(@PathVariable("id") Long id){
-        turmaService.FindTurma(id)
-                .map(turma -> {
-                    turmaService.DeleteTurmaById(turma.getId());
-                    return Void.TYPE;
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
-
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void UpdateTurma(@PathVariable("id") Long id, @RequestBody Turma turma){
-        turmaService.FindTurma(id)
-                .map(turmaBase-> {
-                    modelMapper.map(turma, turmaBase);
-                    turmaService.Save(turmaBase);
-                    return Void.TYPE;
-
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        modelMapper.map(incomingBody, found);
+        turmaService.save(found);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 }

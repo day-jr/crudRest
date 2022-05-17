@@ -12,12 +12,12 @@ public class HtmlFileReader {
         var content = new String();
 
         ////////// path stuff ;D
-        html= new File("E:/java/escola-crud/src/main/java/br/com/escola/client/web/html/" +html );
+        html = new File("E:/java/escola-crud/src/main/java/br/com/escola/client/web/html/" + html);
 
 
         var scan = new Scanner(html);
-        while (scan.hasNextLine()){
-            content+=scan.nextLine();
+        while (scan.hasNextLine()) {
+            content += scan.nextLine();
         }
         return content;
     }

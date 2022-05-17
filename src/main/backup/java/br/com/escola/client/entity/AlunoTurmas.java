@@ -25,5 +25,4 @@ public class AlunoTurmas implements Serializable {
     private Turma codigo;
 
 
-
 }

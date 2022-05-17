@@ -24,7 +24,7 @@ import java.util.List;
 
 public class Aluno implements Serializable {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
@@ -39,12 +39,10 @@ public class Aluno implements Serializable {
     private String email;
 
 
-
-
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "aluno",orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "aluno", orphanRemoval = true)
     @JsonIgnore
     @Column(name = "FK_TURMAS")
-    private List<AlunoTurma> turmas;
+    private transient List<AlunoTurma> turmas;
 
 
     @Override
@@ -68,6 +66,5 @@ public class Aluno implements Serializable {
         result = 31 * result + (turmas != null ? turmas.hashCode() : 0);
         return result;
     }
-
 
 }

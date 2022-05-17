@@ -1,16 +1,16 @@
 package br.com.escola.client.repository;
 
-import br.com.escola.client.entity.AlunoTurma;
+
 import br.com.escola.client.entity.ProfTurma;
-import br.com.escola.client.entity.Professor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
-public interface ProfTurmaRepository extends JpaRepository <ProfTurma, Long> {
+public interface ProfTurmaRepository extends JpaRepository<ProfTurma, Long> {
     @Transactional
     @Modifying
     @Query(
@@ -20,13 +20,10 @@ public interface ProfTurmaRepository extends JpaRepository <ProfTurma, Long> {
     void saveComposite(@Param("professor") Long cpf, @Param("turma") Long codigo);
 
 
-
-
     @Transactional
     @Query(
             value = "SELECT p FROM ProfTurma as p WHERE p.professor.cpf = :cpf AND p.turma.codigo = :codigo")
-    ProfTurma find(@Param("cpf") String cpf, @Param("codigo") String codigo);
-
+   ProfTurma find(@Param("cpf") String cpf, @Param("codigo") String codigo);
 
 
     @Transactional
@@ -35,14 +32,12 @@ public interface ProfTurmaRepository extends JpaRepository <ProfTurma, Long> {
     ProfTurma findById(@Param("idProf") Long idAluno, @Param("idTurma") Long idTurma);
 
 
-
     @Transactional
     @Modifying
     @Query(
             value = "UPDATE PROF_TURMA SET FK_CODIGO = :value WHERE " +
                     "FK_CPF = :cpf AND FK_CODIGO = :codigo", nativeQuery = true)
     void modify(@Param("cpf") Long idAluno, @Param("codigo") Long idTurma, @Param("value") Long value);
-
 
 
     @Transactional

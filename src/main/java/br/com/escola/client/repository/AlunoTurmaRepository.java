@@ -19,7 +19,6 @@ public interface AlunoTurmaRepository extends JpaRepository<AlunoTurma, Long> {
     void saveComposite(@Param("matricula") Long matricula, @Param("turma") Long codigo);
 
 
-
     @Transactional
     @Modifying
     @Query(
@@ -29,13 +28,10 @@ public interface AlunoTurmaRepository extends JpaRepository<AlunoTurma, Long> {
     void deleteTurma(@Param("idAluno") Long idAluno, @Param("idTurma") Long idTurma);
 
 
-
     @Transactional
     @Query(
             value = "SELECT a FROM  AlunoTurma a WHERE a.aluno.matricula = :matricula ")
     AlunoTurma getByMatricula(@Param("matricula") String matricula);
-
-
 
 
     @Transactional
@@ -48,8 +44,6 @@ public interface AlunoTurmaRepository extends JpaRepository<AlunoTurma, Long> {
     @Query(
             value = "SELECT * FROM ALUNO_TURMA WHERE FK_MATRICULA = :idAluno AND FK_CODIGO = :idTurma", nativeQuery = true)
     AlunoTurma findById(@Param("idAluno") Long idAluno, @Param("idTurma") Long idTurma);
-
-
 
 
     @Transactional

@@ -1,4 +1,5 @@
 package br.com.escola.client.entity;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +11,6 @@ import java.io.Serializable;
 import java.util.List;
 
 
-
 @Data
 @AllArgsConstructor
 @Builder
@@ -20,11 +20,11 @@ public class Turma implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="PK_ID")
+    @Column(name = "PK_ID")
     private Long id;
 
 
-    @Column(name="CODIGO")
+    @Column(name = "CODIGO")
     private String codigo;
 
 
@@ -40,22 +40,20 @@ public class Turma implements Serializable {
 
     /////////////////
 
-    @OneToMany(mappedBy = "turma",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @Column(name = "FK_PROFESSORES")
-    private List<ProfTurma> turmaCodigo;
+    private transient List<ProfTurma> turmaCodigo;
 
 
-
-
-    @OneToMany(mappedBy = "turma",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @Column(name = "FK_ALUNOS")
-    private List<AlunoTurma> turmaCodigoAlun;
+    private transient List<AlunoTurma> turmaCodigoAlun;
 
 
     //////////////////////////////////////
-    public static Turma turmaConverter(Turma t){
+    public static Turma turmaConverter(Turma t) {
         Turma turma = new Turma();
         turma.setCodigo(t.getCodigo());
         turma.setTurno(t.getTurno());
@@ -64,12 +62,8 @@ public class Turma implements Serializable {
         return turma;
     }
 
-    public Turma(){}
-
-
-
-
-
+    public Turma() {
+    }
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
