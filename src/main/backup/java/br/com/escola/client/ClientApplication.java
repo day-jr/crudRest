@@ -1,4 +1,5 @@
 package br.com.escola.client;
+
 import br.com.escola.client.myTools.HtmlFileReader;
 
 
@@ -19,39 +20,34 @@ import java.io.FileNotFoundException;
 public class ClientApplication {
 
 
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+        return modelMapper;
+    }
 
 
-	@Bean
-	public ModelMapper modelMapper() {
-		ModelMapper modelMapper = new ModelMapper();
-		modelMapper.getConfiguration().setSkipNullEnabled(true);
-		return modelMapper;
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ClientApplication.class, args);
+
+    }
 
 
+    @RequestMapping("/a")
+    public static String index() throws FileNotFoundException {
+        var html = new File("index.html");
+        var file = new HtmlFileReader();
+        return file.read(html);
 
+    }
 
+    @RequestMapping("/opa")
+    public String opa() throws FileNotFoundException {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ClientApplication.class, args);
+        return "opa";
 
-	}
-
-
-	@RequestMapping("/a")
-	public static String index() throws FileNotFoundException {
-		var html = new File("index.html");
-		var file = new HtmlFileReader();
-		return file.read(html);
-
-	}
-
-	@RequestMapping("/opa")
-	public String opa() throws FileNotFoundException {
-
-		return "opa";
-
-	}
+    }
 
 
 }

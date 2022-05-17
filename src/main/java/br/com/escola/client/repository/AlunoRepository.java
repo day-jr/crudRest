@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 
-public interface AlunoRepository extends JpaRepository<Aluno,Long> {
+public interface AlunoRepository extends JpaRepository<Aluno, Long> {
     @Transactional
     @Query(
             value = "SELECT a FROM Aluno a WHERE a.matricula = :matricula ")

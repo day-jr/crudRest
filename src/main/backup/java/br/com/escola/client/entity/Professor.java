@@ -18,10 +18,10 @@ import java.util.List;
 public class Professor implements Serializable {
     @Id
     @Column(name = "CPF")
-    private  Long id;
+    private Long id;
 
     @OneToMany(mappedBy = "id")
-    private  List<ProfTurma> cpfTurma;
+    private List<ProfTurma> cpfTurma;
 
     @Column(name = "NOME")
     private String nome;
@@ -29,11 +29,6 @@ public class Professor implements Serializable {
 
     @Column(name = "EMAIL")
     private String email;
-
-
-
-
-
 
 
 }

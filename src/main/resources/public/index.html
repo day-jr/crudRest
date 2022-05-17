@@ -10,50 +10,56 @@
 
 <body>
 
-    <div class="content">
-        <center>
-            <h1> CRUD Restful Escola v1.1 <h1>
-        </center>
+<div class="content">
+    <center>
+        <h1> CRUD Restful Escola v1.1 <h1>
+    </center>
 
-        <div class="topNav">
-            <input type="text" placeholder="Search.." class="searchBar">
-            <img src="css/images/search.png" class="iconSrc">
-        </div>
+    <div class="topNav">
+        <input type="text" placeholder="Search.." class="searchBar">
+        <img src="css/images/search.png" class="iconSrc">
+    </div>
 
 
-        <div class="displayProfessor", aria-disabled="true">
-            <h2 class = "atrib1">CPF</h2>
-            <h2 class = "atrib2">Nome</h2>
-            <h2 class = "atrib3">Email</h2>
-            <h2 class = "atrib4">Turmas</h2>
+    <div class="displayProfessor" , aria-disabled="true">
+        <h2 class="atrib1">CPF</h2>
+        <h2 class="atrib2">Nome</h2>
+        <h2 class="atrib3">Email</h2>
+        <h2 class="atrib4">Turmas</h2>
 
-            <div id="texto1" class = "texto1"> </div>
-            <div id="texto2" class = "texto2"> </div>
-            <div id="texto3" class = "texto3"> </div>
-            <div id="texto4" class = "texto4"> </div>
-        </div>
+        <div id="texto1" class="texto1"></div>
+        <div id="texto2" class="texto2"></div>
+        <div id="texto3" class="texto3"></div>
+        <div id="texto4" class="texto4"></div>
+    </div>
 
-        <div class=" containerCrud">
-            <script>var choice = 1;</script>
+    <div class=" containerCrud">
+        <script>var choice = 1;</script>
 
-            <a id="list" onclick="showList(choice)"><button class="bList">List</button></a>
-            <a id="add" onclick="Add(choice)"><button class="bAdd">Add</button></a>
-            <a id="del" onclick="Del(choice)"><button class="bDel">Delete</button></a>
-            
-
-        </div>
-
-        <div class="entitiesContainer">
-            <button id="prof" onclick="choice = 1; handleOnClick(choice)" class="bProf">professor</button>
-            <button id="aluno" onclick="choice = 2; handleOnClick(choice)" class="bAluno">aluno</button>
-            <button id="turma" onclick="choice = 3; handleOnClick(choice)" class="bTurma">turma</button>
-        </div>
+        <a id="list" onclick="showList(choice)">
+            <button class="bList">List</button>
+        </a>
+        <a id="add" onclick="Add(choice)">
+            <button class="bAdd">Add</button>
+        </a>
+        <a id="del" onclick="Del(choice)">
+            <button class="bDel">Delete</button>
+        </a>
 
 
     </div>
 
+    <div class="entitiesContainer">
+        <button id="prof" onclick="choice = 1; handleOnClick(choice)" class="bProf">professor</button>
+        <button id="aluno" onclick="choice = 2; handleOnClick(choice)" class="bAluno">aluno</button>
+        <button id="turma" onclick="choice = 3; handleOnClick(choice)" class="bTurma">turma</button>
+    </div>
 
-    <script src="js/script.js"></script>
+
+</div>
+
+
+<script src="js/script.js"></script>
 
 </body>
 

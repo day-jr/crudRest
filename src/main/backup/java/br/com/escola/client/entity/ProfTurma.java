@@ -27,6 +27,4 @@ public class ProfTurma implements Serializable {
     private Turma codigo;
 
 
-
-
 }

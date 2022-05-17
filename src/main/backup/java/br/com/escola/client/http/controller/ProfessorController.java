@@ -23,44 +23,44 @@ public class ProfessorController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Professor SaveProfessor(@RequestBody Professor professor){
+    public Professor SaveProfessor(@RequestBody Professor professor) {
 
         return professorService.Save(professor);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Professor> GetProfessor(){
+    public List<Professor> GetProfessor() {
         return professorService.GetProfessor();
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public  Professor FindProfessor(@PathVariable("id") Long id){
+    public Professor FindProfessor(@PathVariable("id") Long id) {
         return professorService.FindProfessor(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void DeleteById(@PathVariable("id") Long id){
+    public void DeleteById(@PathVariable("id") Long id) {
         professorService.FindProfessor(id)
                 .map(professor -> {
                     professorService.DeleteById(professor.getId());
-                return Void.TYPE;
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                    return Void.TYPE;
+                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void UpdateProfessor(@PathVariable("id") Long id, @RequestBody Professor professor){
+    public void UpdateProfessor(@PathVariable("id") Long id, @RequestBody Professor professor) {
         professorService.FindProfessor(id)
-                .map(professorBase-> {
+                .map(professorBase -> {
                     modelMapper.map(professor, professorBase);
                     professorService.Save(professorBase);
                     return Void.TYPE;
 
-                }).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
 }

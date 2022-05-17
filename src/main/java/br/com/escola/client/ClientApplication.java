@@ -1,7 +1,6 @@
 package br.com.escola.client;
 
 
-
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
@@ -20,21 +19,18 @@ import java.io.FileNotFoundException;
 public class ClientApplication {
 
 
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+        return modelMapper;
+    }
 
 
-	@Bean
-	public ModelMapper modelMapper() {
-		ModelMapper modelMapper = new ModelMapper();
-		modelMapper.getConfiguration().setSkipNullEnabled(true);
-		return modelMapper;
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ClientApplication.class, args);
 
-
-	public static void main(String[] args) {
-		SpringApplication.run(ClientApplication.class, args);
-
-	}
-
+    }
 
 
 }

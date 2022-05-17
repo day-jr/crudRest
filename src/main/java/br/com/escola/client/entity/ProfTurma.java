@@ -56,7 +56,6 @@ public class ProfTurma implements Serializable {
     }
 
 
-
     public void setProfessor(Professor professor) {
 
         this.professor = professor;

@@ -24,7 +24,7 @@ public class Turma implements Serializable {
     private Long id;
 
 
-    @Column(name="CODIGO",nullable = false)
+    @Column(name = "CODIGO", nullable = false)
     private String codigo;
 
 

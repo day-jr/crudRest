@@ -16,36 +16,28 @@ public class ProfessorService {
     @Autowired
     public ProfessorRepository professorRepository;
 
-    public Professor save(Professor professor){
+    public Professor save(Professor professor) {
         return professorRepository.save(professor);
     }
 
-    public List<Professor> getProfessor(){
+    public List<Professor> getProfessor() {
         return professorRepository.findAllProf();
     }
 
 
-
-    public void deleteProfessorByCpf(String cpf){
+    public void deleteProfessorByCpf(String cpf) {
         professorRepository.deleteByCpf(cpf);
     }
 
 
-    public Professor findByCpf(String cpf) {
+    public Optional<Professor> findByCpf(String cpf) {
 
-         return professorRepository.findByCpf(cpf);
+        return Optional.ofNullable(professorRepository.findByCpf(cpf));
     }
 
-    public void deleteDependency(Long cpf){
+    public void deleteDependency(Long cpf) {
         professorRepository.deleteDependency(cpf);
     }
-
-
-
-
-
-
-
 
 
 }

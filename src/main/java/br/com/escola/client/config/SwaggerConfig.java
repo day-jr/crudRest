@@ -17,7 +17,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class SwaggerConfig extends WebMvcConfigurationSupport {
 
     @Bean
-    public Docket clientApi(){
+    public Docket clientApi() {
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
@@ -28,8 +28,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
     }
 
 
-
-    }
+}
 
 
 

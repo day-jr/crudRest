@@ -3,23 +3,21 @@ package br.com.escola.client.http.controller;
 
 import br.com.escola.client.entity.Aluno;
 import br.com.escola.client.entity.AlunoTurma;
-import br.com.escola.client.entity.Professor;
 import br.com.escola.client.service.AlunoService;
-import br.com.escola.client.service.AlunoTurmaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.List;
+import java.util.Optional;
 
 
 @RestController
 @RequestMapping("/aluno")
 public class AlunoController {
-    @Autowired
-    AlunoTurmaService alunoTurmaService;
+
 
     @Autowired
     AlunoService alunoService;
@@ -29,27 +27,28 @@ public class AlunoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Aluno saveAluno(@RequestBody Aluno aluno, AlunoTurma alunoTurma){
-
+    public Aluno saveAluno(@RequestBody Aluno aluno, AlunoTurma alunoTurma) {
         return alunoService.save(aluno);
     }
 
 
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Aluno> getAluno(){
-        return alunoService.getAluno();
-    }
-
-
-
-    ///////////////////////////////////GET BY CPF
+    ///////////////////////////////////GET BY MATRICULA
     ////////////////////////////////////////////////////////////////////
-    @GetMapping("/search/{matricula}")
-    @ResponseStatus(HttpStatus.OK)
-    public Aluno findAluno(@PathVariable("matricula") String matricula){
+    @GetMapping
+    public ResponseEntity getAluno(@RequestParam(required = false, name = "matricula")
+                                           Optional<String> matricula) {
+        if (matricula.isPresent()) {
+            var found = alunoService.findByMatricula(matricula.get());
+            System.out.println(matricula);
+            if (found.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+            return new ResponseEntity(found, HttpStatus.OK);
 
-        return alunoService.findByMatricula(matricula);
+
+        } else {
+            var found = alunoService.getAluno();
+            if (found.isEmpty()) return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(found, HttpStatus.OK);
+        }
 
     }
 
@@ -57,26 +56,29 @@ public class AlunoController {
     ///////////////////////////////////DELETE BY MATRICULA
     ////////////////////////////////////////////////////////////////////
     @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteByMatricula(@RequestParam("matricula") String matricula){
-        var a = alunoService.findByMatricula(matricula).getId();
+    public ResponseEntity deleteByMatricula(@RequestParam("matricula") String matricula){
+        var found = alunoService.findByMatricula(matricula);
+        if (found.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
 
-        alunoService.deleteDependency(a);
+        alunoService.deleteDependency(found.get().getId());
         alunoService.deleteAlunoByMatricula(matricula);
-    }
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
 
+    }
 
 
     ///////////////////////////////////MODIFY BY MATRICULA
     ////////////////////////////////////////////////////////////////////
     @PutMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateAluno(@RequestParam("matricula") String matricula, @RequestBody Aluno incomingBody){
+    public ResponseEntity updateAluno(@RequestParam("matricula") String matricula, @RequestBody Aluno incomingBody) {
 
-        Aluno a = alunoService.findByMatricula(matricula);
-        modelMapper.map(incomingBody, a);
-        alunoService.save(a);
+        var found = alunoService.findByMatricula(matricula);
+        if (found.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
 
+        modelMapper.map(incomingBody, found);
+        alunoService.save(found.get());
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 

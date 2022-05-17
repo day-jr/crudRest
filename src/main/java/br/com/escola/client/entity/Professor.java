@@ -4,10 +4,10 @@ package br.com.escola.client.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
-
 
 
 @AllArgsConstructor
@@ -23,28 +23,21 @@ public class Professor implements Serializable {
     private String cpf;
 
 
-    @Column(name = "NOME",nullable = true)
+    @Column(name = "NOME", nullable = true)
     private String nome;
 
 
-    @Column(name = "EMAIL",nullable = true)
+    @Column(name = "EMAIL", nullable = true)
     private String email;
 
-///////////////VVVV FK KEY VVVV//////////////
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "professor",orphanRemoval = true)
+    ///////////////VVVV FK KEY VVVV//////////////
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professor", orphanRemoval = true)
     @Column(name = "FK_TURMAS")
     private transient List<ProfTurma> turmas;
 
 
-
-
-
-    public Professor(){}
-
-
-
-
-
+    public Professor() {
+    }
 
 
     public Long getId() {
@@ -78,7 +71,6 @@ public class Professor implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-
 
 
 }

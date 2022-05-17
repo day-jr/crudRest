@@ -8,13 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
-public interface TurmaRepository extends JpaRepository<Turma,Long> {
+public interface TurmaRepository extends JpaRepository<Turma, Long> {
     @Transactional
     @Query(
             value = "SELECT id FROM Turma as t WHERE t.codigo = :codigo")
-    Long findByCodigo(@Param("codigo") String codigo);
-
+    Optional<Long> findByCodigo(@Param("codigo") String codigo);
 
 
     @Transactional

@@ -16,23 +16,21 @@ public class ProfessorService {
     @Autowired
     public ProfessorRepository professorRepository;
 
-    public Professor Save(Professor professor){
+    public Professor Save(Professor professor) {
         return professorRepository.save(professor);
     }
 
-    public List<Professor> GetProfessor(){
+    public List<Professor> GetProfessor() {
         return professorRepository.findAll();
     }
 
-    public Optional<Professor> FindProfessor(Long id){
+    public Optional<Professor> FindProfessor(Long id) {
         return professorRepository.findById(id);
     }
 
-    public void DeleteById(Long id){
+    public void DeleteById(Long id) {
         professorRepository.deleteById(id);
     }
-
-
 
 
 }
