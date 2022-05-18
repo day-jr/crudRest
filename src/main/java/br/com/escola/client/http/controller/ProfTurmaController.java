@@ -18,13 +18,11 @@ import java.util.*;
 @RequestMapping("/turma/prof")
 public class ProfTurmaController {
 
-
     @Autowired
     ProfTurmaService profTurmaService;
 
     @Autowired
     ProfessorService professorService;
-
 
     @Autowired
     ModelMapper modelMapper;
@@ -40,7 +38,6 @@ public class ProfTurmaController {
 
     ////////////////////////////////SHOW ALL////////////////////////////////////
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity getProfTurma(@RequestParam(required = false, name = "cpf") Optional<String> cpf,
                                        @RequestParam(required = false, name = "codigo") Optional<String> codigo,
                                        @RequestParam(required = false, name = "numberMinOfClasses") Optional<Integer> amountMin,
@@ -52,21 +49,18 @@ public class ProfTurmaController {
 
         //Search by min/max classes assigned to a professor
         if (amountMin.isPresent()) return new ResponseEntity(
-                    profTurmaService.filterByNumberOfProfessors(amountMin, amountMax),
-                    HttpStatus.OK);
-
+                profTurmaService.filterByNumberOfProfessors(amountMin, amountMax),
+                HttpStatus.OK);
 
         //Search all classes assigned to a CPF
         if (cpf.isPresent()) return new ResponseEntity(
                 profTurmaService.allClassesAssigned(cpf),
                 HttpStatus.OK);
 
-
-        //Search all professors assigned to a class
+        //Search all professors assigned to a class e servci
         if (codigo.isPresent()) return new ResponseEntity(
                 profTurmaService.allProfessorsAssigned(codigo),
                 HttpStatus.OK);
-
 
         List<ProfTurma> found = profTurmaService.getAll();
         if (found.isEmpty()) return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -76,7 +70,7 @@ public class ProfTurmaController {
 
     ////////////////////////////////////Classes unassigned
     @GetMapping("/semTurma")
-    public ResponseEntity semTurma() {
+    public ResponseEntity noClass() {
         var professors = professorService.getProfessores();
         var classesAssigned = profTurmaService.getAll();
         List<Professor> professorsAssigned = new ArrayList<>();
@@ -93,22 +87,19 @@ public class ProfTurmaController {
     }
 
 
-    ////////////////////////////////////More Than x Classes
-
-
-
     ///////////////////////////////////MODIFY CODIGO BY CPF
     ////////////////////////////////////////////////////////////////////
     @PutMapping
-
     public ResponseEntity updateProfTurma(@RequestParam("cpf") String cpf,
                                           @RequestParam("codigo") String codigo,
                                           @RequestBody ProfTurma incomingBody) {
 
         var pt = profTurmaService.find(cpf, codigo);
         if (pt.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+        var idProf = pt.get().getProfessor().getId();
+        var idClass = pt.get().getTurma().getId();
 
-        profTurmaService.deleteProfTurma(pt.get().getProfessor().getId(), pt.get().getTurma().getId());
+        profTurmaService.deleteProfTurma(idProf, idClass);
         modelMapper.map(incomingBody, pt.get());
         profTurmaService.saveComposite(cpf, codigo);
 
@@ -119,18 +110,18 @@ public class ProfTurmaController {
     ///////////////////////////////////DELETE CODIGO BY MATRICULA
     ////////////////////////////////////////////////////////////////////
     @DeleteMapping
-    public ResponseEntity deleteProfTurma(@RequestParam("cpf") String cpf, @RequestParam("codigo") String codigo) {
+    public ResponseEntity deleteProfTurma(@RequestParam("cpf") String cpf,
+                                          @RequestParam("codigo") String codigo) {
 
         var profTurma = profTurmaService.find(cpf, codigo);
         if (profTurma.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
 
         var profId = profTurma.get().getProfessor().getId();
-        var turmaId = profTurma.get().getTurma().getId();
-        profTurmaService.deleteProfTurma(profId, turmaId);
+        var classId = profTurma.get().getTurma().getId();
+        profTurmaService.deleteProfTurma(profId, classId);
 
 
         return new ResponseEntity(HttpStatus.OK);
     }
-
 
 }
