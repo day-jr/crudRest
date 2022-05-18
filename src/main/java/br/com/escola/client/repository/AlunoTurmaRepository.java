@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 public interface AlunoTurmaRepository extends JpaRepository<AlunoTurma, Long> {
     @Transactional
@@ -44,6 +45,11 @@ public interface AlunoTurmaRepository extends JpaRepository<AlunoTurma, Long> {
     @Query(
             value = "SELECT * FROM ALUNO_TURMA WHERE FK_MATRICULA = :idAluno AND FK_CODIGO = :idTurma", nativeQuery = true)
     AlunoTurma findById(@Param("idAluno") Long idAluno, @Param("idTurma") Long idTurma);
+
+    @Transactional
+    @Query(
+            value = "SELECT * FROM ALUNO_TURMA WHERE FK_MATRICULA = :idAluno", nativeQuery = true)
+    List<AlunoTurma> getAllById(@Param("idAluno") Long idAluno);
 
 
     @Transactional

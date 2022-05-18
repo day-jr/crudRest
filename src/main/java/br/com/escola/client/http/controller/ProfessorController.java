@@ -3,14 +3,12 @@ package br.com.escola.client.http.controller;
 
 import br.com.escola.client.entity.Professor;
 import br.com.escola.client.service.ProfessorService;
-import org.hibernate.annotations.Parameter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -41,7 +39,7 @@ public class ProfessorController {
 
 
         if (cpf.isEmpty()) {
-            var found = professorService.getProfessor();
+            var found = professorService.getProfessores();
             if (found.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
             return new ResponseEntity(found, HttpStatus.OK);
         }

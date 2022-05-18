@@ -4,12 +4,12 @@ package br.com.escola.client.service;
 import br.com.escola.client.entity.*;
 import br.com.escola.client.repository.AlunoTurmaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AlunoTurmaService {
@@ -76,6 +76,65 @@ public class AlunoTurmaService {
 
 
         return elementos;
+    }
+
+    public ResponseEntity filterByNumberOfStudents(Optional<Integer> classesMin, Optional<Integer> classesMax) {
+        var allClassesAssigned = alunoTurmaRepository.findAll();
+        Set<Long> allStudensAssigned = new HashSet<>();
+        final Map<Long, Long> amountOfClasses = new HashMap<>();
+
+        //Ids of all assign students
+        for (AlunoTurma entidade : allClassesAssigned) {
+            allStudensAssigned.add(entidade.getAluno().getId());
+        }
+
+        //Amount of assigned classes each one have
+        for (Long id : allStudensAssigned) {
+            var students = alunoTurmaRepository.getAllById(id);
+            var amount = students.stream().count();
+            amountOfClasses.put(id, amount);
+        }
+
+        Set<Long> keys = amountOfClasses.keySet();
+        List<AlunoTurma> studentsToShow = new ArrayList<>();
+
+        //Filter by user preference (Just min param present)
+        if (classesMin.isPresent() && classesMax.isEmpty()) {
+            for (Long key : keys) {
+                if (amountOfClasses.get(key) >= classesMin.get()) {
+                    for (AlunoTurma element : alunoTurmaRepository.getAllById(key)) {
+                        studentsToShow.add(element);
+                    }
+                }
+            }
+        }
+
+        //Filter by user preference (Just max param present)
+        if (classesMax.isPresent()) {
+            for (Long key : keys) {
+                if (amountOfClasses.get(key) <= classesMax.get()) {
+                    for (AlunoTurma element : alunoTurmaRepository.getAllById(key)) {
+                        studentsToShow.add(element);
+                    }
+                }
+            }
+        }
+
+        //Filter by user preference (Both params are present)
+        if (classesMin.isPresent() && classesMax.isPresent()) {
+            for (Long key : keys) {
+                if (amountOfClasses.get(key) >= classesMin.get() && amountOfClasses.get(key) <= classesMax.get()) {
+                    for (AlunoTurma element : alunoTurmaRepository.getAllById(key)) {
+                        studentsToShow.add(element);
+                    }
+                }
+            }
+        }
+
+
+
+        if (studentsToShow.isEmpty()) return new ResponseEntity(HttpStatus.NO_CONTENT);
+        return new ResponseEntity(studentsToShow, HttpStatus.OK);
     }
 
     public AlunoTurma getAlunoTurma(String matricula) {

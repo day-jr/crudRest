@@ -8,10 +8,12 @@ import br.com.escola.client.repository.ProfTurmaRepository;
 import br.com.escola.client.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 
 import java.util.*;
 
@@ -32,7 +34,75 @@ public class ProfTurmaService {
     }
 
 
-    public void saveComposite(ProfTurma profTurma) {
+    //Search all classes assigned to a CPF
+    public ResponseEntity allClassesAssigned(Optional<String> cpf) {
+        List<Turma> foundTurma = new ArrayList<>();
+        if (cpf.isPresent()) foundTurma = getTurmas(cpf.get());
+
+        if (foundTurma.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+        return new ResponseEntity(foundTurma, HttpStatus.OK);
+    }
+
+
+
+    //Search all professors assigned to a class code
+    public ResponseEntity allProfessorsAssigned(Optional<String> codigo) {
+        List<Professor> foundProf = new ArrayList<>();
+        if (codigo.isPresent())foundProf = getProfessores(codigo.get());
+        if (foundProf.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+        return new ResponseEntity(foundProf, HttpStatus.OK);
+    }
+
+    public ResponseEntity filterByNumberOfProfessors(Optional<Integer> classesMin, Optional<Integer> classesMax) {
+        var allClassesAssigned = getAll();
+        Set<Long> allProfessorsAssigned = new HashSet<>();
+        final Map<Long, Long> amountOfClasses = new HashMap<>();
+
+        //Assign professors
+        for (ProfTurma entidade : allClassesAssigned) {
+            allProfessorsAssigned.add(entidade.getProfessor().getId());
+        }
+
+        //Assing amount of classes each one have
+        for (Long id : allProfessorsAssigned) {
+            var profs = findByProf(id);
+            var amount = profs.stream().count();
+            amountOfClasses.put(id, amount);
+        }
+
+        Set<Long> keys = amountOfClasses.keySet();
+        List<ProfTurma> professorsToShow = new ArrayList<>();
+
+        //Filter by user preference (Just min param present)
+        if (classesMin.isPresent() && classesMax.isEmpty()) {
+            for (Long key : keys) {
+                if (amountOfClasses.get(key) >= classesMin.get()) {
+                    for (ProfTurma element : findByProf(key)) {
+                        professorsToShow.add(element);
+                    }
+                }
+            }
+        }
+
+        //Filter by user preference (Both params are present)
+        if (classesMin.isPresent() && classesMax.isPresent()) {
+            for (Long key : keys) {
+                if (amountOfClasses.get(key) >= classesMin.get() && amountOfClasses.get(key) <= classesMax.get()) {
+                    for (ProfTurma element : findByProf(key)) {
+                        professorsToShow.add(element);
+                    }
+                }
+            }
+        }
+
+        if (professorsToShow.isEmpty()) return new ResponseEntity(HttpStatus.NO_CONTENT);
+        return new ResponseEntity(professorsToShow, HttpStatus.OK);
+    }
+
+
+    public void saveComposite(String cpf, String codigo) {
+        ProfTurma profTurma = new ProfTurma();
+
         String query = "select P from Professor as P where P.cpf = :cpf";
 
         var a = em.createQuery(query, Professor.class);
@@ -58,31 +128,6 @@ public class ProfTurmaService {
     //////////////////////////////////////////
     public List<ProfTurma> getAll() {
         return profTurmaRepository.findAll();
-
-//        List<String> elementos = new ArrayList<>();
-//
-//
-//        for (ProfTurma pt : profTurma) {
-//            switch (elemento) {
-//                case "nome":
-//                    elementos.add(pt.getProfessor().getNome());
-//                    break;
-//
-//
-//                case "professor":
-//                    elementos.add(pt.getProfessor().getCpf());
-//                    break;
-//
-//
-//                case "turma":
-//                    elementos.add(pt.getTurma().getCodigo());
-//                    break;
-//
-//            }
-//        }
-//
-//
-//        return elementos;
 
     }
 
@@ -113,11 +158,10 @@ public class ProfTurmaService {
     public Optional<ProfTurma> find(String cpf, String codigo) {
 
         return Optional.ofNullable(profTurmaRepository.find(cpf, codigo));
-
     }
 
-    public Optional<ProfTurma> findById(Long idProf, Long idTurma) {
-        return Optional.ofNullable(profTurmaRepository.findById(idProf, idTurma));
+    public List<ProfTurma> findByProf(Long idProf) {
+        return profTurmaRepository.findByProf(idProf);
     }
 
     public void deleteProfTurma(Long profId, Long turmaId) {
