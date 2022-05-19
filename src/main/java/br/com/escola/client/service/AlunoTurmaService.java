@@ -2,94 +2,51 @@ package br.com.escola.client.service;
 
 
 import br.com.escola.client.entity.*;
+import br.com.escola.client.repository.AlunoRepository;
 import br.com.escola.client.repository.AlunoTurmaRepository;
+import br.com.escola.client.repository.TurmaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
 import java.util.*;
+
+
 
 @Service
 public class AlunoTurmaService {
 
     @Autowired
     public AlunoTurmaRepository alunoTurmaRepository;
+    public AlunoRepository alunoRepository;
+    public TurmaRepository turmaRepository;
 
-    private EntityManager em;
-
-    public AlunoTurmaService(EntityManager em) {
-        this.em = em;
-    }
 
     public AlunoTurma save(AlunoTurma alunoTurma) {
         return alunoTurmaRepository.save(alunoTurma);
     }
 
-    public void saveComposite(AlunoTurma alunoTurma) {
-        String query = "select A from Aluno as A where A.matricula = :matricula";
+    public void saveComposite(String matricula, String codigo) {
+        AlunoTurma alunoTurma = new AlunoTurma();
+        var aluno = alunoRepository.findByMatricula(matricula);
+        var turma = turmaRepository.findByCodigo(codigo);
+        if(aluno.isEmpty()|| turma.isEmpty()) return;
 
-        var a = em.createQuery(query, Aluno.class);
-        a.setParameter("matricula", alunoTurma.getAluno().getMatricula());
-        var aluno = a.getResultList();
-
-
-        query = "select T from Turma as T where T.codigo = :codigo";
-
-        var b = em.createQuery(query, Turma.class);
-        b.setParameter("codigo", alunoTurma.getTurma().getCodigo());
-        var turma = b.getResultList();
-
-
-        var idTurma = turma.get(0).getId();
-        var idAluno = aluno.get(0).getId();
-
-
+        var idTurma = turma.get().getId();
+        var idAluno = aluno.get().getId();
         alunoTurmaRepository.saveComposite(idAluno, idTurma);
     }
 
-    public List<String> getAlunoTurmaBy(String elemento) {
-        var AlunoTurma = alunoTurmaRepository.findAll();
-
-        List<String> elementos = new ArrayList<>();
-
-
-        for (AlunoTurma at : AlunoTurma) {
-            switch (elemento) {
-                case "nome":
-                    elementos.add(at.getAluno().getNome());
-                    break;
-
-
-                case "matricula":
-                    elementos.add(at.getAluno().getMatricula());
-                    break;
-
-
-                case "turma":
-                    elementos.add(at.getTurma().getCodigo());
-                    break;
-
-            }
-        }
-
-
-        return elementos;
-    }
-
-    public ResponseEntity filterByNumberOfStudents(Optional<Integer> classesMin, Optional<Integer> classesMax) {
+    public List<AlunoTurma> filterByNumberOfStudents(Optional<Long> classesMin, Optional<Long> classesMax) {
         var allClassesAssigned = alunoTurmaRepository.findAll();
-        Set<Long> allStudensAssigned = new HashSet<>();
+        Set<Long> allStudensIdsAssigned = new HashSet<>();
         final Map<Long, Long> amountOfClasses = new HashMap<>();
 
         //Ids of all assign students
         for (AlunoTurma entidade : allClassesAssigned) {
-            allStudensAssigned.add(entidade.getAluno().getId());
+            allStudensIdsAssigned.add(entidade.getAluno().getId());
         }
 
         //Amount of assigned classes each one have
-        for (Long id : allStudensAssigned) {
+        for (Long id : allStudensIdsAssigned) {
             var students = alunoTurmaRepository.getAllById(id);
             var amount = students.stream().count();
             amountOfClasses.put(id, amount);
@@ -133,52 +90,24 @@ public class AlunoTurmaService {
 
 
 
-        if (studentsToShow.isEmpty()) return new ResponseEntity(HttpStatus.NO_CONTENT);
-        return new ResponseEntity(studentsToShow, HttpStatus.OK);
-    }
-
-    public AlunoTurma getAlunoTurma(String matricula) {
-
-        return alunoTurmaRepository.getByMatricula(matricula);
+        return studentsToShow;
     }
 
     public List<AlunoTurma> getAll() {
-        return alunoTurmaRepository.findAll();}
-
-
-
-    public List<Turma> getTurmas(String value) {
-        String query = "SELECT turma FROM AlunoTurma as t " +
-                "WHERE  t.aluno.matricula =" + value;
-
-
-        return  em.createQuery(query, Turma.class).getResultList();
-    }
-
-    public List<Aluno> getAlunos(String value) {
-        String query =  "SELECT aluno FROM AlunoTurma as a " +
-                "WHERE  a.turma.codigo  = " + value;
-
-        return  em.createQuery(query, Aluno.class).getResultList();
+        return alunoTurmaRepository.findAll();
     }
 
     public void deleteAlunoTurma(Long alunoId, Long turmaId) {
-        alunoTurmaRepository.deleteTurma(alunoId, turmaId);
+        alunoTurmaRepository.deleteAlunoTurma(alunoId, turmaId);
     }
 
     public AlunoTurma findById(Long idAluno, Long idTurma) {
-        return alunoTurmaRepository.findById(idAluno, idTurma);
+        return alunoTurmaRepository.findByIds(idAluno, idTurma);
     }
-
-    public void modify(Long idAluno, Long idTurma, Long value) {
-
-        alunoTurmaRepository.modify(idAluno, idTurma, value);
-    }
-
 
     public Optional<AlunoTurma> find(String matricula, String codigo) {
 
-        return Optional.ofNullable(alunoTurmaRepository.find(matricula, codigo));
+        return Optional.ofNullable(alunoTurmaRepository.findAlunoTurmaByMatriculaCodigo(matricula, codigo));
 
     }
 

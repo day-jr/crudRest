@@ -31,33 +31,31 @@ public class TurmaController {
 
 
     @GetMapping
-    public ResponseEntity getTurma(@RequestParam(required = false, name = "codigo")
-                                            Optional<String> codigo) {
+    public ResponseEntity getTurma(@RequestParam(required = false, name = "codigo") Optional<String> codigo) {
 
         if (codigo.isEmpty()) {
-            var found = turmaService.getTurma();
-            if (found.isEmpty()) return new ResponseEntity(HttpStatus.NO_CONTENT);
-            return new ResponseEntity(found, HttpStatus.OK);
+            var turmasList = turmaService.getTurmas();
+            return new ResponseEntity(turmasList, HttpStatus.OK);
         }
 
-        var t = turmaService.findTurmaBycodigo(codigo.get());
+        var t = turmaService.findTurmaIdBycodigo(codigo.get());
         if (t.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
-        var found = turmaService.findTurma(t.get());
-        return new ResponseEntity(found, HttpStatus.OK);
+
+
+        var turmasList = turmaService.findTurma(t.get());
+        return new ResponseEntity(turmasList, HttpStatus.OK);
     }
 
     ///////////////////////////////////DELETE BY CODIGO
     ////////////////////////////////////////////////////////////////////
     @DeleteMapping
-    public ResponseEntity deleteByCodigo(@RequestParam("codigo") String codigo) throws Exception {
-        var t = turmaService.findTurmaBycodigo(codigo);
+    public ResponseEntity deleteByCodigo(@RequestParam("codigo") String codigo) {
+        var turma = turmaService.findTurmaIdBycodigo(codigo);
+        if (turma.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
 
-        if (t.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
-
-        turmaService.deleteDependency(t.get());
-        turmaService.deleteTurmaById(t.get());
+        turmaService.deleteDependency(turma.get());
+        turmaService.deleteTurmaById(turma.get());
         return new ResponseEntity(HttpStatus.NO_CONTENT);
-
     }
 
 
@@ -66,13 +64,14 @@ public class TurmaController {
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity updateTurma(@RequestParam("codigo") String codigo,
-                                      @RequestBody Turma incomingBody) throws Exception {
+                                      @RequestBody Turma incomingBody){
 
-        var found = turmaService.returnTurma(codigo);
-        if (found == null) return new ResponseEntity(HttpStatus.NOT_FOUND);
+        var turmaId = turmaService.findTurmaIdBycodigo(codigo);
+        if(turmaId.isEmpty())return new ResponseEntity(HttpStatus.NOT_FOUND);
+        var turma = turmaService.findTurma(turmaId.get());
 
-        modelMapper.map(incomingBody, found);
-        turmaService.save(found);
+        modelMapper.map(incomingBody, turma.get());
+        turmaService.save(turma.get());
         return new ResponseEntity(HttpStatus.OK);
     }
 

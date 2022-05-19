@@ -7,12 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 public interface AlunoRepository extends JpaRepository<Aluno, Long> {
     @Transactional
     @Query(
             value = "SELECT a FROM Aluno a WHERE a.matricula = :matricula ")
-    Aluno findByMatricula(@Param("matricula") String matricula);
+    Optional<Aluno> findByMatricula(@Param("matricula") String matricula);
 
     @Transactional
     @Modifying
@@ -20,11 +21,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
             value = "DELETE Aluno WHERE matricula = :matricula")
     void deleteByMatricula(@Param("matricula") String matricula);
 
-    @Transactional
-    @Modifying
-    @Query(
-            value = "DELETE ALUNO_TURMA WHERE ALUNO_TURMA.FK_MATRICULA = :matricula", nativeQuery = true)
-    void deleteDependency(@Param("matricula") Long matricula);
+
 
 
 }
