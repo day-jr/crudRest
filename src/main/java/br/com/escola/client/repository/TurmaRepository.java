@@ -13,14 +13,8 @@ import java.util.Optional;
 public interface TurmaRepository extends JpaRepository<Turma, Long> {
     @Transactional
     @Query(
-            value = "SELECT id FROM Turma as t WHERE t.codigo = :codigo")
-    Optional<Long> findByCodigo(@Param("codigo") String codigo);
-
-
-    @Transactional
-    @Query(
             value = "SELECT t FROM Turma as t WHERE t.codigo = :codigo")
-    Turma returnTurma(@Param("codigo") String codigo);
+    Optional<Turma> findByCodigo(@Param("codigo") String codigo);
 
 
     @Transactional

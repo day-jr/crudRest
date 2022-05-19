@@ -2,6 +2,7 @@ package br.com.escola.client.service;
 
 
 import br.com.escola.client.entity.Professor;
+import br.com.escola.client.repository.ProfTurmaRepository;
 import br.com.escola.client.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,9 @@ public class ProfessorService {
 
     @Autowired
     public ProfessorRepository professorRepository;
+
+    @Autowired
+    public ProfTurmaRepository profTurmaRepository;
 
     public Professor save(Professor professor) {
         return professorRepository.save(professor);
@@ -32,11 +36,11 @@ public class ProfessorService {
 
     public Optional<Professor> findByCpf(String cpf) {
 
-        return Optional.ofNullable(professorRepository.findByCpf(cpf));
+        return professorRepository.findByCpf(cpf);
     }
 
     public void deleteDependency(Long cpf) {
-        professorRepository.deleteDependency(cpf);
+        profTurmaRepository.deleteDependency(cpf);
     }
 
 

@@ -37,16 +37,13 @@ public class ProfessorController {
     @GetMapping
     public ResponseEntity getProfessor(@RequestParam(required = false, name = "cpf") Optional<String> cpf) {
 
-
         if (cpf.isEmpty()) {
-            var found = professorService.getProfessores();
-            if (found.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
-            return new ResponseEntity(found, HttpStatus.OK);
+            var profsList = professorService.getProfessores();
+            return new ResponseEntity(profsList, HttpStatus.OK);
         }
 
-        var found = professorService.findByCpf(cpf.get());
-        if (found.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
-        return new ResponseEntity(found, HttpStatus.OK);
+        var profsList = professorService.findByCpf(cpf.get());
+        return new ResponseEntity(profsList, HttpStatus.OK);
     }
 
 
@@ -54,14 +51,14 @@ public class ProfessorController {
     ////////////////////////////////////////////////////////////////////
     @DeleteMapping
     public ResponseEntity deleteById(@RequestParam("cpf") String cpf) {
-        var p = professorService.findByCpf(cpf);
-        if (p.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
-        var id = p.get().getId();
+        var prof = professorService.findByCpf(cpf);
+        if (prof.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+        var id = prof.get().getId();
 
 
         professorService.deleteDependency(id);
         professorService.deleteProfessorByCpf(cpf);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
 
@@ -69,10 +66,10 @@ public class ProfessorController {
     ////////////////////////////////////////////////////////////////////
     @PutMapping
     public ResponseEntity updateProfessor(@RequestParam("cpf") String cpf, @RequestBody Professor incomingBody) {
-        var p = professorService.findByCpf(cpf);
-        if (p.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
-        modelMapper.map(incomingBody, p.get());
-        professorService.save(p.get());
+        var prof = professorService.findByCpf(cpf);
+        if (prof.isEmpty()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+        modelMapper.map(incomingBody, prof.get());
+        professorService.save(prof.get());
         return new ResponseEntity(HttpStatus.OK);
     }
 

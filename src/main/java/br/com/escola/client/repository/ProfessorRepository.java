@@ -8,13 +8,14 @@ import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface ProfessorRepository extends JpaRepository<Professor, Long> {
     @Transactional
     @Query(
             value = "SELECT p FROM Professor p WHERE p.cpf = :cpf ")
-    Professor findByCpf(@Param("cpf") String cpf);
+    Optional<Professor> findByCpf(@Param("cpf") String cpf);
 
 
     @Transactional
@@ -28,11 +29,7 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
             value = "DELETE Professor WHERE cpf = :cpf")
     void deleteByCpf(@Param("cpf") String cpf);
 
-    @Transactional
-    @Modifying
-    @Query(
-            value = "DELETE PROF_TURMA WHERE PROF_TURMA.FK_CPF = :cpf", nativeQuery = true)
-    void deleteDependency(@Param("cpf") Long cpf);
+
 
 
 }

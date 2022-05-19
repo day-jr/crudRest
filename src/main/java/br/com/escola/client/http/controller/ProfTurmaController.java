@@ -4,6 +4,7 @@ package br.com.escola.client.http.controller;
 import br.com.escola.client.entity.*;
 import br.com.escola.client.service.ProfTurmaService;
 import br.com.escola.client.service.ProfessorService;
+import br.com.escola.client.service.TurmaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,9 @@ public class ProfTurmaController {
     ProfTurmaService profTurmaService;
 
     @Autowired
+    TurmaService turmaService;
+
+    @Autowired
     ProfessorService professorService;
 
     @Autowired
@@ -38,10 +42,11 @@ public class ProfTurmaController {
 
     ////////////////////////////////SHOW ALL////////////////////////////////////
     @GetMapping
-    public ResponseEntity getProfTurma(@RequestParam(required = false, name = "cpf") Optional<String> cpf,
-                                       @RequestParam(required = false, name = "codigo") Optional<String> codigo,
-                                       @RequestParam(required = false, name = "numberMinOfClasses") Optional<Integer> amountMin,
-                                       @RequestParam(required = false, name = "numberMaxOfClasses") Optional<Integer> amountMax) {
+    public ResponseEntity getProfTurma(
+            @RequestParam(required = false, name = "cpf") Optional<String> cpf,
+            @RequestParam(required = false, name = "codigo") Optional<String> codigo,
+            @RequestParam(required = false, name = "numberMinOfClasses") Optional<Long> amountMin,
+            @RequestParam(required = false, name = "numberMaxOfClasses") Optional<Long> amountMax) {
 
         //Prevents exceptions
         if (cpf.isPresent() && codigo.isPresent()) return new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -54,10 +59,10 @@ public class ProfTurmaController {
 
         //Search all classes assigned to a CPF
         if (cpf.isPresent()) return new ResponseEntity(
-                profTurmaService.allClassesAssigned(cpf),
+                turmaService.allClassesAssignedToCpf(cpf),
                 HttpStatus.OK);
 
-        //Search all professors assigned to a class e servci
+        //Search all professors assigned to a class
         if (codigo.isPresent()) return new ResponseEntity(
                 profTurmaService.allProfessorsAssigned(codigo),
                 HttpStatus.OK);

@@ -1,8 +1,9 @@
 package br.com.escola.client.service;
 
 
+import br.com.escola.client.entity.AlunoTurma;
 import br.com.escola.client.entity.Turma;
-import br.com.escola.client.repository.TurmaRepository;
+import br.com.escola.client.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,24 +16,49 @@ public class TurmaService {
     @Autowired
     public TurmaRepository turmaRepository;
 
+    @Autowired
+    public ProfessorRepository professorRepository;
+
+    @Autowired
+    public AlunoTurmaRepository alunoTurmaRepository;
+
+    @Autowired
+    public ProfTurmaRepository profTurmaRepository;
+
+    //Search all classes assigned to a registration
+    public Optional<List<AlunoTurma>> allClassesAssignedToRegistration(Optional<String> matricula) {
+        if(matricula.isEmpty())return null;
+        var turmaFound =
+                alunoTurmaRepository.getAllAlunoTurmaByMatricula(matricula.get());
+
+        return turmaFound;
+    }
+
+    //Search all classes assigned to a CPF
+    public Optional<List<Turma>> allClassesAssignedToCpf(Optional<String> cpf) {
+        if(cpf.isEmpty()) return null;
+
+        var turmaFound =  profTurmaRepository.getClassesAssignedToCpf(cpf.get());
+
+        return turmaFound;
+    }
+
     public Turma save(Turma turma) {
         return turmaRepository.save(turma);
     }
 
-    public List<Turma> getTurma() {
-        return turmaRepository.findAll();
-    }
 
-    public Turma returnTurma(String codigo) {
-        return turmaRepository.returnTurma(codigo);
+    public Optional<List<Turma>> getTurmas() {
+        return Optional.of(turmaRepository.findAll());
     }
 
     public Optional<Turma> findTurma(Long id) {
         return turmaRepository.findById(id);
     }
 
-    public Optional<Long> findTurmaBycodigo(String codigo) {
-        return turmaRepository.findByCodigo(codigo);
+    public Optional<Long> findTurmaIdBycodigo(String codigo) {
+        var turmaId = turmaRepository.findByCodigo(codigo).get().getId();
+        return Optional.ofNullable(turmaId);
     }
 
     public void deleteTurmaById(Long id) {

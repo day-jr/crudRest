@@ -2,6 +2,8 @@ package br.com.escola.client.repository;
 
 
 import br.com.escola.client.entity.ProfTurma;
+import br.com.escola.client.entity.Professor;
+import br.com.escola.client.entity.Turma;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,8 +25,29 @@ public interface ProfTurmaRepository extends JpaRepository<ProfTurma, Long> {
 
     @Transactional
     @Query(
+            value =  "SELECT p.professor FROM ProfTurma as p " +
+            "WHERE  p.turma.codigo  = :codigo")
+    Optional<List<Professor>> findByTurma(@Param("codigo") String codigo);
+
+
+
+    @Transactional
+    @Query(
+            value = "SELECT t.turma FROM ProfTurma as t " +
+                    "WHERE t.professor.cpf = :cpf ")
+    Optional<List<Turma>> getClassesAssignedToCpf(@Param("cpf") String cpf);
+
+    @Transactional
+    @Modifying
+    @Query(
+            value = "DELETE PROF_TURMA WHERE PROF_TURMA.FK_CPF = :cpf", nativeQuery = true)
+    void deleteDependency(@Param("cpf") Long cpf);
+
+    @Transactional
+    @Query(
             value = "SELECT p FROM ProfTurma as p WHERE p.professor.cpf = :cpf AND p.turma.codigo = :codigo")
    ProfTurma find(@Param("cpf") String cpf, @Param("codigo") String codigo);
+
 
 
     @Transactional
@@ -35,7 +58,7 @@ public interface ProfTurmaRepository extends JpaRepository<ProfTurma, Long> {
     @Transactional
     @Query(
             value = "SELECT * FROM PROF_TURMA WHERE FK_CPF = :idProf", nativeQuery = true)
-    List<ProfTurma> findByProf(@Param("idProf") Long idProf);
+    Optional<List<ProfTurma>> findByProf(@Param("idProf") Long idProf);
 
 
     @Transactional
