@@ -45,7 +45,7 @@ public class AlunoTurmaController {
 
 
         if (matricula.isPresent() && codigo.isPresent()) return new ResponseEntity(HttpStatus.BAD_REQUEST);
-        List<AlunoTurma> found;
+        List<AlunoTurma> alunoTurmaList;
 
         //Search by min/max classes assigned to a professor
         if (amountMin.isPresent()||amountMax.isPresent()) return new ResponseEntity(
@@ -63,8 +63,8 @@ public class AlunoTurmaController {
                 HttpStatus.OK);
 
 
-        found = alunoTurmaService.getAll();
-        return new ResponseEntity(found, HttpStatus.OK);
+        alunoTurmaList = alunoTurmaService.getAll();
+        return new ResponseEntity(alunoTurmaList, HttpStatus.OK);
     }
 
 
