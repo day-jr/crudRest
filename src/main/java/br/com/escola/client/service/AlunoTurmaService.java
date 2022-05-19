@@ -37,16 +37,16 @@ public class AlunoTurmaService {
 
     public List<AlunoTurma> filterByNumberOfStudents(Optional<Long> classesMin, Optional<Long> classesMax) {
         var allClassesAssigned = alunoTurmaRepository.findAll();
-        Set<Long> allStudensIdsAssigned = new HashSet<>();
+        Set<Long> allStudentsIdsAssigned = new HashSet<>();
         final Map<Long, Long> amountOfClasses = new HashMap<>();
 
         //Ids of all assign students
         for (AlunoTurma entidade : allClassesAssigned) {
-            allStudensIdsAssigned.add(entidade.getAluno().getId());
+            allStudentsIdsAssigned.add(entidade.getAluno().getId());
         }
 
         //Amount of assigned classes each one have
-        for (Long id : allStudensIdsAssigned) {
+        for (Long id : allStudentsIdsAssigned) {
             var students = alunoTurmaRepository.getAllById(id);
             var amount = students.stream().count();
             amountOfClasses.put(id, amount);
