@@ -20,8 +20,8 @@ public class ProfessorService {
         return professorRepository.save(professor);
     }
 
-    public List<Professor> getProfessor() {
-        return professorRepository.findAllProf();
+    public List<Professor> getProfessores() {
+        return professorRepository.findAll();
     }
 
 

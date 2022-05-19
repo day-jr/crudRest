@@ -45,7 +45,7 @@ public class AlunoController {
 
 
         } else {
-            var found = alunoService.getAluno();
+            var found = alunoService.getAlunos();
             if (found.isEmpty()) return new ResponseEntity(HttpStatus.NO_CONTENT);
             return new ResponseEntity(found, HttpStatus.OK);
         }

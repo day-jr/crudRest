@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 public interface ProfTurmaRepository extends JpaRepository<ProfTurma, Long> {
@@ -29,7 +30,12 @@ public interface ProfTurmaRepository extends JpaRepository<ProfTurma, Long> {
     @Transactional
     @Query(
             value = "SELECT * FROM PROF_TURMA WHERE FK_CPF = :idProf AND FK_CODIGO = :idTurma", nativeQuery = true)
-    ProfTurma findById(@Param("idProf") Long idAluno, @Param("idTurma") Long idTurma);
+    List<ProfTurma> findById(@Param("idProf") Long idProf, @Param("idTurma") Long idTurma);
+
+    @Transactional
+    @Query(
+            value = "SELECT * FROM PROF_TURMA WHERE FK_CPF = :idProf", nativeQuery = true)
+    List<ProfTurma> findByProf(@Param("idProf") Long idProf);
 
 
     @Transactional
