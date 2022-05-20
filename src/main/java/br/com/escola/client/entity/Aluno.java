@@ -32,10 +32,10 @@ public class Aluno implements Serializable {
     private String matricula;
 
 
-    @Column(name = "NOME", nullable = true, unique = false)
+    @Column(name = "NOME", nullable = false)
     private String nome;
 
-    @Column(name = "EMAIL", nullable = true, unique = false)
+    @Column(name = "EMAIL", nullable = true, unique = true)
     private String email;
 
 

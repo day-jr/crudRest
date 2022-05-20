@@ -43,7 +43,9 @@ public class ProfTurmaController {
 
         //Prevents exceptions
 
-        if (amountMin.isEmpty() && amountMax.isPresent()) return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        if (amountMin.isEmpty() && amountMax.isPresent()) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
 
         //Search by min/max classes assigned to a professor
         if (amountMin.isPresent()) {
@@ -58,7 +60,9 @@ public class ProfTurmaController {
 
 
         var profTurmasFound = Optional.ofNullable(profTurmaService.getAll());
-        if (profTurmasFound.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if (profTurmasFound.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(profTurmasFound, HttpStatus.OK);
     }
 
@@ -67,12 +71,14 @@ public class ProfTurmaController {
     ///////////////////////////////////MODIFY CODIGO BY CPF
     ////////////////////////////////////////////////////////////////////
     @PutMapping
-    public ResponseEntity <HttpStatus >updateProfTurma(@RequestParam("cpf") String cpf,
+    public ResponseEntity <Void>updateProfTurma(@RequestParam("cpf") String cpf,
                                           @RequestParam("codigo") String codigo,
                                           @RequestBody ProfTurma incomingBody) {
 
         var pt = profTurmaService.find(cpf, codigo);
-        if (pt.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (pt.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         var idProf = pt.get().getProfessor().getId();
         var idClass = pt.get().getTurma().getId();
 
@@ -87,18 +93,20 @@ public class ProfTurmaController {
     ///////////////////////////////////DELETE CODIGO BY MATRICULA
     ////////////////////////////////////////////////////////////////////
     @DeleteMapping
-    public ResponseEntity<HttpStatus>deleteProfTurma(@RequestParam("cpf") String cpf,
+    public ResponseEntity<Void>deleteProfTurma(@RequestParam("cpf") String cpf,
                                           @RequestParam("codigo") String codigo) {
 
         var profTurma = profTurmaService.find(cpf, codigo);
-        if (profTurma.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (profTurma.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         var profId = profTurma.get().getProfessor().getId();
         var classId = profTurma.get().getTurma().getId();
         profTurmaService.deleteProfTurma(profId, classId);
 
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }

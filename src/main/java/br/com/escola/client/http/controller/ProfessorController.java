@@ -84,7 +84,9 @@ public class ProfessorController {
                                 .filter(object -> !professorsAssigned.contains(object))
                                 .toList());
 
-        if (unassignedProfessors.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (unassignedProfessors.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(unassignedProfessors, HttpStatus.OK);
     }
 
@@ -92,9 +94,11 @@ public class ProfessorController {
     ///////////////////////////////////DELETE BY CPF
     ////////////////////////////////////////////////////////////////////
     @DeleteMapping
-    public ResponseEntity<HttpStatus> deleteById(@RequestParam("cpf") String cpf) {
+    public ResponseEntity<Void> deleteById(@RequestParam("cpf") String cpf) {
         var prof = professorService.findByCpf(cpf);
-        if (prof.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (prof.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         var id = prof.get().getId();
 
 
@@ -107,10 +111,12 @@ public class ProfessorController {
     ///////////////////////////////////MODIFY BY CPF
     ////////////////////////////////////////////////////////////////////
     @PutMapping
-    public ResponseEntity<HttpStatus> updateProfessor(@RequestParam("cpf") String cpf,
+    public ResponseEntity<Void> updateProfessor(@RequestParam("cpf") String cpf,
                                                       @RequestBody Professor incomingBody) {
         var prof = professorService.findByCpf(cpf);
-        if (prof.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (prof.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         modelMapper.map(incomingBody, prof.get());
         professorService.save(prof.get());
         return new ResponseEntity<>(HttpStatus.OK);

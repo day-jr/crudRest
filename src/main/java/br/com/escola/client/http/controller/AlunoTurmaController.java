@@ -62,12 +62,14 @@ public class AlunoTurmaController {
     ///////////////////////////////////MODIFY CODIGO BY MATRICULA
     ////////////////////////////////////////////////////////////////////
     @PutMapping
-    public ResponseEntity<HttpStatus> updateAlunoTurma(@RequestParam("matricula") String matricula,
+    public ResponseEntity<Void> updateAlunoTurma(@RequestParam("matricula") String matricula,
                                                        @RequestParam("codigo") String codigo,
                                                        @RequestBody AlunoTurma incomingBody) {
 
         var at = alunoTurmaService.find(matricula, codigo);
-        if (at.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (at.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         var alunoId = at.get().getAluno().getId();
         var turmaId = at.get().getTurma().getId();
@@ -83,16 +85,18 @@ public class AlunoTurmaController {
     ///////////////////////////////////DELETE CODIGO BY MATRICULA
     ////////////////////////////////////////////////////////////////////
     @DeleteMapping
-    public ResponseEntity<HttpStatus> deleteAlunoTurma(@RequestParam("matricula") String matricula,
+    public ResponseEntity<Void> deleteAlunoTurma(@RequestParam("matricula") String matricula,
                                                        @RequestParam("codigo") String codigo) {
         var at = alunoTurmaService.find(matricula, codigo);
-        if (at.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (at.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         var alunoId = at.get().getAluno().getId();
         var turmaId = at.get().getTurma().getId();
 
         alunoTurmaService.deleteAlunoTurma(alunoId, turmaId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }
