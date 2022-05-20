@@ -34,27 +34,35 @@ public class TurmaController {
     @GetMapping
     public ResponseEntity<Optional<List<Turma>>> getTurma(
             @RequestParam(required = false, name = "cpf") Optional<String> cpf,
-            @RequestParam(required = false, name = "codigo") Optional<String> codigo) {
+            @RequestParam(required = false, name = "codigo") Optional<String> codigo,
+            @RequestParam(required = false, name = "matricula") Optional<String> matricula) {
 
-        if (codigo.isEmpty()) {
-            var turmasList = turmaService.getTurmas();
-            return new ResponseEntity<>(turmasList, HttpStatus.OK);
+        if(cpf.isPresent()&& matricula.isPresent()){
+            var inCommon =
+                    turmaService.getTurmaWhereStudentIsTaughtByProfessor(matricula.get(), cpf.get());
+            return new ResponseEntity<>(inCommon,HttpStatus.OK);
         }
 
+
         //Search all classes assigned to a CPF
-        if (cpf.isPresent()) {
+        if (cpf.isPresent()&&matricula.isEmpty()) {
             var allClassesAssignedToCpf = turmaService.allClassesAssignedToCpf(cpf);
             return new ResponseEntity<>(
                     allClassesAssignedToCpf,
                     HttpStatus.OK);
         }
 
-        var t = turmaService.findTurmaIdBycodigo(codigo.get());
-        if (t.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (codigo.isEmpty()) {
+            var turmasList = turmaService.getTurmas();
+            return new ResponseEntity<>(turmasList, HttpStatus.OK);
+        }
 
 
-        var turmasList = turmaService.findTurma(t.get());
-        return new ResponseEntity(turmasList, HttpStatus.OK);
+        var classId = turmaService.findTurmaIdBycodigo(codigo.get());
+        if (classId.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        var turma = turmaService.findTurma(classId.get());
+        return new ResponseEntity(turma, HttpStatus.OK);
     }
 
     ///////////////////////////////////DELETE BY CODIGO

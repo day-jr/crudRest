@@ -22,11 +22,6 @@ public class ProfTurmaController {
     @Autowired
     ProfTurmaService profTurmaService;
 
-    @Autowired
-    TurmaService turmaService;
-
-    @Autowired
-    ProfessorService professorService;
 
     @Autowired
     ModelMapper modelMapper;

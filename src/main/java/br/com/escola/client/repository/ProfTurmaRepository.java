@@ -29,7 +29,11 @@ public interface ProfTurmaRepository extends JpaRepository<ProfTurma, Long> {
             "WHERE  p.turma.codigo  = :codigo")
     Optional<List<Professor>> findByTurma(@Param("codigo") String codigo);
 
-
+    @Transactional
+    @Query(
+            value = "SELECT t FROM ProfTurma as t " +
+                    "WHERE t.professor.cpf = :cpf ")
+    Optional<List<ProfTurma>> getProfessorsAssignedByCpf(@Param("cpf") String cpf);
 
     @Transactional
     @Query(
