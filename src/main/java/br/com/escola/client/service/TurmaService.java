@@ -25,14 +25,6 @@ public class TurmaService {
     @Autowired
     public ProfTurmaRepository profTurmaRepository;
 
-    //Search all classes assigned to a registration
-    public Optional<List<AlunoTurma>> allClassesAssignedToRegistration(Optional<String> matricula) {
-        if(matricula.isEmpty())return null;
-        var turmaFound =
-                alunoTurmaRepository.getAllAlunoTurmaByMatricula(matricula.get());
-
-        return turmaFound;
-    }
 
     //Search all classes assigned to a CPF
     public Optional<List<Turma>> allClassesAssignedToCpf(Optional<String> cpf) {
