@@ -23,11 +23,11 @@ public class Professor implements Serializable {
     private String cpf;
 
 
-    @Column(name = "NOME", nullable = true)
+    @Column(name = "NOME", nullable = false)
     private String nome;
 
 
-    @Column(name = "EMAIL", nullable = true)
+    @Column(name = "EMAIL")
     private String email;
 
     ///////////////VVVV FK KEY VVVV//////////////

@@ -1,8 +1,7 @@
 package br.com.escola.client.http.controller;
+
 import br.com.escola.client.entity.*;
-import br.com.escola.client.service.AlunoService;
 import br.com.escola.client.service.AlunoTurmaService;
-import br.com.escola.client.service.TurmaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,87 +20,83 @@ public class AlunoTurmaController {
     AlunoTurmaService alunoTurmaService;
 
     @Autowired
-    AlunoService alunoService;
-
-    @Autowired
-    TurmaService turmaService;
-
-    @Autowired
     ModelMapper modelMapper;
 
     @PostMapping("/codigo/{codigo}/matricula/{matricula}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveComposite(@PathVariable String matricula,@PathVariable String codigo) {
-        alunoTurmaService.saveComposite(matricula,codigo);
+    public void saveComposite(@PathVariable String matricula, @PathVariable String codigo) {
+        alunoTurmaService.saveComposite(matricula, codigo);
     }
 
     ////////////////////////////////SAVE////////////////////////////////////
     @GetMapping
-    public ResponseEntity getAlunoTurma(
+    public ResponseEntity<Optional<List<AlunoTurma>>> getAlunoTurma(
             @RequestParam(required = false, name = "matricula") Optional<String> matricula,
-            @RequestParam(required = false, name = "codigo") Optional<String> codigo,
             @RequestParam(required = false, name = "numberMinOfClasses") Optional<Long> amountMin,
-            @RequestParam(required = false, name = "numberMaxOfClasses") Optional<Long> amountMax){
+            @RequestParam(required = false, name = "numberMaxOfClasses") Optional<Long> amountMax) {
 
 
-        if (matricula.isPresent() && codigo.isPresent()) return new ResponseEntity(HttpStatus.BAD_REQUEST);
-        List<AlunoTurma> alunoTurmaList;
+        //Search  student by min/max classes assigned to
+        if (amountMin.isPresent() || amountMax.isPresent()) {
+            var studentsAssigned =
+                    alunoTurmaService.filterByNumberOfStudents(amountMin, amountMax);
 
-        //Search by min/max classes assigned to a professor
-        if (amountMin.isPresent()||amountMax.isPresent()) return new ResponseEntity(
-                alunoTurmaService.filterByNumberOfStudents(amountMin, amountMax),
-                HttpStatus.OK);
+            return new ResponseEntity<>(
+                    Optional.ofNullable(studentsAssigned),
+                    HttpStatus.OK);
+        }
 
         //Search all classes assigned to a registration
-        if (matricula.isPresent()) return new ResponseEntity(
-                turmaService.allClassesAssignedToRegistration(matricula),
-                HttpStatus.OK);
-
-        //Search all students assigned to a class code
-        if (codigo.isPresent()) return new ResponseEntity(
-                alunoService.allStudentsAssigned(codigo.get()),
-                HttpStatus.OK);
+        if (matricula.isPresent()) {
+            var classesAssigned =
+                    alunoTurmaService.allClassesAssignedToRegistration(matricula);
+            return new ResponseEntity<>(classesAssigned, HttpStatus.OK);
+        }
 
 
-        alunoTurmaList = alunoTurmaService.getAll();
-        return new ResponseEntity(alunoTurmaList, HttpStatus.OK);
+        var alunoTurmaList = Optional.ofNullable(alunoTurmaService.getAll());
+        return new ResponseEntity<>(alunoTurmaList, HttpStatus.OK);
     }
 
 
     ///////////////////////////////////MODIFY CODIGO BY MATRICULA
     ////////////////////////////////////////////////////////////////////
     @PutMapping
-    public ResponseEntity updateAlunoTurma(@RequestParam("matricula") String matricula,
-                                           @RequestParam("codigo") String codigo,
-                                           @RequestBody AlunoTurma incomingBody) {
+    public ResponseEntity<Void> updateAlunoTurma(@RequestParam("matricula") String matricula,
+                                                       @RequestParam("codigo") String codigo,
+                                                       @RequestBody AlunoTurma incomingBody) {
 
         var at = alunoTurmaService.find(matricula, codigo);
-        if(at.isEmpty())return new ResponseEntity(HttpStatus.NOT_FOUND);
+        if (at.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         var alunoId = at.get().getAluno().getId();
         var turmaId = at.get().getTurma().getId();
 
-        alunoTurmaService.deleteAlunoTurma(alunoId,turmaId);
+        alunoTurmaService.deleteAlunoTurma(alunoId, turmaId);
         modelMapper.map(incomingBody, at.get());
 
-        alunoTurmaService.saveComposite(matricula,codigo);
-        return new ResponseEntity(HttpStatus.OK);
+        alunoTurmaService.saveComposite(matricula, codigo);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
     ///////////////////////////////////DELETE CODIGO BY MATRICULA
     ////////////////////////////////////////////////////////////////////
     @DeleteMapping
-    public ResponseEntity deleteAlunoTurma(@RequestParam("matricula") String matricula,
-                                           @RequestParam("codigo") String codigo) {
+    public ResponseEntity<Void> deleteAlunoTurma(@RequestParam("matricula") String matricula,
+                                                       @RequestParam("codigo") String codigo) {
         var at = alunoTurmaService.find(matricula, codigo);
-        if(at.isEmpty())return new ResponseEntity(HttpStatus.NOT_FOUND);
+        if (at.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         var alunoId = at.get().getAluno().getId();
         var turmaId = at.get().getTurma().getId();
 
         alunoTurmaService.deleteAlunoTurma(alunoId, turmaId);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }

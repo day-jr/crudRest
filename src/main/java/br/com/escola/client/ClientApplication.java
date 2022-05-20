@@ -29,9 +29,6 @@ public class ClientApplication {
     }
 
 
-//
-//- listar a turma em que o aluno Boto Rosa tem aula com o professor Chicanel
-//
 //- listar as turmas que terminam a aula após as 23:00h
 
 }

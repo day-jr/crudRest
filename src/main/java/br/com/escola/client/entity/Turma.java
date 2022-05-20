@@ -6,7 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 
 @Data
@@ -22,18 +25,23 @@ public class Turma implements Serializable {
     private Long id;
 
 
-    @Column(name = "CODIGO")
+    @Column(name = "CODIGO", nullable = false, unique = true)
     private String codigo;
 
 
-    @Column(name = "TURNO")
+    @Column(name = "TURNO", nullable = false)
     private String turno;
 
-    @Column(name = "INICIO")
-    private String inicio;
 
-    @Column(name = "DURACAO")
-    private String duracao;
+
+
+    @Column(name = "INICIO", nullable = false)
+    private DateFormat inicio = new SimpleDateFormat("HH:mm:ss");
+
+    @Column(name = "DURACAO", nullable = false)
+    private DateFormat duracao  = new SimpleDateFormat("HH:mm:ss");
+
+
 
 
     /////////////////

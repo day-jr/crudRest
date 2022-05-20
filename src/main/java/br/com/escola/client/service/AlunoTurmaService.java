@@ -24,6 +24,15 @@ public class AlunoTurmaService {
         return alunoTurmaRepository.save(alunoTurma);
     }
 
+    //Search all classes assigned to a registration
+    public Optional<List<AlunoTurma>> allClassesAssignedToRegistration(Optional<String> matricula) {
+        if(matricula.isEmpty())return null;
+        var turmaFound =
+                alunoTurmaRepository.getAllAlunoTurmaByMatricula(matricula.get());
+
+        return turmaFound;
+    }
+
     public void saveComposite(String matricula, String codigo) {
         AlunoTurma alunoTurma = new AlunoTurma();
         var aluno = alunoRepository.findByMatricula(matricula);
