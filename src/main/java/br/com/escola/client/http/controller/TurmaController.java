@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,17 +37,27 @@ public class TurmaController {
     public ResponseEntity<Optional<List<Turma>>> getTurma(
             @RequestParam(required = false, name = "cpf") Optional<String> cpf,
             @RequestParam(required = false, name = "codigo") Optional<String> codigo,
-            @RequestParam(required = false, name = "matricula") Optional<String> matricula) {
+            @RequestParam(required = false, name = "matricula") Optional<String> matricula,
+            @RequestParam(required = false, name = "finishAfter") Optional<Time> finishAfter) {
 
-        if(cpf.isPresent()&& matricula.isPresent()){
+        if (finishAfter.isPresent()) {
+            System.out.println(finishAfter);
+
+            var classes =
+                    turmaService.filterClassesByFinishTime(finishAfter.get());
+            return new ResponseEntity<>(classes, HttpStatus.OK);
+        }
+
+
+        if (cpf.isPresent() && matricula.isPresent()) {
             var inCommon =
                     turmaService.getTurmaWhereStudentIsTaughtByProfessor(matricula.get(), cpf.get());
-            return new ResponseEntity<>(inCommon,HttpStatus.OK);
+            return new ResponseEntity<>(inCommon, HttpStatus.OK);
         }
 
 
         //Search all classes assigned to a CPF
-        if (cpf.isPresent()&&matricula.isEmpty()) {
+        if (cpf.isPresent() && matricula.isEmpty()) {
             var allClassesAssignedToCpf = turmaService.allClassesAssignedToCpf(cpf);
             return new ResponseEntity<>(
                     allClassesAssignedToCpf,
@@ -87,10 +99,10 @@ public class TurmaController {
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Void> updateTurma(@RequestParam("codigo") String codigo,
-                                      @RequestBody Turma incomingBody){
+                                            @RequestBody Turma incomingBody) {
 
         var turmaId = turmaService.findTurmaIdBycodigo(codigo);
-        if(turmaId.isEmpty()) {
+        if (turmaId.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         var turma = turmaService.findTurma(turmaId.get());
