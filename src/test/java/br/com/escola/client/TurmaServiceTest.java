@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -35,6 +36,42 @@ public class TurmaServiceTest {
     TurmaRepository turmaRepository;
 
 
+    @Before
+    public void setup() {
+
+        //Set entities
+        Turma turma = new Turma(1L, "50",
+                "tarde", null, null, null, null);
+
+        Professor professor = new Professor(1L, "102", "marcio", null, null);
+        Aluno aluno = new Aluno(1L, "102", "marcin", null, null);
+
+
+        //Set relationship
+        AlunoTurma alunoTurma = new AlunoTurma(aluno, turma);
+        ProfTurma profTurma = new ProfTurma(professor, turma);
+
+
+        //Configure repositories
+        Mockito.when(alunoTurmaRepository.getAllAlunoTurmaByMatricula("102"))
+                .thenReturn(Optional.of(Collections.singletonList(alunoTurma)));
+
+        Mockito.when(profTurmaRepository.getProfessorsAssignedByCpf("102"))
+                .thenReturn(Optional.of(Collections.singletonList(profTurma)));
+
+        Mockito.when(turmaRepository.findByCodigo("50"))
+                .thenReturn(Optional.of(turma));
+
+        Mockito.when(profTurmaRepository.getClassesAssignedToCpf("102")).
+                thenReturn(Optional.of(Collections.singletonList(turma)));
+
+        //Cpf not assigned
+        Mockito.when(profTurmaRepository.getClassesAssignedToCpf("1")).
+                thenReturn(Optional.empty());
+
+    }
+
+
     @TestConfiguration
     static class TurmaServiceTestConfiguration {
 
@@ -43,7 +80,6 @@ public class TurmaServiceTest {
             return new TurmaService();
         }
     }
-
 
 
     //Tests function that get a class code whose professor and student are both in it
@@ -60,35 +96,31 @@ public class TurmaServiceTest {
                 "tarde", null, null, null, null))));
     }
 
-    @Before
-    public void setup() {
 
-        //Set entities
+    //Tests getting all classes assigned to a CPF
+    @Test
+    public void TestAllClassesAssignedToCpf() {
+
+        //NOT NULL
+        Optional<String> cpf = Optional.of("102");
+
         Turma turma = new Turma(1L, "50",
                 "tarde", null, null, null, null);
 
-        Professor professor = new Professor(1L, "102", "marcio", null, null);
-        Aluno aluno = new Aluno(1L, "102", "marcin", null, null);
+        var turmaFound =  turmaService.allClassesAssignedToCpf(cpf);
+
+        Assertions.assertEquals(turmaFound,Optional.of(Collections.singletonList(turma)));
 
 
 
-        //Set relationship
-        AlunoTurma alunoTurma = new AlunoTurma(aluno,turma);
-        ProfTurma profTurma = new ProfTurma(professor,turma);
-
-
-
-        //Configure repositories
-        Mockito.when(alunoTurmaRepository.getAllAlunoTurmaByMatricula("102"))
-                .thenReturn(Optional.of(Collections.singletonList(alunoTurma)));
-
-        Mockito.when(profTurmaRepository.getProfessorsAssignedByCpf("102"))
-                .thenReturn(Optional.of(Collections.singletonList(profTurma)));
-
-        Mockito.when(turmaRepository.findByCodigo("50"))
-                .thenReturn(Optional.of(turma));
-
+        //Not assigned cpf
+        Optional<String> cpfNotAssigned = Optional.of("1");
+        var turmaFoundNull =  turmaService.allClassesAssignedToCpf(cpfNotAssigned);
+        Assertions.assertEquals(turmaFoundNull,Optional.empty());
 
     }
+
+
+
 
 }
