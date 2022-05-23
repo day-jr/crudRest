@@ -104,7 +104,8 @@ public class TurmaService {
     }
 
     public void deleteDependency(Long codigo) {
-        turmaRepository.deleteDependency(codigo);
+        turmaRepository.deleteDependencyAlunoTurma(codigo);
+        turmaRepository.deleteDependencyProfturma(codigo);
     }
 
     public Optional<List<Turma>> filterClassesByFinishTime(Time finishTime){

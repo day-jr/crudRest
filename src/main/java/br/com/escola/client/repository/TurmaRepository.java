@@ -21,10 +21,13 @@ public interface TurmaRepository extends JpaRepository<Turma, Long> {
 
     @Transactional
     @Modifying
-    @Query(
-            value = "DELETE PROF_TURMA WHERE PROF_TURMA.FK_CODIGO = :codigo ; " +
-                    "DELETE ALUNO_TURMA WHERE ALUNO_TURMA.FK_CODIGO = :codigo  ;", nativeQuery = true)
-    void deleteDependency(@Param("codigo") Long codigo);
+    @Query(value = "DELETE ProfTurma WHERE turma.id = :id ")
+    void deleteDependencyProfturma(@Param("id") Long id);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE AlunoTurma WHERE turma.id = :id")
+    void deleteDependencyAlunoTurma(@Param("id") Long id);
 
     @Transactional
     @Query(

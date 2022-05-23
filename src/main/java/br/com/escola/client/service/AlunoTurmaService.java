@@ -37,11 +37,11 @@ public class AlunoTurmaService {
         AlunoTurma alunoTurma = new AlunoTurma();
         var aluno = alunoRepository.findByMatricula(matricula);
         var turma = turmaRepository.findByCodigo(codigo);
-        if(aluno.isEmpty()|| turma.isEmpty()) return;
 
-        var idTurma = turma.get().getId();
-        var idAluno = aluno.get().getId();
-        alunoTurmaRepository.saveComposite(idAluno, idTurma);
+        if(aluno.isEmpty()|| turma.isEmpty()) return;
+        alunoTurma.setTurma(turma.get());
+        alunoTurma.setAluno(aluno.get());
+        alunoTurmaRepository.save(alunoTurma);
     }
 
     public List<AlunoTurma> filterByNumberOfStudents(Optional<Long> classesMin, Optional<Long> classesMax) {

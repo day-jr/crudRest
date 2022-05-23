@@ -14,13 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProfTurmaRepository extends JpaRepository<ProfTurma, Long> {
-    @Transactional
-    @Modifying
-    @Query(
-            value = "INSERT INTO PROF_TURMA (FK_CPF,FK_CODIGO) " +
-                    "VALUES (:professor,:turma)",
-            nativeQuery = true)
-    void saveComposite(@Param("professor") Long cpf, @Param("turma") Long codigo);
 
 
     @Transactional
@@ -44,8 +37,8 @@ public interface ProfTurmaRepository extends JpaRepository<ProfTurma, Long> {
     @Transactional
     @Modifying
     @Query(
-            value = "DELETE PROF_TURMA WHERE PROF_TURMA.FK_CPF = :cpf", nativeQuery = true)
-    void deleteDependency(@Param("cpf") Long cpf);
+            value = "DELETE ProfTurma WHERE professor.id = :id")
+    void deleteDependency(@Param("id") Long id);
 
     @Transactional
     @Query(
@@ -56,29 +49,30 @@ public interface ProfTurmaRepository extends JpaRepository<ProfTurma, Long> {
 
     @Transactional
     @Query(
-            value = "SELECT * FROM PROF_TURMA WHERE FK_CPF = :idProf AND FK_CODIGO = :idTurma", nativeQuery = true)
+            value = "SELECT pt FROM ProfTurma as pt WHERE professor.id = :idProf AND turma.id = :idTurma")
     List<ProfTurma> findById(@Param("idProf") Long idProf, @Param("idTurma") Long idTurma);
 
     @Transactional
     @Query(
-            value = "SELECT * FROM PROF_TURMA WHERE FK_CPF = :idProf", nativeQuery = true)
+            value = "SELECT pt FROM ProfTurma as pt WHERE professor.id = :idProf")
     Optional<List<ProfTurma>> findByProf(@Param("idProf") Long idProf);
 
 
     @Transactional
     @Modifying
     @Query(
-            value = "UPDATE PROF_TURMA SET FK_CODIGO = :value WHERE " +
-                    "FK_CPF = :cpf AND FK_CODIGO = :codigo", nativeQuery = true)
+            value = "UPDATE ProfTurma pt SET pt.turma.id = :value WHERE " +
+                    "pt.professor.id = :cpf AND " +
+                    "pt.turma.id = :codigo")
     void modify(@Param("cpf") Long idAluno, @Param("codigo") Long idTurma, @Param("value") Long value);
 
 
     @Transactional
     @Modifying
     @Query(
-            value = "DELETE PROF_TURMA WHERE " +
-                    "FK_CODIGO = :idTurma and " +
-                    "FK_CPF= :idProf", nativeQuery = true)
+            value = "DELETE ProfTurma WHERE " +
+                    "turma.id = :idTurma AND " +
+                    "professor.id = :idProf")
     void deleteTurma(@Param("idProf") Long idProf, @Param("idTurma") Long idTurma);
 
 

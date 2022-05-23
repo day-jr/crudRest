@@ -12,13 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AlunoTurmaRepository extends JpaRepository<AlunoTurma, Long> {
-    @Transactional
-    @Modifying
-    @Query(
-            value = "INSERT INTO ALUNO_TURMA (FK_MATRICULA,FK_CODIGO) " +
-                    "VALUES (:matricula,:turma)",
-            nativeQuery = true)
-    void saveComposite(@Param("matricula") Long matricula, @Param("turma") Long codigo);
 
     @Transactional
     @Query(
@@ -29,9 +22,9 @@ public interface AlunoTurmaRepository extends JpaRepository<AlunoTurma, Long> {
     @Transactional
     @Modifying
     @Query(
-            value = "DELETE ALUNO_TURMA WHERE " +
-                    "FK_CODIGO = :idTurma and " +
-                    "FK_MATRICULA = :idAluno", nativeQuery = true)
+            value = "DELETE AlunoTurma WHERE " +
+                    "turma.id = :idTurma and " +
+                    "aluno.id = :idAluno")
     void deleteAlunoTurma(@Param("idAluno") Long idAluno, @Param("idTurma") Long idTurma);
 
 
@@ -49,26 +42,28 @@ public interface AlunoTurmaRepository extends JpaRepository<AlunoTurma, Long> {
 
     @Transactional
     @Query(
-            value = "SELECT * FROM ALUNO_TURMA WHERE FK_MATRICULA = :idAluno AND FK_CODIGO = :idTurma", nativeQuery = true)
+            value = "SELECT al FROM AlunoTurma as al WHERE " +
+                    "al.aluno.id = :idAluno AND " +
+                    "al.turma.id = :idTurma")
     AlunoTurma findByIds(@Param("idAluno") Long idAluno, @Param("idTurma") Long idTurma);
 
     @Transactional
     @Query(
-            value = "SELECT * FROM ALUNO_TURMA WHERE FK_MATRICULA = :idAluno", nativeQuery = true)
+            value = "SELECT al FROM AlunoTurma as al WHERE al.aluno.id = :idAluno")
     List<AlunoTurma> getAllById(@Param("idAluno") Long idAluno);
 
 
     @Transactional
     @Modifying
     @Query(
-            value = "UPDATE ALUNO_TURMA SET FK_CODIGO = :value WHERE " +
-                    "FK_MATRICULA = :matricula AND FK_CODIGO = :codigo", nativeQuery = true)
+            value = "UPDATE AlunoTurma as al SET al.turma.id = :value WHERE " +
+                    "al.aluno.id = :matricula AND al.turma.id = :codigo")
     void modify(@Param("matricula") Long idAluno, @Param("codigo") Long idTurma, @Param("value") Long value);
 
     @Transactional
     @Modifying
     @Query(
-            value = "DELETE ALUNO_TURMA WHERE ALUNO_TURMA.FK_MATRICULA = :matricula", nativeQuery = true)
+            value = "DELETE AlunoTurma WHERE aluno.matricula = :matricula")
     void deleteDependency(@Param("matricula") Long matricula);
 
 }
