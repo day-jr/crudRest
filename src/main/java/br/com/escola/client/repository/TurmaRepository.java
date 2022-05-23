@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
+import java.sql.Time;
+import java.util.List;
 import java.util.Optional;
 
 public interface TurmaRepository extends JpaRepository<Turma, Long> {
@@ -21,7 +23,12 @@ public interface TurmaRepository extends JpaRepository<Turma, Long> {
     @Modifying
     @Query(
             value = "DELETE PROF_TURMA WHERE PROF_TURMA.FK_CODIGO = :codigo ; " +
-                    "DELETE ALUNO_TURMA WHERE ALUNO_TURMA.FK_CODIGO = :codigo ; ", nativeQuery = true)
+                    "DELETE ALUNO_TURMA WHERE ALUNO_TURMA.FK_CODIGO = :codigo  ;", nativeQuery = true)
     void deleteDependency(@Param("codigo") Long codigo);
+
+    @Transactional
+    @Query(
+            value = "SELECT t FROM Turma as t WHERE ( t.inicio + t.duracao ) <= :limitTime ")
+    Optional<List<Turma>> limitByTime(@Param("limitTime") Time limitTime);
 
 }

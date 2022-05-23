@@ -3,16 +3,16 @@ package br.com.escola.client.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.sql.Time;
 import java.util.List;
-import java.util.Locale;
+
+import static org.springframework.format.annotation.DateTimeFormat.ISO.TIME;
 
 
-@Data
 @AllArgsConstructor
 @Builder
 
@@ -29,23 +29,21 @@ public class Turma implements Serializable {
     private String codigo;
 
 
-    @Column(name = "TURNO", nullable = false)
+    @Column(name = "TURNO", nullable = true)
     private String turno;
 
 
+    @Column(name = "INICIO", nullable = true)
+    @DateTimeFormat(pattern = "HH:mm")
+    private Time inicio;
 
-
-    @Column(name = "INICIO", nullable = false)
-    private DateFormat inicio = new SimpleDateFormat("HH:mm:ss");
-
-    @Column(name = "DURACAO", nullable = false)
-    private DateFormat duracao  = new SimpleDateFormat("HH:mm:ss");
-
+    @Column(name = "DURACAO", nullable = true)
+    @DateTimeFormat(pattern = "HH:mm")
+    private Time duracao;
 
 
 
     /////////////////
-
     @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @Column(name = "FK_PROFESSORES")
@@ -58,21 +56,70 @@ public class Turma implements Serializable {
     private transient List<AlunoTurma> turmaCodigoAlun;
 
 
-    //////////////////////////////////////
-    public static Turma turmaConverter(Turma t) {
-        Turma turma = new Turma();
-        turma.setCodigo(t.getCodigo());
-        turma.setTurno(t.getTurno());
-        turma.setInicio(t.getInicio());
-        turma.setDuracao(t.getDuracao());
-        return turma;
-    }
+
 
     public Turma() {
     }
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getTurno() {
+        return turno;
+    }
+
+    public void setTurno(String turno) {
+        this.turno = turno;
+    }
+
+    public Time getInicio() {
+        return inicio;
+    }
+
+    public void setInicio(Time inicio) {
+        this.inicio = inicio;
+    }
+
+    public Time getDuracao() {
+        return duracao;
+    }
+
+    public void setDuracao(Time duracao) {
+        this.duracao = duracao;
+    }
+
+
+    public List<ProfTurma> getTurmaCodigo() {
+        return turmaCodigo;
+    }
+
+    public void setTurmaCodigo(List<ProfTurma> turmaCodigo) {
+        this.turmaCodigo = turmaCodigo;
+    }
+
+    public List<AlunoTurma> getTurmaCodigoAlun() {
+        return turmaCodigoAlun;
+    }
+
+    public void setTurmaCodigoAlun(List<AlunoTurma> turmaCodigoAlun) {
+        this.turmaCodigoAlun = turmaCodigoAlun;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

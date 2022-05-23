@@ -8,6 +8,7 @@ import br.com.escola.client.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,8 +38,8 @@ public class TurmaService {
 
     public Turma save(Turma turma) {
         return turmaRepository.save(turma);
-    }
 
+    }
 
 
     public Optional<List<Turma>> getTurmaWhereStudentIsTaughtByProfessor(String matricula, String cpf){
@@ -104,5 +105,9 @@ public class TurmaService {
 
     public void deleteDependency(Long codigo) {
         turmaRepository.deleteDependency(codigo);
+    }
+
+    public Optional<List<Turma>> filterClassesByFinishTime(Time finishTime){
+        return turmaRepository.limitByTime(finishTime);
     }
 }
