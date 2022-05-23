@@ -29,6 +29,5 @@ public class ClientApplication {
     }
 
 
-//- listar as turmas que terminam a aula após as 23:00h
 
 }

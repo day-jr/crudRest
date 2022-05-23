@@ -101,9 +101,9 @@ public class ProfTurmaService {
 
         if (turma.isEmpty()|| professor.isEmpty())return;
 
-        var idTurma = turma.get().getId();
-        var idProf = professor.get().getId();
-        profTurmaRepository.saveComposite(idProf, idTurma);
+        profTurma.setTurma(turma.get());
+        profTurma.setProfessor(professor.get());
+        profTurmaRepository.save(profTurma);
     }
 
 
