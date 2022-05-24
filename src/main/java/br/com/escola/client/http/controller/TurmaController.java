@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +33,7 @@ public class TurmaController {
 
 
     @GetMapping
-    public ResponseEntity<Optional<List<Turma>>> getTurma(
+    public ResponseEntity<Optional<List<Turma>>> getTurmas(
             @RequestParam(required = false, name = "cpf") Optional<String> cpf,
             @RequestParam(required = false, name = "codigo") Optional<String> codigo,
             @RequestParam(required = false, name = "matricula") Optional<String> matricula,
