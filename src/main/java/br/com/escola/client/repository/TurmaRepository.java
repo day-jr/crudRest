@@ -19,6 +19,7 @@ public interface TurmaRepository extends JpaRepository<Turma, Long> {
     Optional<Turma> findByCodigo(@Param("codigo") String codigo);
 
 
+
     @Transactional
     @Modifying
     @Query(value = "DELETE ProfTurma WHERE turma.id = :id ")

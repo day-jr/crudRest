@@ -3,6 +3,7 @@ package br.com.escola.client.http.controller;
 
 import br.com.escola.client.entity.Turma;
 import br.com.escola.client.service.TurmaService;
+import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
 import java.util.Optional;
@@ -34,14 +34,13 @@ public class TurmaController {
 
 
     @GetMapping
-    public ResponseEntity<Optional<List<Turma>>> getTurma(
+    public ResponseEntity<Optional<List<Turma>>> getTurmas(
             @RequestParam(required = false, name = "cpf") Optional<String> cpf,
             @RequestParam(required = false, name = "codigo") Optional<String> codigo,
             @RequestParam(required = false, name = "matricula") Optional<String> matricula,
             @RequestParam(required = false, name = "finishAfter") Optional<Time> finishAfter) {
 
         if (finishAfter.isPresent()) {
-            System.out.println(finishAfter);
 
             var classes =
                     turmaService.filterClassesByFinishTime(finishAfter.get());
@@ -58,7 +57,7 @@ public class TurmaController {
 
         //Search all classes assigned to a CPF
         if (cpf.isPresent() && matricula.isEmpty()) {
-            var allClassesAssignedToCpf = turmaService.allClassesAssignedToCpf(cpf);
+            var allClassesAssignedToCpf = turmaService.allClassesAssignedToCpf(cpf.get());
             return new ResponseEntity<>(
                     allClassesAssignedToCpf,
                     HttpStatus.OK);
@@ -87,7 +86,6 @@ public class TurmaController {
         if (turma.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
         turmaService.deleteDependency(turma.get());
         turmaService.deleteTurmaById(turma.get());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -108,7 +106,7 @@ public class TurmaController {
         var turma = turmaService.findTurma(turmaId.get());
 
         modelMapper.map(incomingBody, turma.get());
-        turmaService.save(turma.get());
+        turmaService.update(turma.get(),codigo);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
