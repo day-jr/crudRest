@@ -105,7 +105,7 @@ public class TurmaServiceTest {
                 thenReturn(Optional.empty());
 
         //NOT NULL
-        Optional<String> cpf = Optional.of("102");
+        String cpf = "102";
 
         Turma turma = new Turma(1L, "50",
                 "tarde", null, null, null, null);
@@ -117,7 +117,7 @@ public class TurmaServiceTest {
 
 
         //Not assigned cpf
-        Optional<String> cpfNotAssigned = Optional.of("1");
+        String cpfNotAssigned = "1";
         var turmaFoundNull =  turmaService.allClassesAssignedToCpf(cpfNotAssigned);
         Assertions.assertEquals(turmaFoundNull,Optional.empty());
 

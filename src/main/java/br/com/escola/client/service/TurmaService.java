@@ -26,27 +26,39 @@ public class TurmaService {
     public AlunoTurmaRepository alunoTurmaRepository;
 
 
-
     //Search all classes assigned to a CPF
-    public Optional<List<Turma>> allClassesAssignedToCpf(Optional<String> cpf) {
-        if(cpf.isEmpty()) return null;
+    public Optional<List<Turma>> allClassesAssignedToCpf(String cpf) {
+        var turmaFound = profTurmaRepository.getClassesAssignedToCpf(cpf);
 
-        var turmaFound =  profTurmaRepository.getClassesAssignedToCpf(cpf.get());
+        if (turmaFound.isEmpty()) return Optional.empty();
 
         return turmaFound;
     }
 
     public Turma save(Turma turma) {
+        turma.setId(null);
         return turmaRepository.save(turma);
+    }
 
+    public void update(Turma turma, String codigo) {
+        var actualClassId = findTurmaIdBycodigo(codigo);
+
+        if (actualClassId.isEmpty()) {
+            return;//that class does not exist, cancel transaction
+        }
+
+        //else, parse actual Id to requisition to ensure it will not be modified
+        turma.setId(actualClassId.get());
+
+        turmaRepository.save(turma);
     }
 
 
-    public Optional<List<Turma>> getTurmaWhereStudentIsTaughtByProfessor(String matricula, String cpf){
+    public Optional<List<Turma>> getTurmaWhereStudentIsTaughtByProfessor(String matricula, String cpf) {
 
         var aluno = alunoTurmaRepository.getAllAlunoTurmaByMatricula(matricula);
         var professor = profTurmaRepository.getProfessorsAssignedByCpf(cpf);
-        if(aluno.isEmpty()|| professor.isEmpty())return Optional.empty();
+        if (aluno.isEmpty() || professor.isEmpty()) return Optional.empty();
 
 
         List<String> codigoListAluno = new ArrayList<>();
@@ -54,19 +66,19 @@ public class TurmaService {
         List<String> codigoTurmasInCommon = new ArrayList<>();
 
         //Take all class code from professor and throws to a list of codes
-        for(ProfTurma prof: professor.get()){
+        for (ProfTurma prof : professor.get()) {
             codigoListProf.add(prof.getTurma().getCodigo());
         }
 
         //Take all class code from student and throws to a list of codes
-        for(AlunoTurma al : aluno.get()){
+        for (AlunoTurma al : aluno.get()) {
             codigoListAluno.add(al.getTurma().getCodigo());
         }
 
         //Compares both lists, if equals, throws to "turmasInCommon"
-        for(String profCodes : codigoListProf){
+        for (String profCodes : codigoListProf) {
 
-            if(codigoListAluno.contains(profCodes)){
+            if (codigoListAluno.contains(profCodes)) {
                 codigoTurmasInCommon.add(profCodes);
             }
         }
@@ -75,15 +87,14 @@ public class TurmaService {
             return Optional.empty();
         }
 
-
         //Get all turmas from list by its code and throws to a list of Entity (turmas)
         List<Turma> turmasInCommon = new ArrayList<>();
-        for (String turma : codigoTurmasInCommon){
+        for (String turma : codigoTurmasInCommon) {
             turmasInCommon.add(turmaRepository.findByCodigo(turma).get());
         }
 
 
-        return Optional.ofNullable(turmasInCommon);
+        return Optional.of(turmasInCommon);
     }
 
     public Optional<List<Turma>> getTurmas() {
@@ -95,8 +106,14 @@ public class TurmaService {
     }
 
     public Optional<Long> findTurmaIdBycodigo(String codigo) {
-        var turmaId = turmaRepository.findByCodigo(codigo).get().getId();
-        return Optional.ofNullable(turmaId);
+        var turma = turmaRepository.findByCodigo(codigo);
+
+        if (turma.isEmpty()) {
+            return Optional.empty();
+        }
+
+
+        return Optional.ofNullable(turma.get().getId());
     }
 
     public void deleteTurmaById(Long id) {
@@ -108,7 +125,7 @@ public class TurmaService {
         turmaRepository.deleteDependencyProfturma(codigo);
     }
 
-    public Optional<List<Turma>> filterClassesByFinishTime(Time finishTime){
+    public Optional<List<Turma>> filterClassesByFinishTime(Time finishTime) {
         return turmaRepository.limitByTime(finishTime);
     }
 }
