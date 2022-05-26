@@ -86,19 +86,9 @@ public class AlunoController {
     @PutMapping
     public ResponseEntity<Void> updateAluno(@RequestParam("matricula") String matricula, @RequestBody Aluno incomingBody) {
 
-        var studentFound = alunoService.findByMatricula(matricula);
-        if (studentFound.isEmpty()) {
+        if(alunoService.update(incomingBody,matricula).isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        if (incomingBody.getId()!=null){
-            System.out.println("Should not try to modify Id. \nThis attribute was ignored.");
-        }
-
-
-
-        modelMapper.map(incomingBody, studentFound.get());
-        alunoService.update(studentFound.get(),matricula);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

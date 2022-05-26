@@ -5,7 +5,10 @@ import br.com.escola.client.entity.Aluno;
 import br.com.escola.client.entity.Turma;
 import br.com.escola.client.repository.AlunoRepository;
 import br.com.escola.client.repository.AlunoTurmaRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,19 +53,30 @@ public class AlunoService {
         alunoRepository.deleteByMatricula(matricula);
     }
 
-    public void update(Aluno aluno, String matricula) {
+    @Autowired
+    ModelMapper modelMapper;
+
+    public Optional<Aluno> update(Aluno incomingBody, String matricula) {
         var optionalAluno = findByMatricula(matricula);
 
-        if(optionalAluno.isEmpty()) {
-            return;//that student does not exist, cancel transaction
+        if (optionalAluno.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Long originalId= optionalAluno.get().getId();
+
+        if (incomingBody.getId()!=null){
+            System.out.println("Should not try to modify Id. \nThis attribute was ignored.");
+
         }
 
 
-
+        modelMapper.map(incomingBody, optionalAluno.get());
         //else, parse actual Id to requisition to ensure it will not be modified
-        aluno.setId(optionalAluno.get().getId());
+        optionalAluno.get().setId(originalId);
 
-        alunoRepository.save(aluno);
+
+        return Optional.of(alunoRepository.save(optionalAluno.get()));
     }
 
 }
