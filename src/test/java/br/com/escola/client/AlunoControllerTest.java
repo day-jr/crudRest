@@ -7,6 +7,7 @@ import br.com.escola.client.entity.Turma;
 import br.com.escola.client.tools.Json;
 import br.com.escola.client.tools.Json.indexClass.index;
 import lombok.SneakyThrows;
+import net.bytebuddy.description.type.TypeList;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -191,7 +192,6 @@ public class AlunoControllerTest {
         session.close();
 
 
-
         boolean error = false;
 
         //Entity was just created, this list should not be empty
@@ -232,5 +232,33 @@ public class AlunoControllerTest {
         Assertions.assertFalse(error);
     }
 
+    @Test
+    @SneakyThrows
+    public void deleteByMatricula_shouldReturnNoContentAndNotFound() {
+
+        mockMvc.perform(delete("/aluno?matricula=100"))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(delete("/aluno?matricula=150"))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(delete("/aluno?matricula=100"))
+                .andExpect(status().isNotFound());
+
+
+        Session session = sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+        var shouldBeEmpty =
+                session.createSQLQuery("SELECT * FROM ALUNO WHERE MATRICULA = :matricula")
+                        .setParameter("matricula", "100").getResultList();
+        tx.commit();
+        session.close();
+
+        final ArrayList<Object> empty = new ArrayList<>();
+
+        Assertions.assertEquals(empty,shouldBeEmpty);
+
+
+    }
 
 }

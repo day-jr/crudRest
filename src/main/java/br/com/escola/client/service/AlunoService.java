@@ -37,8 +37,8 @@ public class AlunoService {
         return alunoRepository.findAll();
     }
 
-    public void deleteDependency(Long matricula) {
-        alunoTurmaRepository.deleteDependency(matricula);
+    public void deleteDependency(Long id) {
+        alunoTurmaRepository.deleteDependency(id);
     }
 
     public Optional<Aluno> findByMatricula(String matricula) {

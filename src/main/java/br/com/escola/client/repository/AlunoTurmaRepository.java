@@ -63,7 +63,7 @@ public interface AlunoTurmaRepository extends JpaRepository<AlunoTurma, Long> {
     @Transactional
     @Modifying
     @Query(
-            value = "DELETE AlunoTurma WHERE aluno.matricula = :matricula")
-    void deleteDependency(@Param("matricula") Long matricula);
+            value = "DELETE AlunoTurma WHERE aluno.id = :id")
+    void deleteDependency(@Param("id") Long id);
 
 }
