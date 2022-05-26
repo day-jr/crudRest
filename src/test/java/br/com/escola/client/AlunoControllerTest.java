@@ -4,6 +4,7 @@ package br.com.escola.client;
 import br.com.escola.client.entity.Aluno;
 import br.com.escola.client.entity.AlunoTurma;
 import br.com.escola.client.entity.Turma;
+import br.com.escola.client.tools.Json;
 import br.com.escola.client.tools.Json.indexClass.index;
 import lombok.SneakyThrows;
 import org.hibernate.Session;
@@ -12,12 +13,15 @@ import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
 
 import static br.com.escola.client.tools.Json.toJson;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -27,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @RunWith(SpringRunner.class)
@@ -135,13 +140,96 @@ public class AlunoControllerTest {
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/aluno?codigo=40"))
-                .andExpect(content().json(toJson(aluno4,index.singleArray)))
+                .andExpect(content().json(toJson(aluno4, index.singleArray)))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/aluno?codigo=50"))
                 .andExpect(content().json("[]"))
                 .andExpect(status().isOk());
 
+    }
+
+    //POST MAPPING
+    @Test
+    @SneakyThrows
+    public void saveAluno_shouldReturnCreated() {
+        //parsedId must be ignored by postMapping
+        final Long passedId = 5123512346L;
+        final String passedMatricula = "500";
+        final String passedNome = "AlunoTeste";
+        final String passedEmail = "@teste";
+
+
+        final Aluno alunoToCreateTest = new Aluno(passedId, passedMatricula, passedNome, passedEmail, null);
+        mockMvc.perform(post("/aluno")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(toJson(alunoToCreateTest)))
+                .andExpect(status().isCreated());
+
+
+        Session session = sessionFactory.openSession();
+        Transaction fx = session.beginTransaction();
+        var alunoId =
+                session.createSQLQuery("SELECT ID FROM ALUNO WHERE MATRICULA = :matricula")
+                        .setParameter("matricula", passedMatricula).getResultList();
+
+        var alunoMatricula =
+                session.createSQLQuery("SELECT MATRICULA FROM ALUNO WHERE MATRICULA = :matricula")
+                        .setParameter("matricula", passedMatricula).getResultList();
+
+        var alunoNome =
+                session.createSQLQuery("SELECT NOME FROM ALUNO WHERE MATRICULA = :matricula")
+                        .setParameter("matricula", passedMatricula).getResultList();
+
+        var alunoEmail =
+                session.createSQLQuery("SELECT EMAIL FROM ALUNO WHERE MATRICULA = :matricula")
+                        .setParameter("matricula", passedMatricula).getResultList();
+
+
+        fx.commit();
+        session.close();
+
+
+
+        boolean error = false;
+
+        //Entity was just created, this list should not be empty
+        if (alunoId.isEmpty()) {
+            error = true;
+
+        } else {
+
+            //Matricula should be unique, so that list must contain just one element
+            if (alunoMatricula.size() > 1) {
+                error = true;
+
+            } else {
+                //User should not be able to change Id, so Id that was parsed here should not match with his actual Id
+                if (alunoId.get(0).equals(passedId.toString())) {
+                    error = true;
+                }
+
+                //Aluno matricula should match with value passed
+                if (!alunoMatricula.get(0).equals(passedMatricula)) {
+                    error = true;
+                }
+
+                //Aluno nome should match with value passed
+                if (!alunoNome.get(0).equals(passedNome)) {
+                    error = true;
+                }
+
+                //Aluno email should match with value passed
+                if (!alunoEmail.get(0).equals(passedEmail)) {
+                    error = true;
+                }
+
+
+            }
+        }
+
+        Assertions.assertFalse(error);
     }
 
 

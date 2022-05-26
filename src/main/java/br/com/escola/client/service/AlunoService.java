@@ -29,6 +29,7 @@ public class AlunoService {
 
 
     public Aluno save(Aluno aluno) {
+        //aluno.setId(null);
         return alunoRepository.save(aluno);
     }
 
