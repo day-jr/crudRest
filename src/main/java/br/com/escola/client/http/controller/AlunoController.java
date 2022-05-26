@@ -91,8 +91,14 @@ public class AlunoController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        modelMapper.map(incomingBody, studentFound);
-        alunoService.save(studentFound.get());
+        if (incomingBody.getId()!=null){
+            System.out.println("Should not try to modify Id. \nThis attribute was ignored.");
+        }
+
+
+
+        modelMapper.map(incomingBody, studentFound.get());
+        alunoService.update(studentFound.get(),matricula);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

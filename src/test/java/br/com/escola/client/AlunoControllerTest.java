@@ -232,6 +232,7 @@ public class AlunoControllerTest {
         Assertions.assertFalse(error);
     }
 
+    //DELETE MAPPING
     @Test
     @SneakyThrows
     public void deleteByMatricula_shouldReturnNoContentAndNotFound() {
@@ -256,7 +257,72 @@ public class AlunoControllerTest {
 
         final ArrayList<Object> empty = new ArrayList<>();
 
-        Assertions.assertEquals(empty,shouldBeEmpty);
+        Assertions.assertEquals(empty, shouldBeEmpty);
+
+
+    }
+
+    //PUT MAPPING
+    @Test
+    @SneakyThrows
+    public void updateAluno_shouldReturnOk_NotFound_NotFound() {
+        final var studentModified = new Aluno();
+        final var idPassed = 23610349678341907L;
+        final var namePassed = "pedro";
+        final var emailPassed = "pedro@gmail";
+        final var matriculaPassed = "600";
+
+        studentModified.setId(idPassed);
+        studentModified.setNome(namePassed);
+        studentModified.setEmail(emailPassed);
+        studentModified.setMatricula(matriculaPassed);
+
+        mockMvc.perform(put("/aluno?matricula=100")
+                        .content(toJson(studentModified))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+
+        mockMvc.perform(put("/aluno?matricula=100")
+                        .content(toJson(studentModified))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+
+
+        Session session = sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+        var actualId = session.createSQLQuery("SELECT ID FROM ALUNO WHERE MATRICULA = 600")
+                .getSingleResult().toString();
+        var actualName = session.createSQLQuery("SELECT NOME FROM ALUNO WHERE MATRICULA = 600")
+                .getSingleResult().toString();
+        var actualEmail = session.createSQLQuery("SELECT EMAIL FROM ALUNO WHERE MATRICULA = 600")
+                .getSingleResult().toString();
+        tx.commit();
+        session.close();
+
+        var error = false;
+
+        //Should not be able to modify Id
+        if(actualId.equals(String.valueOf(idPassed))){
+            error = true;
+        }
+
+        //Name should have been modified
+        if (!actualName.equals(namePassed)){
+            error = true;
+        }
+
+        //Email should have been modified
+        if (!actualEmail.equals(emailPassed)){
+            error = true;
+        }
+
+        Assertions.assertFalse(error);
+
+
 
 
     }

@@ -2,6 +2,7 @@ package br.com.escola.client.service;
 
 
 import br.com.escola.client.entity.Aluno;
+import br.com.escola.client.entity.Turma;
 import br.com.escola.client.repository.AlunoRepository;
 import br.com.escola.client.repository.AlunoTurmaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +50,19 @@ public class AlunoService {
         alunoRepository.deleteByMatricula(matricula);
     }
 
+    public void update(Aluno aluno, String matricula) {
+        var optionalAluno = findByMatricula(matricula);
+
+        if(optionalAluno.isEmpty()) {
+            return;//that student does not exist, cancel transaction
+        }
+
+
+
+        //else, parse actual Id to requisition to ensure it will not be modified
+        aluno.setId(optionalAluno.get().getId());
+
+        alunoRepository.save(aluno);
+    }
 
 }
