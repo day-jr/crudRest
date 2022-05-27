@@ -86,13 +86,9 @@ public class AlunoController {
     @PutMapping
     public ResponseEntity<Void> updateAluno(@RequestParam("matricula") String matricula, @RequestBody Aluno incomingBody) {
 
-        var studentFound = alunoService.findByMatricula(matricula);
-        if (studentFound.isEmpty()) {
+        if(alunoService.update(incomingBody,matricula).isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        modelMapper.map(incomingBody, studentFound);
-        alunoService.save(studentFound.get());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

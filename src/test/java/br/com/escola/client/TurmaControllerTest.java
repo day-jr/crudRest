@@ -19,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +35,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 //@WebMvcTest(controllers = TurmaController.class)
 public class TurmaControllerTest {
+
+    @Autowired
+    SessionFactory sessionFactory;
+
+    @Autowired
+    MockMvc mockMvc;
 
 
     @Before
@@ -83,12 +88,6 @@ public class TurmaControllerTest {
     }
 
 
-    @Autowired
-    SessionFactory sessionFactory;
-
-    @Autowired
-    MockMvc mockMvc;
-
 //    @MockBean
 //    TurmaService turmaService;
 
@@ -121,6 +120,7 @@ public class TurmaControllerTest {
     private final ProfTurma profTurma2_3 = new ProfTurma(prof2, turma3);
 
 
+    //POST MAPPING
     @Test
     public void saveTurma_shouldReturnCreated() throws Exception {
 
@@ -133,6 +133,7 @@ public class TurmaControllerTest {
     }
 
 
+    //GET MAPPING
     @SneakyThrows
     @Test
     public void getTurmas_testsEmptyCodigoParam_shouldReturnListOfClassesAndOk() {
@@ -149,6 +150,7 @@ public class TurmaControllerTest {
     }
 
 
+    //GET MAPPING
     @Test
     @SneakyThrows
     public void getTurmas_testsCpfParam_shouldReturnOk() {
@@ -169,6 +171,7 @@ public class TurmaControllerTest {
 
     }
 
+    //GET MAPPING
     @Test
     @SneakyThrows
     public void getTurmas_testsCodigoParam_shouldReturnOKandNotFound() {
@@ -181,6 +184,7 @@ public class TurmaControllerTest {
 
     }
 
+    //GET MAPPING
     @Test
     @SneakyThrows
     public void getTurmas_testsCpfAndCodigoParam_shouldReturnOkAndNotFound() {
@@ -200,6 +204,7 @@ public class TurmaControllerTest {
 
     }
 
+    //GET MAPPING
     @Test
     @SneakyThrows
     public void getTurmas_testsFinishTimeParam_shouldReturnOk() {
@@ -235,6 +240,7 @@ public class TurmaControllerTest {
     }
 
 
+    //DELETE MAPPING
     @SneakyThrows
     @Test
     public void deleteByCodigo_shouldReturnNoContentAndNotFound() {
@@ -248,6 +254,7 @@ public class TurmaControllerTest {
     }
 
 
+    //PUT MAPPING
     @Test
     @SneakyThrows
     public void updateTurma_shouldReturnNotFound_Ok_Ok_Ok() {
@@ -277,7 +284,6 @@ public class TurmaControllerTest {
                 .andExpect(status().isOk());
 
 
-
         turmaMod.setId(7L);
         //Tries to change class Id. It should always ignore and return Ok.
         mockMvc.perform(put("/turma?codigo=50")
@@ -285,7 +291,6 @@ public class TurmaControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
 
 
     }

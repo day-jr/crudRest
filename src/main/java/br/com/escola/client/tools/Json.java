@@ -2,6 +2,7 @@ package br.com.escola.client.tools;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 
 import java.util.List;
 
@@ -15,6 +16,16 @@ public class Json {
             begin,
             end,
         }
+    }
+
+    @SneakyThrows
+    public static String getAtribbute(String jsonString, String elementToGet){
+
+
+        var elementIndex = jsonString.indexOf(elementToGet);
+        var start = jsonString.indexOf(":",elementIndex)+1;
+        var end = jsonString.indexOf(",",elementIndex);
+        return jsonString.substring(start,end);
     }
 
     public static String toJson(Object toConvert, indexClass.index index) throws JsonProcessingException {
