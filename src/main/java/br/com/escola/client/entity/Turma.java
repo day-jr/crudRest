@@ -1,8 +1,13 @@
 package br.com.escola.client.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -10,13 +15,13 @@ import java.io.Serializable;
 import java.sql.Time;
 import java.util.List;
 
-import static org.springframework.format.annotation.DateTimeFormat.ISO.TIME;
 
 
 @AllArgsConstructor
 @Builder
-
+@Data
 @Entity
+@Accessors(chain = true)
 public class Turma implements Serializable {
 
     @Id
@@ -44,16 +49,15 @@ public class Turma implements Serializable {
 
 
     /////////////////
-    @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL)
     @Column(name = "FK_PROFESSORES")
-    private transient List<ProfTurma> turmaCodigo;
+    private transient List<ProfTurma> profFK;
 
 
-    @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+
+    @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL)
     @Column(name = "FK_ALUNOS")
-    private transient List<AlunoTurma> turmaCodigoAlun;
+    private transient List<AlunoTurma> alunoFK;
 
 
 
@@ -63,62 +67,6 @@ public class Turma implements Serializable {
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
-    public String getTurno() {
-        return turno;
-    }
-
-    public void setTurno(String turno) {
-        this.turno = turno;
-    }
-
-    public Time getInicio() {
-        return inicio;
-    }
-
-    public void setInicio(Time inicio) {
-        this.inicio = inicio;
-    }
-
-    public Time getDuracao() {
-        return duracao;
-    }
-
-    public void setDuracao(Time duracao) {
-        this.duracao = duracao;
-    }
-
-
-    public List<ProfTurma> getTurmaCodigo() {
-        return turmaCodigo;
-    }
-
-    public void setTurmaCodigo(List<ProfTurma> turmaCodigo) {
-        this.turmaCodigo = turmaCodigo;
-    }
-
-    public List<AlunoTurma> getTurmaCodigoAlun() {
-        return turmaCodigoAlun;
-    }
-
-    public void setTurmaCodigoAlun(List<AlunoTurma> turmaCodigoAlun) {
-        this.turmaCodigoAlun = turmaCodigoAlun;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -132,8 +80,8 @@ public class Turma implements Serializable {
         if (turno != null ? !turno.equals(turma.turno) : turma.turno != null) return false;
         if (inicio != null ? !inicio.equals(turma.inicio) : turma.inicio != null) return false;
         if (duracao != null ? !duracao.equals(turma.duracao) : turma.duracao != null) return false;
-        if (turmaCodigo != null ? !turmaCodigo.equals(turma.turmaCodigo) : turma.turmaCodigo != null) return false;
-        return turmaCodigoAlun != null ? turmaCodigoAlun.equals(turma.turmaCodigoAlun) : turma.turmaCodigoAlun == null;
+        if (profFK != null ? !profFK.equals(turma.profFK) : turma.profFK != null) return false;
+        return alunoFK != null ? alunoFK.equals(turma.alunoFK) : turma.alunoFK == null;
     }
 
     @Override
@@ -143,8 +91,8 @@ public class Turma implements Serializable {
         result = 31 * result + (turno != null ? turno.hashCode() : 0);
         result = 31 * result + (inicio != null ? inicio.hashCode() : 0);
         result = 31 * result + (duracao != null ? duracao.hashCode() : 0);
-        result = 31 * result + (turmaCodigo != null ? turmaCodigo.hashCode() : 0);
-        result = 31 * result + (turmaCodigoAlun != null ? turmaCodigoAlun.hashCode() : 0);
+        result = 31 * result + (profFK != null ? profFK.hashCode() : 0);
+        result = 31 * result + (alunoFK != null ? alunoFK.hashCode() : 0);
         return result;
     }
 

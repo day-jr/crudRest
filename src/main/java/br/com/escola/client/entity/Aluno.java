@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,12 +19,7 @@ import java.util.List;
 @Builder
 @Data
 @Entity
-
-//////////////////////////////////////////////////////
-//FAZER O MESMO PROCESSO Q FIZ NO PROFESSOR AQ
-/////////////////////////////////////////////////////
-
-
+@Accessors(chain = true)
 public class Aluno implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,9 +38,8 @@ public class Aluno implements Serializable {
 
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "aluno", orphanRemoval = true)
-    @JsonIgnore
     @Column(name = "FK_TURMAS")
-    private transient List<AlunoTurma> turmas;
+    private transient List<AlunoTurma> turmaFK;
 
 
     @Override
@@ -55,7 +52,7 @@ public class Aluno implements Serializable {
         if (!id.equals(aluno.id)) return false;
         if (!nome.equals(aluno.nome)) return false;
         if (email != null ? !email.equals(aluno.email) : aluno.email != null) return false;
-        return turmas != null ? turmas.equals(aluno.turmas) : aluno.turmas == null;
+        return turmaFK != null ? turmaFK.equals(aluno.turmaFK) : aluno.turmaFK == null;
     }
 
     @Override
@@ -63,7 +60,7 @@ public class Aluno implements Serializable {
         int result = id.hashCode();
         result = 31 * result + nome.hashCode();
         result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (turmas != null ? turmas.hashCode() : 0);
+        result = 31 * result + (turmaFK != null ? turmaFK.hashCode() : 0);
         return result;
     }
 

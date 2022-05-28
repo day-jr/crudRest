@@ -44,6 +44,10 @@ public class AlunoTurmaService {
         alunoTurmaRepository.save(alunoTurma);
     }
 
+    public Optional<List<AlunoTurma>> getClassAssignedByClassCode(String codigo){
+        return alunoTurmaRepository.getAllClassesAssignmentByClassCode(codigo);
+    }
+
     public List<AlunoTurma> filterByNumberOfStudents(Optional<Long> classesMin, Optional<Long> classesMax) {
         var allClassesAssigned = alunoTurmaRepository.findAll();
         Set<Long> allStudentsIdsAssigned = new HashSet<>();

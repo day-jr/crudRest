@@ -1,7 +1,6 @@
 package br.com.escola.client.service;
 
 
-import br.com.escola.client.entity.AlunoTurma;
 import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Professor;
 import br.com.escola.client.repository.ProfTurmaRepository;
@@ -112,6 +111,11 @@ public class ProfTurmaService {
         return profTurmaRepository.findAll();
 
     }
+
+    public Optional<List<ProfTurma>> getClassAssignedByClassCode(String codigo){
+        return profTurmaRepository.getProfTurmaByClassCode(codigo);
+    }
+
 
 
     public Optional<ProfTurma> find(String cpf, String codigo) {

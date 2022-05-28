@@ -3,7 +3,8 @@ package br.com.escola.client;
 
 import br.com.escola.client.entity.*;
 
-
+import br.com.escola.client.dto.response.*;
+import br.com.escola.client.dto.request.*;
 import lombok.SneakyThrows;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,6 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static br.com.escola.client.tools.Json.indexClass.index;
 import static br.com.escola.client.tools.Json.*;
@@ -132,21 +135,30 @@ public class TurmaControllerTest {
 
     }
 
+    @Autowired
+    ModelMapper modelMapper;
 
     //GET MAPPING
     @SneakyThrows
     @Test
     public void getTurmas_testsEmptyCodigoParam_shouldReturnListOfClassesAndOk() {
         List<Turma> expectedClasses = new ArrayList<>();
+        List<dtoGetTurma> expectedClassesParsed = new ArrayList<>();
         expectedClasses.add(turma4);
         expectedClasses.add(turma3);
         expectedClasses.add(turma2);
         expectedClasses.add(turma1);
 
+        for(Turma entity: expectedClasses){
+            dtoGetTurma turmaParsed = new dtoGetTurma();
+            modelMapper.map(entity,turmaParsed);
+            expectedClassesParsed.add(turmaParsed);
+
+        }
+
         mockMvc.perform(get("/turma"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(
-                        toJson(expectedClasses)));
+                .andExpect(content().json(toJson(expectedClassesParsed)));
     }
 
 
@@ -155,15 +167,22 @@ public class TurmaControllerTest {
     @SneakyThrows
     public void getTurmas_testsCpfParam_shouldReturnOk() {
 
+        var parsedTurma1 = new dtoGetTurma();
+        modelMapper.map(turma1,parsedTurma1);
+
+        var parsedTurma3 = new dtoGetTurma();
+        modelMapper.map(turma3,parsedTurma3);
+
+
         mockMvc.perform(get("/turma?cpf=100"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(
-                        toJson(turma1, index.begin) +
-                                toJson(turma3, index.end)));
+                        toJson(parsedTurma1, index.begin) +
+                                toJson(parsedTurma3, index.end)));
 
         mockMvc.perform(get("/turma?cpf=200"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(toJson(turma3, index.singleArray)));
+                .andExpect(content().json(toJson(parsedTurma3, index.singleArray)));
 
         mockMvc.perform(get("/turma?cpf=300"))
                 .andExpect(status().isOk())
@@ -175,8 +194,12 @@ public class TurmaControllerTest {
     @Test
     @SneakyThrows
     public void getTurmas_testsCodigoParam_shouldReturnOKandNotFound() {
+
+        var parsedTurma1 = new dtoGetTurma();
+        modelMapper.map(turma1,parsedTurma1);
+
         mockMvc.perform(get("/turma?codigo=10"))
-                .andExpect(content().json(toJson(turma1)))
+                .andExpect(content().json(toJson(parsedTurma1)))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/turma?codigo=50000"))
@@ -188,19 +211,21 @@ public class TurmaControllerTest {
     @Test
     @SneakyThrows
     public void getTurmas_testsCpfAndCodigoParam_shouldReturnOkAndNotFound() {
+        var parsedTurma1 = new dtoGetTurma();
+        modelMapper.map(turma1,parsedTurma1);
         mockMvc.perform(get("/turma?cpf=100&matricula=100"))
-                .andExpect(content().json(toJson(turma1, index.singleArray)))
+                .andExpect(content().json(toJson(parsedTurma1, index.singleArray)))
                 .andExpect(status().isOk());
 
 
         mockMvc.perform(get("/turma?cpf=100&matricula=200"))
-                .andExpect(content().json(toJson(turma1, index.singleArray)))
+                .andExpect(content().json(toJson(parsedTurma1, index.singleArray)))
                 .andExpect(status().isOk());
 
 
         mockMvc.perform(get("/turma?cpf=100&matricula=400"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("null"));
+                .andExpect(content().string("[]"));
 
     }
 
@@ -208,17 +233,19 @@ public class TurmaControllerTest {
     @Test
     @SneakyThrows
     public void getTurmas_testsFinishTimeParam_shouldReturnOk() {
-        List<Turma> turmasExpectedTest1 = new ArrayList<>();
-        turmasExpectedTest1.add(turma4);
-        turmasExpectedTest1.add(turma3);
-        turmasExpectedTest1.add(turma2);
-        turmasExpectedTest1.add(turma1);
+        List<dtoGetTurma> turmasExpectedTest1 = new ArrayList<>();
 
-        List<Turma> turmasExpectedTest2 = new ArrayList<>();
-        turmasExpectedTest2.add(turma3);
-        turmasExpectedTest2.add(turma2);
-        turmasExpectedTest2.add(turma1);
+        turmasExpectedTest1.add(new dtoGetTurma(Optional.of(turma4)));
+        turmasExpectedTest1.add(new dtoGetTurma(Optional.of(turma3)));
+        turmasExpectedTest1.add(new dtoGetTurma(Optional.of(turma2)));
+        turmasExpectedTest1.add(new dtoGetTurma(Optional.of(turma1)));
 
+        List<dtoGetTurma> turmasExpectedTest2 = new ArrayList<>();
+        turmasExpectedTest2.add(new dtoGetTurma(Optional.of(turma3)));
+        turmasExpectedTest2.add(new dtoGetTurma(Optional.of(turma2)));
+        turmasExpectedTest2.add(new dtoGetTurma(Optional.of(turma1)));
+
+        var parsedTurma1 = new dtoGetTurma(Optional.of(turma1));
 
         mockMvc.perform(get("/turma?finishAfter=20:00:00"))
                 .andExpect(content().json(toJson(turmasExpectedTest1)))
@@ -229,7 +256,7 @@ public class TurmaControllerTest {
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/turma?finishAfter=2:00:00"))
-                .andExpect(content().json(toJson(turma1, index.singleArray)))
+                .andExpect(content().json(toJson(parsedTurma1, index.singleArray)))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/turma?finishAfter=1:00:00"))
@@ -258,7 +285,7 @@ public class TurmaControllerTest {
     @Test
     @SneakyThrows
     public void updateTurma_shouldReturnNotFound_Ok_Ok_Ok() {
-        Turma turmaMod = new Turma();
+        dtoGetTurma turmaMod = new dtoGetTurma();
         turmaMod.setCodigo("50");
         turmaMod.setTurno("noite");
 
@@ -282,16 +309,6 @@ public class TurmaControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
-
-        turmaMod.setId(7L);
-        //Tries to change class Id. It should always ignore and return Ok.
-        mockMvc.perform(put("/turma?codigo=50")
-                        .content(toJson(turmaMod))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
 
     }
 

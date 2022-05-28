@@ -5,6 +5,8 @@ import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Professor;
 import br.com.escola.client.service.ProfTurmaService;
 import br.com.escola.client.service.ProfessorService;
+import br.com.escola.client.dto.request.dtoGetProfessor;
+import br.com.escola.client.dto.response.dtoPostProfessor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,43 +36,43 @@ public class ProfessorController {
     ////////////////////////////////////////////////////////////////////
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Professor saveProfessor(@RequestBody Professor professor) {
-        return professorService.save(professor);
+    public Professor saveProfessor(@RequestBody dtoPostProfessor professorDTO) {
+
+        return professorService.save(professorDTO.build());
     }
 
 
     ///////////////////////////////////GET
     ////////////////////////////////////////////////////////////////////
     @GetMapping
-    public ResponseEntity<Optional<List<Professor>>> getProfessor(
+    public ResponseEntity<dtoGetProfessor> getProfessor(
             @RequestParam(required = false, name = "codigo") Optional<String> codigo,
             @RequestParam(required = false, name = "cpf") Optional<String> cpf) {
 
         if (cpf.isEmpty()) {
-            var profsList =
-                    Optional.ofNullable(
-                            professorService.getProfessores());
+            var profsList = dtoGetProfessor.parseList(professorService.getProfessores());
 
-            return new ResponseEntity<>(profsList, HttpStatus.OK);
+
+            return new ResponseEntity(profsList, HttpStatus.OK);
         }
 
         //Search all professors assigned to a class
         if (codigo.isPresent()) {
             var allProfessorsAssigned =
-                    profTurmaService.allProfessorsAssigned(codigo);
+                    dtoGetProfessor.parseList(profTurmaService.allProfessorsAssigned(codigo).get());
 
-            return new ResponseEntity<>(
+            return new ResponseEntity(
                     allProfessorsAssigned,
                     HttpStatus.OK);
         }
 
-        var prof = professorService.findByCpf(cpf.get());
-        return new ResponseEntity(prof, HttpStatus.OK);
+        var prof = new dtoGetProfessor(professorService.findByCpf(cpf.get()).get());
+        return new ResponseEntity<>(prof, HttpStatus.OK);
     }
 
     ////////////////////////////////////Classes unassigned
     @GetMapping("/semTurma")
-    public ResponseEntity<Optional<List<Professor>>> noClass() {
+    public ResponseEntity<dtoGetProfessor> noClass() {
         var professors = professorService.getProfessores();
         var classesAssigned = profTurmaService.getAll();
         List<Professor> professorsAssigned = new ArrayList<>();
@@ -87,7 +89,9 @@ public class ProfessorController {
         if (unassignedProfessors.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(unassignedProfessors, HttpStatus.OK);
+
+        var parsedUnassignedProfessors = dtoGetProfessor.parseList(unassignedProfessors.get());
+        return new ResponseEntity(parsedUnassignedProfessors, HttpStatus.OK);
     }
 
 
@@ -112,7 +116,7 @@ public class ProfessorController {
     ////////////////////////////////////////////////////////////////////
     @PutMapping
     public ResponseEntity<Void> updateProfessor(@RequestParam("cpf") String cpf,
-                                                      @RequestBody Professor incomingBody) {
+                                                @RequestBody dtoPostProfessor incomingBody) {
         var prof = professorService.findByCpf(cpf);
         if (prof.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -124,5 +128,3 @@ public class ProfessorController {
 
 
 }
-
-

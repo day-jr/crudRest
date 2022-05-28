@@ -3,7 +3,8 @@ package br.com.escola.client.http.controller;
 
 import br.com.escola.client.entity.Turma;
 import br.com.escola.client.service.TurmaService;
-import lombok.SneakyThrows;
+import br.com.escola.client.dto.request.dtoGetTurma;
+import br.com.escola.client.dto.response.dtoPostTurma;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.sql.Time;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,13 +30,13 @@ public class TurmaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Turma saveTurma(@RequestBody Turma turma) {
-        return turmaService.save(turma);
+    public Turma saveTurma(@RequestBody dtoPostTurma turma) {
+        return turmaService.save(turma.build());
     }
 
 
     @GetMapping
-    public ResponseEntity<Optional<List<Turma>>> getTurmas(
+    public ResponseEntity<Optional<List<dtoGetTurma>>> getTurmas(
             @RequestParam(required = false, name = "cpf") Optional<String> cpf,
             @RequestParam(required = false, name = "codigo") Optional<String> codigo,
             @RequestParam(required = false, name = "matricula") Optional<String> matricula,
@@ -43,28 +45,32 @@ public class TurmaController {
         if (finishAfter.isPresent()) {
 
             var classes =
-                    turmaService.filterClassesByFinishTime(finishAfter.get());
+                    Optional.of(dtoGetTurma.toList(turmaService.filterClassesByFinishTime(finishAfter.get())));
+
             return new ResponseEntity<>(classes, HttpStatus.OK);
         }
 
 
         if (cpf.isPresent() && matricula.isPresent()) {
             var inCommon =
-                    turmaService.getTurmaWhereStudentIsTaughtByProfessor(matricula.get(), cpf.get());
+                    Optional.of(dtoGetTurma.toList
+                            (turmaService.getTurmaWhereStudentIsTaughtByProfessor(matricula.get(), cpf.get())));
             return new ResponseEntity<>(inCommon, HttpStatus.OK);
         }
 
 
         //Search all classes assigned to a CPF
         if (cpf.isPresent() && matricula.isEmpty()) {
-            var allClassesAssignedToCpf = turmaService.allClassesAssignedToCpf(cpf.get());
+            var allClassesAssignedToCpf =
+                    Optional.of(dtoGetTurma.toList(turmaService.allClassesAssignedToCpf(cpf.get())));
+
             return new ResponseEntity<>(
                     allClassesAssignedToCpf,
                     HttpStatus.OK);
         }
 
         if (codigo.isEmpty()) {
-            var turmasList = turmaService.getTurmas();
+            var turmasList = Optional.of(dtoGetTurma.toList(turmaService.getTurmas()));
             return new ResponseEntity<>(turmasList, HttpStatus.OK);
         }
 
@@ -74,7 +80,7 @@ public class TurmaController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        var turma = turmaService.findTurma(classId.get());
+        var turma = Optional.of(new dtoGetTurma(turmaService.findTurma(classId.get())));
         return new ResponseEntity(turma, HttpStatus.OK);
     }
 
@@ -97,17 +103,11 @@ public class TurmaController {
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Void> updateTurma(@RequestParam("codigo") String codigo,
-                                            @RequestBody Turma incomingBody) {
-
-        var turmaId = turmaService.findTurmaIdBycodigo(codigo);
-        if (turmaId.isEmpty()) {
+                                            @RequestBody dtoPostTurma incomingBody) {
+        if (turmaService.update(incomingBody,codigo).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        var turma = turmaService.findTurma(turmaId.get());
 
-
-        modelMapper.map(incomingBody, turma.get());
-        turmaService.update(turma.get(),codigo);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

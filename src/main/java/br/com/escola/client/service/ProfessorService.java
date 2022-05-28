@@ -6,7 +6,7 @@ import br.com.escola.client.repository.ProfTurmaRepository;
 import br.com.escola.client.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import br.com.escola.client.dto.response.dtoPostProfessor;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +21,7 @@ public class ProfessorService {
     public ProfTurmaRepository profTurmaRepository;
 
     public Professor save(Professor professor) {
+
         return professorRepository.save(professor);
     }
 

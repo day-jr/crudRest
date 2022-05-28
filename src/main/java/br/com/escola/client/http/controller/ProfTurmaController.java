@@ -1,10 +1,9 @@
 package br.com.escola.client.http.controller;
 
 
+
 import br.com.escola.client.entity.*;
 import br.com.escola.client.service.ProfTurmaService;
-import br.com.escola.client.service.ProfessorService;
-import br.com.escola.client.service.TurmaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +15,7 @@ import java.util.*;
 
 
 @RestController
-@RequestMapping("/turma/prof")
+@RequestMapping("/turmaProf")
 public class ProfTurmaController {
 
     @Autowired
@@ -37,21 +36,19 @@ public class ProfTurmaController {
 
     ////////////////////////////////SHOW ALL////////////////////////////////////
     @GetMapping
-    public ResponseEntity<Optional<List<ProfTurma>>> getProfTurma(
+    public ResponseEntity<List<ProfTurma>> getProfTurma(
             @RequestParam(required = false, name = "numberMinOfClasses") Optional<Long> amountMin,
             @RequestParam(required = false, name = "numberMaxOfClasses") Optional<Long> amountMax) {
 
         //Prevents exceptions
-
         if (amountMin.isEmpty() && amountMax.isPresent()) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         //Search by min/max classes assigned to a professor
         if (amountMin.isPresent()) {
             var professorsFiltered =
-                    Optional.ofNullable(
-                            profTurmaService.filterByNumberOfProfessors(amountMin, amountMax));
+                            profTurmaService.filterByNumberOfProfessors(amountMin, amountMax);
 
             return new ResponseEntity<>(
                     professorsFiltered,
@@ -63,7 +60,8 @@ public class ProfTurmaController {
         if (profTurmasFound.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(profTurmasFound, HttpStatus.OK);
+
+        return new ResponseEntity<>(profTurmasFound.get(), HttpStatus.OK);
     }
 
 

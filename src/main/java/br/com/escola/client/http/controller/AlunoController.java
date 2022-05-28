@@ -1,6 +1,8 @@
 package br.com.escola.client.http.controller;
 
 
+import br.com.escola.client.dto.response.dtoPostAluno;
+import br.com.escola.client.dto.request.dtoGetAluno;
 import br.com.escola.client.entity.Aluno;
 import br.com.escola.client.service.AlunoService;
 import org.modelmapper.ModelMapper;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,24 +30,26 @@ public class AlunoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Aluno saveAluno(@RequestBody Aluno aluno) {
-        return alunoService.save(aluno);
+    public Aluno saveAluno(@RequestBody dtoPostAluno aluno) {
+        return alunoService.save(aluno.build());
     }
 
 
     ///////////////////////////////////GET BY MATRICULA
     ////////////////////////////////////////////////////////////////////
     @GetMapping
-    public ResponseEntity<Optional<List<Aluno>>> getAluno(@RequestParam(required = false, name = "matricula")
-                                                                  Optional<String> matricula,
-                                                          @RequestParam(required = false, name = "codigo")
-                                                                  Optional<String> codigo) {
+    public ResponseEntity<dtoGetAluno> getAluno(@RequestParam(required = false, name = "matricula")
+                                                        Optional<String> matricula,
+                                                @RequestParam(required = false, name = "codigo")
+                                                        Optional<String> codigo) {
 
         //Search all students assigned to a class code
         if (codigo.isPresent()) {
-            var allStudentsAssigned = alunoService.allStudentsAssigned(codigo.get());
-            return new ResponseEntity<>(
-                    allStudentsAssigned,
+            var allStudentsAssignedDTO =
+                    dtoGetAluno.parseList(alunoService.allStudentsAssigned(codigo.get()).get());
+
+            return new ResponseEntity(
+                    allStudentsAssignedDTO,
                     HttpStatus.OK);
         }
         if (matricula.isPresent()) {
@@ -52,7 +57,9 @@ public class AlunoController {
             if (alunoFound.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity(alunoFound, HttpStatus.OK);
+
+            var alunoDTO = new dtoGetAluno(alunoFound.get());
+            return new ResponseEntity<>(alunoDTO, HttpStatus.OK);
 
 
         } else {
@@ -60,7 +67,10 @@ public class AlunoController {
             if (alunosFound.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(alunosFound, HttpStatus.OK);
+
+            var allStudentsAssigned = dtoGetAluno.parseList(alunosFound.get());
+
+            return new ResponseEntity(allStudentsAssigned, HttpStatus.OK);
         }
 
     }
@@ -84,12 +94,15 @@ public class AlunoController {
     ///////////////////////////////////MODIFY BY MATRICULA
     ////////////////////////////////////////////////////////////////////
     @PutMapping
-    public ResponseEntity<Void> updateAluno(@RequestParam("matricula") String matricula, @RequestBody Aluno incomingBody) {
+    public ResponseEntity<Void> updateAluno(@RequestParam("matricula") String matricula,
+                                            @RequestBody dtoPostAluno incomingBody) {
 
-        if(alunoService.update(incomingBody,matricula).isEmpty()){
+
+
+
+        if (alunoService.update(incomingBody,matricula).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

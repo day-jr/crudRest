@@ -40,6 +40,19 @@ public interface ProfTurmaRepository extends JpaRepository<ProfTurma, Long> {
             value = "DELETE ProfTurma WHERE professor.id = :id")
     void deleteDependency(@Param("id") Long id);
 
+
+    @Transactional
+    @Query(
+            value = "SELECT t FROM ProfTurma as t " +
+                    "WHERE t.professor.cpf = :cpf ")
+    Optional<List<ProfTurma>> getProfTurmaByClassCpf(@Param("cpf") String cpf);
+
+    @Transactional
+    @Query(
+            value = "SELECT t FROM ProfTurma as t " +
+                    "WHERE t.turma.codigo = :codigo ")
+    Optional<List<ProfTurma>> getProfTurmaByClassCode(@Param("codigo") String codigo);
+
     @Transactional
     @Query(
             value = "SELECT p FROM ProfTurma as p WHERE p.professor.cpf = :cpf AND p.turma.codigo = :codigo")
