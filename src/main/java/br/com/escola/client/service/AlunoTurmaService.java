@@ -48,7 +48,7 @@ public class AlunoTurmaService {
         return alunoTurmaRepository.getAllClassesAssignmentByClassCode(codigo);
     }
 
-    public List<AlunoTurma> filterByNumberOfStudents(Optional<Long> classesMin, Optional<Long> classesMax) {
+    public Optional<List<AlunoTurma>> filterByNumberOfStudents(Optional<Long> classesMin, Optional<Long> classesMax) {
         var allClassesAssigned = alunoTurmaRepository.findAll();
         Set<Long> allStudentsIdsAssigned = new HashSet<>();
         final Map<Long, Long> amountOfClasses = new HashMap<>();
@@ -66,7 +66,7 @@ public class AlunoTurmaService {
         }
 
         Set<Long> keys = amountOfClasses.keySet();
-        List<AlunoTurma> studentsToShow = new ArrayList<>();
+        var studentsToShow = new ArrayList<AlunoTurma>();
 
         //Filter by user preference (Just min param present)
         if (classesMin.isPresent() && classesMax.isEmpty()) {
@@ -103,7 +103,7 @@ public class AlunoTurmaService {
 
 
 
-        return studentsToShow;
+        return Optional.of(studentsToShow);
     }
 
     public List<AlunoTurma> getAll() {

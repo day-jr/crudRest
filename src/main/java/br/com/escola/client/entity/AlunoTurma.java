@@ -1,13 +1,11 @@
 package br.com.escola.client.entity;
 
 
-import br.com.escola.client.entity.idClasses.AlunoTurmaId;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -16,15 +14,20 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "ALUNO_TURMA")
-@IdClass(AlunoTurmaId.class)
+
 @Accessors(chain = true)
 public class AlunoTurma implements Serializable {
-    @Id
-    @JoinColumn(referencedColumnName = "FK_TURMAS")
-    private Aluno aluno;
 
     @Id
-    @JoinColumn(referencedColumnName = "FK_ALUNOS")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(optional=false)
+    @JoinColumn(name = "FK_ALUNOS", referencedColumnName = "id")
+    private Aluno aluno;
+
+    @ManyToOne(optional=false)
+    @JoinColumn(name = "FK_TURMAS", referencedColumnName = "id")
     private Turma turma;
 
 

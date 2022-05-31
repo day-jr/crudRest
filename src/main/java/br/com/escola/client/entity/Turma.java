@@ -26,7 +26,6 @@ public class Turma implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PK_ID")
     private Long id;
 
 
@@ -50,13 +49,13 @@ public class Turma implements Serializable {
 
     /////////////////
     @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL)
-    @Column(name = "FK_PROFESSORES")
+    @Column(name = "FK_TURMAS")
     private transient List<ProfTurma> profFK;
 
 
 
     @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL)
-    @Column(name = "FK_ALUNOS")
+    @Column(name = "FK_TURMAS")
     private transient List<AlunoTurma> alunoFK;
 
 

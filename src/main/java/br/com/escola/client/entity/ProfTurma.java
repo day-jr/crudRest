@@ -1,7 +1,7 @@
 package br.com.escola.client.entity;
 
 
-import br.com.escola.client.entity.idClasses.ProfTurmaId;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +21,6 @@ import java.io.Serializable;
 @Builder
 @Entity
 @Table(name = "PROF_TURMA")
-@IdClass(ProfTurmaId.class)
 @Accessors(chain = true)
 public class ProfTurma implements Serializable {
 
@@ -29,12 +28,12 @@ public class ProfTurma implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Id
-    @JoinColumn(referencedColumnName = "FK_TURMAS")
+    @JoinColumn(name = "FK_PROFESSORES", referencedColumnName = "id")
+    @ManyToOne(optional=false)
     private Professor professor;
 
-    @Id
-    @JoinColumn(referencedColumnName = "FK_PROFESSORES")
+    @JoinColumn(name = "FK_TURMAS", referencedColumnName = "id")
+    @ManyToOne(optional=false)
     private Turma turma;
 
 

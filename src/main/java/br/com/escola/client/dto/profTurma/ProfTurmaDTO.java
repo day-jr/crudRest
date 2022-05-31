@@ -33,7 +33,7 @@ public class ProfTurmaDTO {
 
     public static List<ProfTurmaDTO> parseList(Optional<List<ProfTurma>> profTurma){
         var profTurmaDTO = new ArrayList<ProfTurmaDTO>();
-        ModelMapper modelMapper = new ModelMapper();
+
 
         if(profTurma.isPresent()) {
             for(ProfTurma element: profTurma.get()) {
