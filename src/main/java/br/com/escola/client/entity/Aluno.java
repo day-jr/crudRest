@@ -37,8 +37,8 @@ public class Aluno implements Serializable {
 
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "aluno", orphanRemoval = true)
-    @Column(name = "FK_TURMAS")
-    private transient List<AlunoTurma> turmaFK;
+    @Column(name = "FK_ALUNOS")
+    private transient List<AlunoTurma> alunoFK;
 
 
     @Override
@@ -49,18 +49,19 @@ public class Aluno implements Serializable {
         Aluno aluno = (Aluno) o;
 
         if (!id.equals(aluno.id)) return false;
+        if (!matricula.equals(aluno.matricula)) return false;
         if (!nome.equals(aluno.nome)) return false;
         if (email != null ? !email.equals(aluno.email) : aluno.email != null) return false;
-        return turmaFK != null ? turmaFK.equals(aluno.turmaFK) : aluno.turmaFK == null;
+        return alunoFK != null ? alunoFK.equals(aluno.alunoFK) : aluno.alunoFK == null;
     }
 
     @Override
     public int hashCode() {
         int result = id.hashCode();
+        result = 31 * result + matricula.hashCode();
         result = 31 * result + nome.hashCode();
         result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (turmaFK != null ? turmaFK.hashCode() : 0);
+        result = 31 * result + (alunoFK != null ? alunoFK.hashCode() : 0);
         return result;
     }
-
 }

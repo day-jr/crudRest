@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import br.com.escola.client.dto.alunoTurma.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,15 +22,15 @@ public class AlunoTurmaController {
     @Autowired
     ModelMapper modelMapper;
 
-    @PostMapping("/codigo/{codigo}/matricula/{matricula}")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveComposite(@PathVariable String matricula, @PathVariable String codigo) {
-        alunoTurmaService.saveComposite(matricula, codigo);
+    public void saveComposite(@RequestBody AlunoTurmaDTO alunoTurmaDTO ) {
+        alunoTurmaService.saveComposite(alunoTurmaDTO.getAlunoMatricula(), alunoTurmaDTO.getTurmaCodigo());
     }
 
     ////////////////////////////////SAVE////////////////////////////////////
     @GetMapping
-    public ResponseEntity<List<AlunoTurma>> getAlunoTurma(
+    public ResponseEntity<List<AlunoTurmaDTO>> getAlunoTurma(
             @RequestParam(required = false, name = "numberMinOfClasses") Optional<Long> amountMin,
             @RequestParam(required = false, name = "numberMaxOfClasses") Optional<Long> amountMax) {
 
@@ -38,7 +38,7 @@ public class AlunoTurmaController {
         //Search  student by min/max classes assigned to
         if (amountMin.isPresent() || amountMax.isPresent()) {
             var studentsAssigned =
-                    alunoTurmaService.filterByNumberOfStudents(amountMin, amountMax);
+                    AlunoTurmaDTO.parseList(alunoTurmaService.filterByNumberOfStudents(amountMin, amountMax));
 
             return new ResponseEntity<>(
                     studentsAssigned,
@@ -47,7 +47,7 @@ public class AlunoTurmaController {
 
 
 
-        var alunoTurmaList = alunoTurmaService.getAll();
+        var alunoTurmaList = AlunoTurmaDTO.parseList(Optional.of(alunoTurmaService.getAll()));
         return new ResponseEntity<>(alunoTurmaList, HttpStatus.OK);
     }
 
@@ -57,7 +57,7 @@ public class AlunoTurmaController {
     @PutMapping
     public ResponseEntity<Void> updateAlunoTurma(@RequestParam("matricula") String matricula,
                                                        @RequestParam("codigo") String codigo,
-                                                       @RequestBody AlunoTurma incomingBody) {
+                                                       @RequestBody AlunoTurmaDTO incomingBody) {
 
         var at = alunoTurmaService.find(matricula, codigo);
         if (at.isEmpty()) {

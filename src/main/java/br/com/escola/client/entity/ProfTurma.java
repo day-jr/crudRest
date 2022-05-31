@@ -1,7 +1,7 @@
 package br.com.escola.client.entity;
 
 
-import br.com.escola.client.entity.idClasses.ProfTurmaId;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +32,7 @@ public class ProfTurma implements Serializable {
     @ManyToOne(optional=false)
     private Professor professor;
 
-    @JoinColumn(name = "FK_TURMAS", referencedColumnName = "PK_ID")
+    @JoinColumn(name = "FK_TURMAS", referencedColumnName = "id")
     @ManyToOne(optional=false)
     private Turma turma;
 

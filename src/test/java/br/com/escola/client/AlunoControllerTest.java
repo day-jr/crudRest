@@ -95,10 +95,10 @@ public class AlunoControllerTest {
     private final Aluno aluno4 = new Aluno(4L, "400", "Marlin", null, null);
 
 
-    private final AlunoTurma alunoTurma1_1 = new AlunoTurma(aluno1, turma1);
-    private final AlunoTurma alunoTurma1_2 = new AlunoTurma(aluno1, turma2);
-    private final AlunoTurma alunoTurma2_1 = new AlunoTurma(aluno2, turma1);
-    private final AlunoTurma alunoTurma4_4 = new AlunoTurma(aluno4, turma4);
+    private final AlunoTurma alunoTurma1_1 = new AlunoTurma(1L,aluno1, turma1);
+    private final AlunoTurma alunoTurma1_2 = new AlunoTurma(1L,aluno1, turma2);
+    private final AlunoTurma alunoTurma2_1 = new AlunoTurma(1L,aluno2, turma1);
+    private final AlunoTurma alunoTurma4_4 = new AlunoTurma(1L,aluno4, turma4);
 
     @Autowired
     ModelMapper modelMapper;
