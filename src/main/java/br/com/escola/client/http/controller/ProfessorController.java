@@ -46,7 +46,11 @@ public class ProfessorController {
             @RequestParam(required = false, name = "codigo") Optional<String> codigo,
             @RequestParam(required = false, name = "cpf") Optional<String> cpf) {
 
-        if (cpf.isEmpty()) {
+        if(cpf.isPresent()&&codigo.isPresent()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        if (cpf.isEmpty()&& codigo.isEmpty()) {
             var profsList = ProfessorDTO.parseList(Optional.of(professorService.getAllProfessores()));
             return new ResponseEntity<>(profsList, HttpStatus.OK);
         }
@@ -61,6 +65,9 @@ public class ProfessorController {
                     HttpStatus.OK);
         }
 
+        if(professorService.findByCpf(cpf.get()).isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         var prof = new ProfessorDTO(professorService.findByCpf(cpf.get()));
         return new ResponseEntity<>(Collections.singletonList(prof), HttpStatus.OK);
     }

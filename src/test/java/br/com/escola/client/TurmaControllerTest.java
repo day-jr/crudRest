@@ -1,6 +1,7 @@
 package br.com.escola.client;
 
 
+import br.com.escola.client.dto.aluno.AlunoDTO;
 import br.com.escola.client.dto.turma.TurmaDTO;
 import br.com.escola.client.entity.*;
 
@@ -133,6 +134,29 @@ public class TurmaControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
+
+    }
+
+    //GET MAPPING
+    @Test
+    @SneakyThrows
+    @DisplayName("Should return OK an empty list when there is no classes in database")
+    public void getTurmas_testsNoParamWithoutData(){
+
+        Session session = sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+        session.createSQLQuery("DELETE FROM ALUNO_TURMA").executeUpdate();
+        session.createSQLQuery("DELETE FROM PROF_TURMA").executeUpdate();
+        session.createSQLQuery("DELETE FROM TURMA").executeUpdate();
+        tx.commit();
+        session.close();
+
+
+        mockMvc.perform(get("/turma")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("[]"))
+                .andExpect(status().isOk());
 
     }
 

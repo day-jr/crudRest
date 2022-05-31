@@ -104,105 +104,11 @@ public class AlunoControllerTest {
     @Autowired
     ModelMapper modelMapper;
 
-    //GET MAPPING
-    @Test
-    @SneakyThrows
-    @DisplayName("Should return OK and all students")
-    public void getAluno_testsNoParameter() {
-        List<Aluno> students = new ArrayList<>();
-        List<AlunoDTO> studentsParsed = new ArrayList<>();
-        students.add(aluno1);
-        students.add(aluno2);
-        students.add(aluno3);
-        students.add(aluno4);
-
-
-        for(Aluno entity: students){
-            AlunoDTO alunoParsed = new AlunoDTO();
-            modelMapper.map(entity,alunoParsed);
-            studentsParsed.add(alunoParsed);
-
-        }
-
-        mockMvc.perform(get("/aluno"))
-                .andExpect(content().json(toJson(studentsParsed)))
-                .andExpect(status().isOk());
-    }
-
-    //GET MAPPING
-    @Test
-    @SneakyThrows
-    @DisplayName("Should return OK and a single student when exists in database")
-    public void getAluno_testsMatriculaParameter() {
-        var parsedStudent = new AlunoDTO();
-        modelMapper.map(aluno1,parsedStudent);
-
-
-        mockMvc.perform(get("/aluno?matricula=100"))
-                .andExpect(content().json(toJson(parsedStudent,index.singleArray)))
-                .andExpect(status().isOk());
-
-
-    }
-
-    //GET MAPPING
-    @Test
-    @SneakyThrows
-    @DisplayName("Should return NotFound when does not exist in database")
-    public void getAluno_testsNonexistentMatriculaParameter_shouldReturnNotFound() {
-
-        mockMvc.perform(get("/aluno?matricula=123"))
-                .andExpect(content().string(""))
-                .andExpect(status().isNotFound());
-    }
-
-
-
-    //GET MAPPING
-    @Test
-    @SneakyThrows
-    @DisplayName("Should return OK and all students assigned to this code if exists in database")
-    public void getAluno_testsCodigoParameter_shouldReturnAlunoAndOK() {
-
-        var parsedStudent1 = new AlunoDTO();
-        modelMapper.map(aluno1,parsedStudent1);
-
-        var parsedStudent2 = new AlunoDTO();
-        modelMapper.map(aluno2,parsedStudent2);
-
-        var parsedStudent4 = new AlunoDTO();
-        modelMapper.map(aluno4,parsedStudent4);
-
-
-
-        mockMvc.perform(get("/aluno?codigo=10"))
-                .andExpect(content().json(
-                        toJson(parsedStudent1, index.begin)
-                                + toJson(parsedStudent2, index.end)))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/aluno?codigo=40"))
-                .andExpect(content().json(toJson(parsedStudent4, index.singleArray)))
-                .andExpect(status().isOk());
-
-
-    }
-
-    //GET MAPPING
-    @Test
-    @SneakyThrows
-    @DisplayName("Should return OK and an empty list if none is assigned")
-    public void getAluno_testsNonexistentCodigoParameter_shouldReturnNotFound() {
-
-        mockMvc.perform(get("/aluno?codigo=50"))
-                .andExpect(content().json("[]"))
-                .andExpect(status().isOk());
-
-    }
 
     //POST MAPPING
     @Test
     @SneakyThrows
+    @DisplayName("Should return create and dont change its id")
     public void saveAluno_shouldReturnCreated() {
         //parsedId must be ignored by postMapping
         final Long passedId = 5123512346L;
@@ -282,6 +188,125 @@ public class AlunoControllerTest {
         Assertions.assertFalse(error);
     }
 
+    //GET MAPPING
+    @Test
+    @SneakyThrows
+    @DisplayName("Should return OK and all students")
+    public void getAluno_testsNoParameter() {
+        List<Aluno> students = new ArrayList<>();
+        List<AlunoDTO> studentsParsed = new ArrayList<>();
+        students.add(aluno1);
+        students.add(aluno2);
+        students.add(aluno3);
+        students.add(aluno4);
+
+
+        for(Aluno entity: students){
+            AlunoDTO alunoParsed = new AlunoDTO();
+            modelMapper.map(entity,alunoParsed);
+            studentsParsed.add(alunoParsed);
+
+        }
+
+        mockMvc.perform(get("/aluno"))
+                .andExpect(content().json(toJson(studentsParsed)))
+                .andExpect(status().isOk());
+    }
+    //GET MAPPING
+    @Test
+    @SneakyThrows
+    @DisplayName("Should return OK an empty list when there is no students in database")
+    public void getAlunos_testsNoParamWithoutData(){
+
+        Session session = sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+        session.createSQLQuery("DELETE FROM ALUNO_TURMA").executeUpdate();
+        session.createSQLQuery("DELETE FROM ALUNO").executeUpdate();
+        tx.commit();
+        session.close();
+
+
+        mockMvc.perform(get("/aluno")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("[]"))
+                .andExpect(status().isOk());
+
+    }
+
+    //GET MAPPING
+    @Test
+    @SneakyThrows
+    @DisplayName("Should return OK and a single student when exists in database")
+    public void getAluno_testsMatriculaParameter() {
+        var parsedStudent = new AlunoDTO();
+        modelMapper.map(aluno1,parsedStudent);
+
+
+        mockMvc.perform(get("/aluno?matricula=100"))
+                .andExpect(content().json(toJson(parsedStudent,index.singleArray)))
+                .andExpect(status().isOk());
+
+
+    }
+
+    //GET MAPPING
+    @Test
+    @SneakyThrows
+    @DisplayName("Should return NotFound when does not exist in database")
+    public void getAluno_testsNonexistentMatriculaParameter_shouldReturnNotFound() {
+
+        mockMvc.perform(get("/aluno?matricula=123"))
+                .andExpect(content().string(""))
+                .andExpect(status().isNotFound());
+    }
+
+
+
+    //GET MAPPING
+    @Test
+    @SneakyThrows
+    @DisplayName("Should return OK and all students assigned to this code if exists in database")
+    public void getAluno_testsCodigoParameter_shouldReturnAlunoAndOK() {
+
+        var parsedStudent1 = new AlunoDTO();
+        modelMapper.map(aluno1,parsedStudent1);
+
+        var parsedStudent2 = new AlunoDTO();
+        modelMapper.map(aluno2,parsedStudent2);
+
+        var parsedStudent4 = new AlunoDTO();
+        modelMapper.map(aluno4,parsedStudent4);
+
+
+
+        mockMvc.perform(get("/aluno?codigo=10"))
+                .andExpect(content().json(
+                        toJson(parsedStudent1, index.begin)
+                                + toJson(parsedStudent2, index.end)))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/aluno?codigo=40"))
+                .andExpect(content().json(toJson(parsedStudent4, index.singleArray)))
+                .andExpect(status().isOk());
+
+
+    }
+
+    //GET MAPPING
+    @Test
+    @SneakyThrows
+    @DisplayName("Should return OK and an empty list if none is assigned")
+    public void getAluno_testsNonexistentCodigoParameter_shouldReturnNotFound() {
+
+        mockMvc.perform(get("/aluno?codigo=50"))
+                .andExpect(content().json("[]"))
+                .andExpect(status().isOk());
+
+    }
+
+
+
     //DELETE MAPPING
     @Test
     @SneakyThrows
@@ -301,14 +326,13 @@ public class AlunoControllerTest {
         Session session = sessionFactory.openSession();
         Transaction tx = session.beginTransaction();
         var shouldBeEmpty =
-                session.createSQLQuery("SELECT * FROM ALUNO WHERE MATRICULA = :matricula")
-                        .setParameter("matricula", "100").getResultList();
+                session.createSQLQuery("SELECT * FROM ALUNO WHERE MATRICULA = 100").getResultList();
+
         tx.commit();
         session.close();
 
-        final ArrayList<Object> empty = new ArrayList<>();
 
-        Assertions.assertEquals(empty, shouldBeEmpty);
+        Assertions.assertEquals(new ArrayList<>(), shouldBeEmpty);
 
 
     }
@@ -317,7 +341,7 @@ public class AlunoControllerTest {
     @Test
     @SneakyThrows
     @DisplayName("Should return OK if successfully modify student and notFound if it is not there")
-    public void updateAluno() {
+    public void update() {
         final var studentModified = new Aluno();
         final var studentModifiedDTO = new AlunoDTO();
         final var idPassed = 23610349678341907L;

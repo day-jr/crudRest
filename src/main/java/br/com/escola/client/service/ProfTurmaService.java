@@ -28,9 +28,8 @@ public class ProfTurmaService {
 
     //Search all professors assigned to a class code
     public Optional<List<Professor>> allProfessorsAssigned(Optional<String> codigo) {
-        if (codigo.isEmpty()) return null;
-        var foundProf = profTurmaRepository.findByTurma(codigo.get());
-        return foundProf;
+        if (codigo.isEmpty()) return Optional.empty();
+        return profTurmaRepository.findByTurma(codigo.get());
     }
 
     public Optional<List<ProfTurma>> filterByNumberOfProfessors(Optional<Long> classesMin, Optional<Long> classesMax) {
