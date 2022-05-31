@@ -1,4 +1,4 @@
-package br.com.escola.client.dto.request;
+package br.com.escola.client.dto.turma;
 
 import br.com.escola.client.entity.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.Optional;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class dtoGetTurma {
+public class TurmaDTO {
 
 
     private String codigo;
@@ -22,12 +22,23 @@ public class dtoGetTurma {
     private Time inicio;
     private Time duracao;
 
+    public TurmaDTO(Optional<Turma> turma) {
+        if (turma.isPresent()) {
 
-    static public List<dtoGetTurma> toList(Optional<List<Turma>> turma) {
-        List<dtoGetTurma> parsedClasses = new ArrayList<>();
+            this.codigo = turma.get().getCodigo();
+            this.turno = turma.get().getTurno();
+            this.inicio = turma.get().getInicio();
+            this.duracao = turma.get().getDuracao();
+
+        }
+
+    }
+
+    static public List<TurmaDTO> parseList(Optional<List<Turma>> turma) {
+        List<TurmaDTO> parsedClasses = new ArrayList<>();
         if (turma.isPresent()) {
             for (Turma element : turma.get()) {
-                dtoGetTurma toParse = new dtoGetTurma();
+                TurmaDTO toParse = new TurmaDTO();
 
                 toParse.codigo = element.getCodigo();
                 toParse.turno = element.getTurno();
@@ -41,18 +52,15 @@ public class dtoGetTurma {
         return parsedClasses;
     }
 
-    public dtoGetTurma(Optional<Turma> turma) {
-        if (turma.isPresent()) {
-
-            this.codigo = turma.get().getCodigo();
-            this.turno = turma.get().getTurno();
-            this.inicio = turma.get().getInicio();
-            this.duracao = turma.get().getDuracao();
-
-        }
-
-
+    public Turma build() {
+        return new Turma()
+                .setCodigo(this.codigo)
+                .setTurno(this.turno)
+                .setInicio(this.inicio)
+                .setDuracao(this.duracao);
     }
+
+
 
 
 }

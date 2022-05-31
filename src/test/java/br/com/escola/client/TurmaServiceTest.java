@@ -49,7 +49,7 @@ public class TurmaServiceTest {
 
         //Set relationship
         AlunoTurma alunoTurma = new AlunoTurma(aluno, turma);
-        ProfTurma profTurma = new ProfTurma(professor, turma);
+        ProfTurma profTurma = new ProfTurma(null,professor, turma);
 
 
 

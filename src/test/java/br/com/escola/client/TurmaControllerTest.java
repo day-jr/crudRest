@@ -1,10 +1,9 @@
 package br.com.escola.client;
 
 
+import br.com.escola.client.dto.turma.TurmaDTO;
 import br.com.escola.client.entity.*;
 
-import br.com.escola.client.dto.response.*;
-import br.com.escola.client.dto.request.*;
 import lombok.SneakyThrows;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -117,10 +116,10 @@ public class TurmaControllerTest {
     private final AlunoTurma alunoTurma2_1 = new AlunoTurma(aluno2, turma1);
     private final AlunoTurma alunoTurma4_4 = new AlunoTurma(aluno4, turma4);
 
-    private final ProfTurma profTurma1_1 = new ProfTurma(prof1, turma1);
-    private final ProfTurma profTurma1_2 = new ProfTurma(prof1, turma2);
-    private final ProfTurma profTurma1_3 = new ProfTurma(prof1, turma3);
-    private final ProfTurma profTurma2_3 = new ProfTurma(prof2, turma3);
+    private final ProfTurma profTurma1_1 = new ProfTurma(1L,prof1, turma1);
+    private final ProfTurma profTurma1_2 = new ProfTurma(2L,prof1, turma2);
+    private final ProfTurma profTurma1_3 = new ProfTurma(3L,prof1, turma3);
+    private final ProfTurma profTurma2_3 = new ProfTurma(4L,prof2, turma3);
 
 
     //POST MAPPING
@@ -143,14 +142,14 @@ public class TurmaControllerTest {
     @Test
     public void getTurmas_testsEmptyCodigoParam_shouldReturnListOfClassesAndOk() {
         List<Turma> expectedClasses = new ArrayList<>();
-        List<dtoGetTurma> expectedClassesParsed = new ArrayList<>();
+        List<TurmaDTO> expectedClassesParsed = new ArrayList<>();
         expectedClasses.add(turma4);
         expectedClasses.add(turma3);
         expectedClasses.add(turma2);
         expectedClasses.add(turma1);
 
         for(Turma entity: expectedClasses){
-            dtoGetTurma turmaParsed = new dtoGetTurma();
+            TurmaDTO turmaParsed = new TurmaDTO();
             modelMapper.map(entity,turmaParsed);
             expectedClassesParsed.add(turmaParsed);
 
@@ -167,10 +166,10 @@ public class TurmaControllerTest {
     @SneakyThrows
     public void getTurmas_testsCpfParam_shouldReturnOk() {
 
-        var parsedTurma1 = new dtoGetTurma();
+        var parsedTurma1 = new TurmaDTO();
         modelMapper.map(turma1,parsedTurma1);
 
-        var parsedTurma3 = new dtoGetTurma();
+        var parsedTurma3 = new TurmaDTO();
         modelMapper.map(turma3,parsedTurma3);
 
 
@@ -195,11 +194,11 @@ public class TurmaControllerTest {
     @SneakyThrows
     public void getTurmas_testsCodigoParam_shouldReturnOKandNotFound() {
 
-        var parsedTurma1 = new dtoGetTurma();
+        var parsedTurma1 = new TurmaDTO();
         modelMapper.map(turma1,parsedTurma1);
 
         mockMvc.perform(get("/turma?codigo=10"))
-                .andExpect(content().json(toJson(parsedTurma1)))
+                .andExpect(content().json(toJson(parsedTurma1,index.singleArray)))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/turma?codigo=50000"))
@@ -211,7 +210,7 @@ public class TurmaControllerTest {
     @Test
     @SneakyThrows
     public void getTurmas_testsCpfAndCodigoParam_shouldReturnOkAndNotFound() {
-        var parsedTurma1 = new dtoGetTurma();
+        var parsedTurma1 = new TurmaDTO();
         modelMapper.map(turma1,parsedTurma1);
         mockMvc.perform(get("/turma?cpf=100&matricula=100"))
                 .andExpect(content().json(toJson(parsedTurma1, index.singleArray)))
@@ -233,19 +232,19 @@ public class TurmaControllerTest {
     @Test
     @SneakyThrows
     public void getTurmas_testsFinishTimeParam_shouldReturnOk() {
-        List<dtoGetTurma> turmasExpectedTest1 = new ArrayList<>();
+        List<TurmaDTO> turmasExpectedTest1 = new ArrayList<>();
 
-        turmasExpectedTest1.add(new dtoGetTurma(Optional.of(turma4)));
-        turmasExpectedTest1.add(new dtoGetTurma(Optional.of(turma3)));
-        turmasExpectedTest1.add(new dtoGetTurma(Optional.of(turma2)));
-        turmasExpectedTest1.add(new dtoGetTurma(Optional.of(turma1)));
+        turmasExpectedTest1.add(new TurmaDTO(Optional.of(turma4)));
+        turmasExpectedTest1.add(new TurmaDTO(Optional.of(turma3)));
+        turmasExpectedTest1.add(new TurmaDTO(Optional.of(turma2)));
+        turmasExpectedTest1.add(new TurmaDTO(Optional.of(turma1)));
 
-        List<dtoGetTurma> turmasExpectedTest2 = new ArrayList<>();
-        turmasExpectedTest2.add(new dtoGetTurma(Optional.of(turma3)));
-        turmasExpectedTest2.add(new dtoGetTurma(Optional.of(turma2)));
-        turmasExpectedTest2.add(new dtoGetTurma(Optional.of(turma1)));
+        List<TurmaDTO> turmasExpectedTest2 = new ArrayList<>();
+        turmasExpectedTest2.add(new TurmaDTO(Optional.of(turma3)));
+        turmasExpectedTest2.add(new TurmaDTO(Optional.of(turma2)));
+        turmasExpectedTest2.add(new TurmaDTO(Optional.of(turma1)));
 
-        var parsedTurma1 = new dtoGetTurma(Optional.of(turma1));
+        var parsedTurma1 = new TurmaDTO(Optional.of(turma1));
 
         mockMvc.perform(get("/turma?finishAfter=20:00:00"))
                 .andExpect(content().json(toJson(turmasExpectedTest1)))
@@ -285,7 +284,7 @@ public class TurmaControllerTest {
     @Test
     @SneakyThrows
     public void updateTurma_shouldReturnNotFound_Ok_Ok_Ok() {
-        dtoGetTurma turmaMod = new dtoGetTurma();
+        TurmaDTO turmaMod = new TurmaDTO();
         turmaMod.setCodigo("50");
         turmaMod.setTurno("noite");
 

@@ -1,7 +1,7 @@
 package br.com.escola.client.service;
 
 
-import br.com.escola.client.dto.response.dtoPostTurma;
+import br.com.escola.client.dto.turma.TurmaDTO;
 import br.com.escola.client.entity.AlunoTurma;
 import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Turma;
@@ -122,7 +122,7 @@ public class TurmaService {
     @Autowired
     ModelMapper modelMapper;
 
-    public Optional<Turma> update(dtoPostTurma incomingBody, String codigo) {
+    public Optional<Turma> update(TurmaDTO incomingBody, String codigo) {
         var optionalId = findTurmaIdBycodigo(codigo);
         if (optionalId.isEmpty()) {
             return Optional.empty();

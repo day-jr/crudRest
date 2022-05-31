@@ -33,7 +33,7 @@ public class ProfTurmaService {
         return foundProf;
     }
 
-    public List<ProfTurma> filterByNumberOfProfessors(Optional<Long> classesMin, Optional<Long> classesMax) {
+    public Optional<List<ProfTurma>> filterByNumberOfProfessors(Optional<Long> classesMin, Optional<Long> classesMax) {
         var allClassesAssigned = getAll();
         Set<Long> allProfessorsAssigned = new HashSet<>();
         final Map<Long, Long> amountOfClasses = new HashMap<>();
@@ -89,7 +89,7 @@ public class ProfTurmaService {
         }
 
 
-        return professorsToShow;
+        return Optional.of(professorsToShow);
     }
 
 

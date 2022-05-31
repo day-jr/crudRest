@@ -1,12 +1,13 @@
 package br.com.escola.client.service;
 
 
+import br.com.escola.client.dto.professor.ProfessorDTO;
 import br.com.escola.client.entity.Professor;
 import br.com.escola.client.repository.ProfTurmaRepository;
 import br.com.escola.client.repository.ProfessorRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import br.com.escola.client.dto.response.dtoPostProfessor;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,7 @@ public class ProfessorService {
         return professorRepository.save(professor);
     }
 
-    public List<Professor> getProfessores() {
+    public List<Professor> getAllProfessores() {
         return professorRepository.findAll();
     }
 
@@ -44,5 +45,20 @@ public class ProfessorService {
         profTurmaRepository.deleteDependency(cpf);
     }
 
+
+    @Autowired
+    ModelMapper modelMapper;
+
+    public Optional<Professor> update(ProfessorDTO incomingBody, String cpf) {
+        var optionalProfessor = findByCpf(cpf);
+
+        if (optionalProfessor.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var professorDTO = optionalProfessor.get();
+        modelMapper.map(incomingBody,professorDTO);
+        return Optional.of(professorRepository.save(professorDTO));
+    }
 
 }

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,6 +17,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "ALUNO_TURMA")
 @IdClass(AlunoTurmaId.class)
+@Accessors(chain = true)
 public class AlunoTurma implements Serializable {
     @Id
     @JoinColumn(referencedColumnName = "FK_TURMAS")

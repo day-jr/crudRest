@@ -1,13 +1,12 @@
 package br.com.escola.client;
 
 
+import br.com.escola.client.dto.aluno.AlunoDTO;
 import br.com.escola.client.entity.Aluno;
 import br.com.escola.client.entity.AlunoTurma;
 import br.com.escola.client.entity.Turma;
 import br.com.escola.client.tools.Json.indexClass.index;
 import lombok.SneakyThrows;
-import br.com.escola.client.dto.response.*;
-import br.com.escola.client.dto.request.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -109,7 +108,7 @@ public class AlunoControllerTest {
     @SneakyThrows
     public void getAluno_testsNoParameter_shouldReturnAllStudendsAndReturnOk() {
         List<Aluno> students = new ArrayList<>();
-        List<dtoGetAluno> studentsParsed = new ArrayList<>();
+        List<AlunoDTO> studentsParsed = new ArrayList<>();
         students.add(aluno1);
         students.add(aluno2);
         students.add(aluno3);
@@ -117,7 +116,7 @@ public class AlunoControllerTest {
 
 
         for(Aluno entity: students){
-            dtoGetAluno alunoParsed = new dtoGetAluno();
+            AlunoDTO alunoParsed = new AlunoDTO();
             modelMapper.map(entity,alunoParsed);
             studentsParsed.add(alunoParsed);
 
@@ -132,16 +131,16 @@ public class AlunoControllerTest {
     @Test
     @SneakyThrows
     public void getAluno_testsMatriculaParameter_shouldReturnAlunoAndOK_NotFound() {
-        var parsedStudent = new dtoGetAluno();
+        var parsedStudent = new AlunoDTO();
         modelMapper.map(aluno1,parsedStudent);
 
 
 
         mockMvc.perform(get("/aluno?matricula=100"))
-                .andExpect(content().json(toJson(parsedStudent)))
+                .andExpect(content().json(toJson(parsedStudent,index.singleArray)))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/aluno?matricula=150"))
+        mockMvc.perform(get("/aluno?matricula=123"))
                 .andExpect(content().string(""))
                 .andExpect(status().isNotFound());
     }
@@ -151,13 +150,13 @@ public class AlunoControllerTest {
     @SneakyThrows
     public void getAluno_testsCodigoParameter_shouldReturnAlunoAndOK_NotFound() {
 
-        var parsedStudent1 = new dtoGetAluno();
+        var parsedStudent1 = new AlunoDTO();
         modelMapper.map(aluno1,parsedStudent1);
 
-        var parsedStudent2 = new dtoGetAluno();
+        var parsedStudent2 = new AlunoDTO();
         modelMapper.map(aluno2,parsedStudent2);
 
-        var parsedStudent4 = new dtoGetAluno();
+        var parsedStudent4 = new AlunoDTO();
         modelMapper.map(aluno4,parsedStudent4);
 
 
@@ -295,7 +294,7 @@ public class AlunoControllerTest {
     @SneakyThrows
     public void updateAluno_shouldReturnOk_NotFound_NotFound() {
         final var studentModified = new Aluno();
-        final var studentModifiedDTO = new dtoPostAluno();
+        final var studentModifiedDTO = new AlunoDTO();
         final var idPassed = 23610349678341907L;
         final var namePassed = "pedro";
         final var emailPassed = "pedro@gmail";

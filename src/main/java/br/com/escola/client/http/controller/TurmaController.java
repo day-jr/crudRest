@@ -3,9 +3,7 @@ package br.com.escola.client.http.controller;
 
 import br.com.escola.client.entity.Turma;
 import br.com.escola.client.service.TurmaService;
-import br.com.escola.client.dto.request.dtoGetTurma;
-import br.com.escola.client.dto.response.dtoPostTurma;
-import org.modelmapper.ModelMapper;
+import br.com.escola.client.dto.turma.TurmaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,18 +23,15 @@ public class TurmaController {
     @Autowired
     TurmaService turmaService;
 
-    @Autowired
-    ModelMapper modelMapper;
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Turma saveTurma(@RequestBody dtoPostTurma turma) {
+    public Turma saveTurma(@RequestBody TurmaDTO turma) {
         return turmaService.save(turma.build());
     }
 
 
     @GetMapping
-    public ResponseEntity<Optional<List<dtoGetTurma>>> getTurmas(
+    public ResponseEntity<List<TurmaDTO>> getTurmas(
             @RequestParam(required = false, name = "cpf") Optional<String> cpf,
             @RequestParam(required = false, name = "codigo") Optional<String> codigo,
             @RequestParam(required = false, name = "matricula") Optional<String> matricula,
@@ -45,7 +40,7 @@ public class TurmaController {
         if (finishAfter.isPresent()) {
 
             var classes =
-                    Optional.of(dtoGetTurma.toList(turmaService.filterClassesByFinishTime(finishAfter.get())));
+                    TurmaDTO.parseList(turmaService.filterClassesByFinishTime(finishAfter.get()));
 
             return new ResponseEntity<>(classes, HttpStatus.OK);
         }
@@ -53,8 +48,8 @@ public class TurmaController {
 
         if (cpf.isPresent() && matricula.isPresent()) {
             var inCommon =
-                    Optional.of(dtoGetTurma.toList
-                            (turmaService.getTurmaWhereStudentIsTaughtByProfessor(matricula.get(), cpf.get())));
+                    TurmaDTO.parseList
+                            (turmaService.getTurmaWhereStudentIsTaughtByProfessor(matricula.get(), cpf.get()));
             return new ResponseEntity<>(inCommon, HttpStatus.OK);
         }
 
@@ -62,7 +57,7 @@ public class TurmaController {
         //Search all classes assigned to a CPF
         if (cpf.isPresent() && matricula.isEmpty()) {
             var allClassesAssignedToCpf =
-                    Optional.of(dtoGetTurma.toList(turmaService.allClassesAssignedToCpf(cpf.get())));
+                    TurmaDTO.parseList(turmaService.allClassesAssignedToCpf(cpf.get()));
 
             return new ResponseEntity<>(
                     allClassesAssignedToCpf,
@@ -70,7 +65,7 @@ public class TurmaController {
         }
 
         if (codigo.isEmpty()) {
-            var turmasList = Optional.of(dtoGetTurma.toList(turmaService.getTurmas()));
+            var turmasList = TurmaDTO.parseList(turmaService.getTurmas());
             return new ResponseEntity<>(turmasList, HttpStatus.OK);
         }
 
@@ -80,8 +75,8 @@ public class TurmaController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        var turma = Optional.of(new dtoGetTurma(turmaService.findTurma(classId.get())));
-        return new ResponseEntity(turma, HttpStatus.OK);
+        var turma = new TurmaDTO(turmaService.findTurma(classId.get()));
+        return new ResponseEntity<>(Collections.singletonList(turma), HttpStatus.OK);
     }
 
     ///////////////////////////////////DELETE BY CODIGO
@@ -103,7 +98,7 @@ public class TurmaController {
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Void> updateTurma(@RequestParam("codigo") String codigo,
-                                            @RequestBody dtoPostTurma incomingBody) {
+                                            @RequestBody TurmaDTO incomingBody) {
         if (turmaService.update(incomingBody,codigo).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

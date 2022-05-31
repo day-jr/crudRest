@@ -1,7 +1,7 @@
 package br.com.escola.client.http.controller;
 
 
-
+import br.com.escola.client.dto.profTurma.*;
 import br.com.escola.client.entity.*;
 import br.com.escola.client.service.ProfTurmaService;
 import org.modelmapper.ModelMapper;
@@ -27,16 +27,16 @@ public class ProfTurmaController {
 
 
     ////////////////////////////////SAVE////////////////////////////////////
-    @PostMapping("/codigo/{codigo}/cpf/{cpf}")
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveCompositeAluno(@PathVariable String cpf, @PathVariable String codigo) {
-        profTurmaService.saveComposite(cpf, codigo);
+    public void saveCompositeAluno(@RequestBody ProfTurmaDTO turma) {
+        profTurmaService.saveComposite(turma.getProfessorCpf(), turma.getTurmaCodigo());
     }
 
 
     ////////////////////////////////SHOW ALL////////////////////////////////////
     @GetMapping
-    public ResponseEntity<List<ProfTurma>> getProfTurma(
+    public ResponseEntity<List<ProfTurmaDTO>> getProfTurma(
             @RequestParam(required = false, name = "numberMinOfClasses") Optional<Long> amountMin,
             @RequestParam(required = false, name = "numberMaxOfClasses") Optional<Long> amountMax) {
 
@@ -48,7 +48,7 @@ public class ProfTurmaController {
         //Search by min/max classes assigned to a professor
         if (amountMin.isPresent()) {
             var professorsFiltered =
-                            profTurmaService.filterByNumberOfProfessors(amountMin, amountMax);
+                    ProfTurmaDTO.parseList(profTurmaService.filterByNumberOfProfessors(amountMin, amountMax));
 
             return new ResponseEntity<>(
                     professorsFiltered,
@@ -56,22 +56,21 @@ public class ProfTurmaController {
         }
 
 
-        var profTurmasFound = Optional.ofNullable(profTurmaService.getAll());
+        var profTurmasFound = profTurmaService.getAll();
         if (profTurmasFound.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>(profTurmasFound.get(), HttpStatus.OK);
+        return new ResponseEntity<>(ProfTurmaDTO.parseList(Optional.of(profTurmasFound)), HttpStatus.OK);
     }
-
 
 
     ///////////////////////////////////MODIFY CODIGO BY CPF
     ////////////////////////////////////////////////////////////////////
     @PutMapping
-    public ResponseEntity <Void>updateProfTurma(@RequestParam("cpf") String cpf,
-                                          @RequestParam("codigo") String codigo,
-                                          @RequestBody ProfTurma incomingBody) {
+    public ResponseEntity<Void> updateProfTurma(@RequestParam("cpf") String cpf,
+                                                @RequestParam("codigo") String codigo,
+                                                @RequestBody ProfTurma incomingBody) {
 
         var pt = profTurmaService.find(cpf, codigo);
         if (pt.isEmpty()) {
@@ -91,8 +90,8 @@ public class ProfTurmaController {
     ///////////////////////////////////DELETE CODIGO BY MATRICULA
     ////////////////////////////////////////////////////////////////////
     @DeleteMapping
-    public ResponseEntity<Void>deleteProfTurma(@RequestParam("cpf") String cpf,
-                                          @RequestParam("codigo") String codigo) {
+    public ResponseEntity<Void> deleteProfTurma(@RequestParam("cpf") String cpf,
+                                                @RequestParam("codigo") String codigo) {
 
         var profTurma = profTurmaService.find(cpf, codigo);
         if (profTurma.isEmpty()) {

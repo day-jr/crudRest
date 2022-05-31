@@ -1,7 +1,6 @@
 package br.com.escola.client.service;
 
-import br.com.escola.client.dto.request.dtoGetAluno;
-import br.com.escola.client.dto.response.dtoPostAluno;
+import br.com.escola.client.dto.aluno.AlunoDTO;
 import br.com.escola.client.entity.Aluno;
 import br.com.escola.client.repository.AlunoRepository;
 import br.com.escola.client.repository.AlunoTurmaRepository;
@@ -54,17 +53,15 @@ public class AlunoService {
     @Autowired
     ModelMapper modelMapper;
 
-    public Optional<Aluno> update(dtoPostAluno incomingBody, String matricula) {
+    public Optional<Aluno> update(AlunoDTO incomingBody, String matricula) {
         var optionalAluno = findByMatricula(matricula);
-        var parsedAluno = new dtoPostAluno();
 
         if (optionalAluno.isEmpty()) {
             return Optional.empty();
         }
+
         var alunoDTO = optionalAluno.get();
-
         modelMapper.map(incomingBody,alunoDTO);
-
         return Optional.of(alunoRepository.save(alunoDTO));
     }
 

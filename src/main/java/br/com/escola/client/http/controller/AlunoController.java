@@ -1,18 +1,17 @@
 package br.com.escola.client.http.controller;
 
 
-import br.com.escola.client.dto.response.dtoPostAluno;
-import br.com.escola.client.dto.request.dtoGetAluno;
+
+import br.com.escola.client.dto.aluno.AlunoDTO;
 import br.com.escola.client.entity.Aluno;
 import br.com.escola.client.service.AlunoService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,12 +24,10 @@ public class AlunoController {
     @Autowired
     AlunoService alunoService;
 
-    @Autowired
-    ModelMapper modelMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Aluno saveAluno(@RequestBody dtoPostAluno aluno) {
+    public Aluno saveAluno(@RequestBody AlunoDTO aluno) {
         return alunoService.save(aluno.build());
     }
 
@@ -38,17 +35,17 @@ public class AlunoController {
     ///////////////////////////////////GET BY MATRICULA
     ////////////////////////////////////////////////////////////////////
     @GetMapping
-    public ResponseEntity<dtoGetAluno> getAluno(@RequestParam(required = false, name = "matricula")
+    public ResponseEntity<List<AlunoDTO>> getAluno(@RequestParam(required = false, name = "matricula")
                                                         Optional<String> matricula,
-                                                @RequestParam(required = false, name = "codigo")
+                                                   @RequestParam(required = false, name = "codigo")
                                                         Optional<String> codigo) {
 
         //Search all students assigned to a class code
         if (codigo.isPresent()) {
             var allStudentsAssignedDTO =
-                    dtoGetAluno.parseList(alunoService.allStudentsAssigned(codigo.get()).get());
+                    AlunoDTO.parseList(alunoService.allStudentsAssigned(codigo.get()));
 
-            return new ResponseEntity(
+            return new ResponseEntity<>(
                     allStudentsAssignedDTO,
                     HttpStatus.OK);
         }
@@ -58,8 +55,8 @@ public class AlunoController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
-            var alunoDTO = new dtoGetAluno(alunoFound.get());
-            return new ResponseEntity<>(alunoDTO, HttpStatus.OK);
+            var alunoDTO = new AlunoDTO(alunoFound);
+            return new ResponseEntity<>(Collections.singletonList(alunoDTO), HttpStatus.OK);
 
 
         } else {
@@ -68,9 +65,9 @@ public class AlunoController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
-            var allStudentsAssigned = dtoGetAluno.parseList(alunosFound.get());
+            var allStudentsAssigned = AlunoDTO.parseList(alunosFound);
 
-            return new ResponseEntity(allStudentsAssigned, HttpStatus.OK);
+            return new ResponseEntity<>(allStudentsAssigned, HttpStatus.OK);
         }
 
     }
@@ -95,10 +92,7 @@ public class AlunoController {
     ////////////////////////////////////////////////////////////////////
     @PutMapping
     public ResponseEntity<Void> updateAluno(@RequestParam("matricula") String matricula,
-                                            @RequestBody dtoPostAluno incomingBody) {
-
-
-
+                                            @RequestBody AlunoDTO incomingBody) {
 
         if (alunoService.update(incomingBody,matricula).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
