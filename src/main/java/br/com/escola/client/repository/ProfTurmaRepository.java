@@ -4,6 +4,7 @@ package br.com.escola.client.repository;
 import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Professor;
 import br.com.escola.client.entity.Turma;
+import br.com.escola.client.entity.idClasses.ProfTurmaId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +14,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProfTurmaRepository extends JpaRepository<ProfTurma, Long> {
+public interface ProfTurmaRepository extends JpaRepository<ProfTurma, ProfTurmaId> {
 
 
     @Transactional
@@ -39,6 +40,19 @@ public interface ProfTurmaRepository extends JpaRepository<ProfTurma, Long> {
     @Query(
             value = "DELETE ProfTurma WHERE professor.id = :id")
     void deleteDependency(@Param("id") Long id);
+
+
+    @Transactional
+    @Query(
+            value = "SELECT t FROM ProfTurma as t " +
+                    "WHERE t.professor.cpf = :cpf ")
+    Optional<List<ProfTurma>> getProfTurmaByClassCpf(@Param("cpf") String cpf);
+
+    @Transactional
+    @Query(
+            value = "SELECT t FROM ProfTurma as t " +
+                    "WHERE t.turma.codigo = :codigo ")
+    Optional<List<ProfTurma>> getProfTurmaByClassCode(@Param("codigo") String codigo);
 
     @Transactional
     @Query(

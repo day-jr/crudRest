@@ -5,13 +5,14 @@ import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Professor;
 import br.com.escola.client.service.ProfTurmaService;
 import br.com.escola.client.service.ProfessorService;
-import org.modelmapper.ModelMapper;
+import br.com.escola.client.dto.professor.ProfessorDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,52 +27,48 @@ public class ProfessorController {
     @Autowired
     ProfTurmaService profTurmaService;
 
-    @Autowired
-    ModelMapper modelMapper;
 
 
     ///////////////////////////////////CREATE
     ////////////////////////////////////////////////////////////////////
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Professor saveProfessor(@RequestBody Professor professor) {
-        return professorService.save(professor);
+    public Professor saveProfessor(@RequestBody ProfessorDTO professorDTO) {
+
+        return professorService.save(professorDTO.build());
     }
 
 
     ///////////////////////////////////GET
     ////////////////////////////////////////////////////////////////////
     @GetMapping
-    public ResponseEntity<Optional<List<Professor>>> getProfessor(
+    public ResponseEntity<List<ProfessorDTO>> getProfessor(
             @RequestParam(required = false, name = "codigo") Optional<String> codigo,
             @RequestParam(required = false, name = "cpf") Optional<String> cpf) {
 
         if (cpf.isEmpty()) {
-            var profsList =
-                    Optional.ofNullable(
-                            professorService.getProfessores());
-
+            var profsList = ProfessorDTO.parseList(Optional.of(professorService.getAllProfessores()));
             return new ResponseEntity<>(profsList, HttpStatus.OK);
         }
 
         //Search all professors assigned to a class
         if (codigo.isPresent()) {
             var allProfessorsAssigned =
-                    profTurmaService.allProfessorsAssigned(codigo);
+                    ProfessorDTO.parseList(profTurmaService.allProfessorsAssigned(codigo));
 
             return new ResponseEntity<>(
                     allProfessorsAssigned,
                     HttpStatus.OK);
         }
 
-        var prof = professorService.findByCpf(cpf.get());
-        return new ResponseEntity(prof, HttpStatus.OK);
+        var prof = new ProfessorDTO(professorService.findByCpf(cpf.get()));
+        return new ResponseEntity<>(Collections.singletonList(prof), HttpStatus.OK);
     }
 
     ////////////////////////////////////Classes unassigned
     @GetMapping("/semTurma")
-    public ResponseEntity<Optional<List<Professor>>> noClass() {
-        var professors = professorService.getProfessores();
+    public ResponseEntity<List<ProfessorDTO>> noClass() {
+        var professors = professorService.getAllProfessores();
         var classesAssigned = profTurmaService.getAll();
         List<Professor> professorsAssigned = new ArrayList<>();
 
@@ -87,7 +84,10 @@ public class ProfessorController {
         if (unassignedProfessors.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(unassignedProfessors, HttpStatus.OK);
+
+        var parsedUnassignedProfessors = ProfessorDTO.parseList(unassignedProfessors);
+
+        return new ResponseEntity<>(parsedUnassignedProfessors, HttpStatus.OK);
     }
 
 
@@ -112,17 +112,13 @@ public class ProfessorController {
     ////////////////////////////////////////////////////////////////////
     @PutMapping
     public ResponseEntity<Void> updateProfessor(@RequestParam("cpf") String cpf,
-                                                      @RequestBody Professor incomingBody) {
-        var prof = professorService.findByCpf(cpf);
-        if (prof.isEmpty()) {
+                                                @RequestBody ProfessorDTO incomingBody) {
+
+        if (professorService.update(incomingBody,cpf).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        modelMapper.map(incomingBody, prof.get());
-        professorService.save(prof.get());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
 }
-
-

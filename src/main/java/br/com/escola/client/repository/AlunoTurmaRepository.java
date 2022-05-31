@@ -16,7 +16,12 @@ public interface AlunoTurmaRepository extends JpaRepository<AlunoTurma, Long> {
     @Transactional
     @Query(
             value = "SELECT aluno FROM AlunoTurma as a WHERE  a.turma.codigo  = :codigo")
-    Optional<List<Aluno>> getAllAssignmentsOfStudentByClassCode(@Param("codigo") String codigo);
+    Optional<List<Aluno>> getAllStudentAssignmentsByClassCode(@Param("codigo") String codigo);
+
+    @Transactional
+    @Query(
+            value = "SELECT a FROM AlunoTurma as a WHERE  a.turma.codigo  = :codigo")
+    Optional<List<AlunoTurma>> getAllClassesAssignmentByClassCode(@Param("codigo") String codigo);
 
 
     @Transactional

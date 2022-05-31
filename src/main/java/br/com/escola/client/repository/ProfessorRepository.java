@@ -19,11 +19,6 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
 
 
     @Transactional
-    @Query(
-            value = "SELECT p FROM Professor as p")
-    List<Professor> findAllProf();
-
-    @Transactional
     @Modifying
     @Query(
             value = "DELETE Professor WHERE cpf = :cpf")

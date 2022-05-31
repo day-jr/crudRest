@@ -1,10 +1,12 @@
 package br.com.escola.client.service;
 
 
+import br.com.escola.client.dto.turma.TurmaDTO;
 import br.com.escola.client.entity.AlunoTurma;
 import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Turma;
 import br.com.escola.client.repository.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,18 +42,6 @@ public class TurmaService {
         return turmaRepository.save(turma);
     }
 
-    public void update(Turma turma, String codigo) {
-        var actualClassId = findTurmaIdBycodigo(codigo);
-
-        if (actualClassId.isEmpty()) {
-            return;//that class does not exist, cancel transaction
-        }
-
-        //else, parse actual Id to requisition to ensure it will not be modified
-        turma.setId(actualClassId.get());
-
-        turmaRepository.save(turma);
-    }
 
 
     public Optional<List<Turma>> getTurmaWhereStudentIsTaughtByProfessor(String matricula, String cpf) {
@@ -87,7 +77,7 @@ public class TurmaService {
             return Optional.empty();
         }
 
-        //Get all turmas from list by its code and throws to a list of Entity (turmas)
+        //Get all turmaFK from list by its code and throws to a list of Entity (turmaFK)
         List<Turma> turmasInCommon = new ArrayList<>();
         for (String turma : codigoTurmasInCommon) {
             turmasInCommon.add(turmaRepository.findByCodigo(turma).get());
@@ -127,5 +117,20 @@ public class TurmaService {
 
     public Optional<List<Turma>> filterClassesByFinishTime(Time finishTime) {
         return turmaRepository.limitByTime(finishTime);
+    }
+
+    @Autowired
+    ModelMapper modelMapper;
+
+    public Optional<Turma> update(TurmaDTO incomingBody, String codigo) {
+        var optionalId = findTurmaIdBycodigo(codigo);
+        if (optionalId.isEmpty()) {
+            return Optional.empty();
+        }
+        var turmaDTO = findTurma(optionalId.get()).get();
+
+        modelMapper.map(incomingBody,turmaDTO);
+
+        return Optional.of(turmaRepository.save(turmaDTO));
     }
 }

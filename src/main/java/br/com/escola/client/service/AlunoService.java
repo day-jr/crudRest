@@ -1,14 +1,11 @@
 package br.com.escola.client.service;
 
-
+import br.com.escola.client.dto.aluno.AlunoDTO;
 import br.com.escola.client.entity.Aluno;
-import br.com.escola.client.entity.Turma;
 import br.com.escola.client.repository.AlunoRepository;
 import br.com.escola.client.repository.AlunoTurmaRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +24,7 @@ public class AlunoService {
     //Search all students assigned to a class code
     public Optional<List<Aluno>> allStudentsAssigned(String codigo) {
         Optional<List<Aluno>> alunosFound;
-        alunosFound = alunoTurmaRepository.getAllAssignmentsOfStudentByClassCode(codigo);
+        alunosFound = alunoTurmaRepository.getAllStudentAssignmentsByClassCode(codigo);
         return alunosFound;
     }
 
@@ -56,27 +53,17 @@ public class AlunoService {
     @Autowired
     ModelMapper modelMapper;
 
-    public Optional<Aluno> update(Aluno incomingBody, String matricula) {
+    public Optional<Aluno> update(AlunoDTO incomingBody, String matricula) {
         var optionalAluno = findByMatricula(matricula);
 
         if (optionalAluno.isEmpty()) {
             return Optional.empty();
         }
 
-        Long originalId= optionalAluno.get().getId();
-
-        if (incomingBody.getId()!=null){
-            System.out.println("Should not try to modify Id. \nThis attribute was ignored.");
-
-        }
-
-
-        modelMapper.map(incomingBody, optionalAluno.get());
-        //else, parse actual Id to requisition to ensure it will not be modified
-        optionalAluno.get().setId(originalId);
-
-
-        return Optional.of(alunoRepository.save(optionalAluno.get()));
+        var alunoDTO = optionalAluno.get();
+        modelMapper.map(incomingBody,alunoDTO);
+        return Optional.of(alunoRepository.save(alunoDTO));
     }
+
 
 }

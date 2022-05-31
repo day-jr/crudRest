@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,8 +16,10 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Data
 @Builder
-@Embeddable
 public class ProfTurmaId implements Serializable {
+
+    private Long id;
+
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "FK_CPF")
@@ -34,13 +37,15 @@ public class ProfTurmaId implements Serializable {
 
         ProfTurmaId that = (ProfTurmaId) o;
 
+        if (!id.equals(that.id)) return false;
         if (!professor.equals(that.professor)) return false;
         return turma.equals(that.turma);
     }
 
     @Override
     public int hashCode() {
-        int result = professor.hashCode();
+        int result = id.hashCode();
+        result = 31 * result + professor.hashCode();
         result = 31 * result + turma.hashCode();
         return result;
     }

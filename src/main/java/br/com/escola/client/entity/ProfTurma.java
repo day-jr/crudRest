@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 
 import javax.persistence.*;
@@ -21,8 +22,12 @@ import java.io.Serializable;
 @Entity
 @Table(name = "PROF_TURMA")
 @IdClass(ProfTurmaId.class)
+@Accessors(chain = true)
 public class ProfTurma implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Id
     @JoinColumn(referencedColumnName = "FK_TURMAS")
@@ -40,24 +45,16 @@ public class ProfTurma implements Serializable {
 
         ProfTurma profTurma = (ProfTurma) o;
 
+        if (!id.equals(profTurma.id)) return false;
         if (!professor.equals(profTurma.professor)) return false;
         return turma.equals(profTurma.turma);
     }
 
     @Override
     public int hashCode() {
-        int result = professor.hashCode();
+        int result = id.hashCode();
+        result = 31 * result + professor.hashCode();
         result = 31 * result + turma.hashCode();
         return result;
-    }
-
-    public Professor getProfessor() {
-        return professor;
-    }
-
-
-    public void setProfessor(Professor professor) {
-
-        this.professor = professor;
     }
 }

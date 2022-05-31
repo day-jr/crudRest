@@ -30,8 +30,7 @@ public class AlunoTurmaController {
 
     ////////////////////////////////SAVE////////////////////////////////////
     @GetMapping
-    public ResponseEntity<Optional<List<AlunoTurma>>> getAlunoTurma(
-            @RequestParam(required = false, name = "matricula") Optional<String> matricula,
+    public ResponseEntity<List<AlunoTurma>> getAlunoTurma(
             @RequestParam(required = false, name = "numberMinOfClasses") Optional<Long> amountMin,
             @RequestParam(required = false, name = "numberMaxOfClasses") Optional<Long> amountMax) {
 
@@ -42,19 +41,13 @@ public class AlunoTurmaController {
                     alunoTurmaService.filterByNumberOfStudents(amountMin, amountMax);
 
             return new ResponseEntity<>(
-                    Optional.ofNullable(studentsAssigned),
+                    studentsAssigned,
                     HttpStatus.OK);
         }
 
-        //Search all classes assigned to a registration
-        if (matricula.isPresent()) {
-            var classesAssigned =
-                    alunoTurmaService.allClassesAssignedToRegistration(matricula);
-            return new ResponseEntity<>(classesAssigned, HttpStatus.OK);
-        }
 
 
-        var alunoTurmaList = Optional.ofNullable(alunoTurmaService.getAll());
+        var alunoTurmaList = alunoTurmaService.getAll();
         return new ResponseEntity<>(alunoTurmaList, HttpStatus.OK);
     }
 

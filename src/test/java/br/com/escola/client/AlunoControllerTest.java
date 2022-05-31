@@ -1,13 +1,12 @@
 package br.com.escola.client;
 
 
+import br.com.escola.client.dto.aluno.AlunoDTO;
 import br.com.escola.client.entity.Aluno;
 import br.com.escola.client.entity.AlunoTurma;
 import br.com.escola.client.entity.Turma;
-import br.com.escola.client.tools.Json;
 import br.com.escola.client.tools.Json.indexClass.index;
 import lombok.SneakyThrows;
-import net.bytebuddy.description.type.TypeList;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -16,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 @RunWith(SpringRunner.class)
@@ -101,19 +100,30 @@ public class AlunoControllerTest {
     private final AlunoTurma alunoTurma2_1 = new AlunoTurma(aluno2, turma1);
     private final AlunoTurma alunoTurma4_4 = new AlunoTurma(aluno4, turma4);
 
+    @Autowired
+    ModelMapper modelMapper;
 
     //GET MAPPING
     @Test
     @SneakyThrows
-    public void getAluno_testsNoParameter_shouldAllStudendsAndReturnOk() {
+    public void getAluno_testsNoParameter_shouldReturnAllStudendsAndReturnOk() {
         List<Aluno> students = new ArrayList<>();
+        List<AlunoDTO> studentsParsed = new ArrayList<>();
         students.add(aluno1);
         students.add(aluno2);
         students.add(aluno3);
         students.add(aluno4);
 
+
+        for(Aluno entity: students){
+            AlunoDTO alunoParsed = new AlunoDTO();
+            modelMapper.map(entity,alunoParsed);
+            studentsParsed.add(alunoParsed);
+
+        }
+
         mockMvc.perform(get("/aluno"))
-                .andExpect(content().json(toJson(students)))
+                .andExpect(content().json(toJson(studentsParsed)))
                 .andExpect(status().isOk());
     }
 
@@ -121,11 +131,16 @@ public class AlunoControllerTest {
     @Test
     @SneakyThrows
     public void getAluno_testsMatriculaParameter_shouldReturnAlunoAndOK_NotFound() {
+        var parsedStudent = new AlunoDTO();
+        modelMapper.map(aluno1,parsedStudent);
+
+
+
         mockMvc.perform(get("/aluno?matricula=100"))
-                .andExpect(content().json(toJson(aluno1)))
+                .andExpect(content().json(toJson(parsedStudent,index.singleArray)))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/aluno?matricula=150"))
+        mockMvc.perform(get("/aluno?matricula=123"))
                 .andExpect(content().string(""))
                 .andExpect(status().isNotFound());
     }
@@ -134,14 +149,26 @@ public class AlunoControllerTest {
     @Test
     @SneakyThrows
     public void getAluno_testsCodigoParameter_shouldReturnAlunoAndOK_NotFound() {
+
+        var parsedStudent1 = new AlunoDTO();
+        modelMapper.map(aluno1,parsedStudent1);
+
+        var parsedStudent2 = new AlunoDTO();
+        modelMapper.map(aluno2,parsedStudent2);
+
+        var parsedStudent4 = new AlunoDTO();
+        modelMapper.map(aluno4,parsedStudent4);
+
+
+
         mockMvc.perform(get("/aluno?codigo=10"))
                 .andExpect(content().json(
-                        toJson(aluno1, index.begin)
-                                + toJson(aluno2, index.end)))
+                        toJson(parsedStudent1, index.begin)
+                                + toJson(parsedStudent2, index.end)))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/aluno?codigo=40"))
-                .andExpect(content().json(toJson(aluno4, index.singleArray)))
+                .andExpect(content().json(toJson(parsedStudent4, index.singleArray)))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/aluno?codigo=50"))
@@ -267,6 +294,7 @@ public class AlunoControllerTest {
     @SneakyThrows
     public void updateAluno_shouldReturnOk_NotFound_NotFound() {
         final var studentModified = new Aluno();
+        final var studentModifiedDTO = new AlunoDTO();
         final var idPassed = 23610349678341907L;
         final var namePassed = "pedro";
         final var emailPassed = "pedro@gmail";
@@ -277,19 +305,20 @@ public class AlunoControllerTest {
         studentModified.setEmail(emailPassed);
         studentModified.setMatricula(matriculaPassed);
 
+        modelMapper.map(studentModified,studentModifiedDTO);
+
         mockMvc.perform(put("/aluno?matricula=100")
-                        .content(toJson(studentModified))
+                        .content(toJson(studentModifiedDTO))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
 
         mockMvc.perform(put("/aluno?matricula=100")
-                        .content(toJson(studentModified))
+                        .content(toJson(studentModifiedDTO))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
-
 
 
         Session session = sessionFactory.openSession();
@@ -306,23 +335,21 @@ public class AlunoControllerTest {
         var error = false;
 
         //Should not be able to modify Id
-        if(actualId.equals(String.valueOf(idPassed))){
+        if (actualId.equals(String.valueOf(idPassed))) {
             error = true;
         }
 
         //Name should have been modified
-        if (!actualName.equals(namePassed)){
+        if (!actualName.equals(namePassed)) {
             error = true;
         }
 
         //Email should have been modified
-        if (!actualEmail.equals(emailPassed)){
+        if (!actualEmail.equals(emailPassed)) {
             error = true;
         }
 
         Assertions.assertFalse(error);
-
-
 
 
     }
