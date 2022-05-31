@@ -35,8 +35,8 @@ public class Professor implements Serializable {
 
     ///////////////VVVV FK KEY VVVV//////////////
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "professor", orphanRemoval = true)
-    @Column(name = "FK_TURMAS")
-    private transient List<ProfTurma> turmaFK;
+    @Column(name = "FK_PROFESSORES")
+    private transient List<ProfTurma> profTurmaFK;
 
 
     public Professor() {
@@ -55,7 +55,7 @@ public class Professor implements Serializable {
         if (!cpf.equals(professor.cpf)) return false;
         if (!nome.equals(professor.nome)) return false;
         if (email != null ? !email.equals(professor.email) : professor.email != null) return false;
-        return turmaFK != null ? turmaFK.equals(professor.turmaFK) : professor.turmaFK == null;
+        return profTurmaFK != null ? profTurmaFK.equals(professor.profTurmaFK) : professor.profTurmaFK == null;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class Professor implements Serializable {
         result = 31 * result + cpf.hashCode();
         result = 31 * result + nome.hashCode();
         result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (turmaFK != null ? turmaFK.hashCode() : 0);
+        result = 31 * result + (profTurmaFK != null ? profTurmaFK.hashCode() : 0);
         return result;
     }
 }
