@@ -32,7 +32,7 @@ public interface TurmaRepository extends JpaRepository<Turma, Long> {
 
     @Transactional
     @Query(
-            value = "SELECT t FROM Turma as t WHERE ( t.inicio + t.duracao ) <= :limitTime ")
+            value = "SELECT t FROM Turma as t WHERE ( t.inicio + t.duracao ) >= :limitTime ")
     Optional<List<Turma>> limitByTime(@Param("limitTime") Time limitTime);
 
 }

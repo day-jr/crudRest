@@ -14,6 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +107,8 @@ public class AlunoControllerTest {
     //GET MAPPING
     @Test
     @SneakyThrows
-    public void getAluno_testsNoParameter_shouldReturnAllStudendsAndReturnOk() {
+    @DisplayName("Should return OK and all students")
+    public void getAluno_testsNoParameter() {
         List<Aluno> students = new ArrayList<>();
         List<AlunoDTO> studentsParsed = new ArrayList<>();
         students.add(aluno1);
@@ -130,25 +132,37 @@ public class AlunoControllerTest {
     //GET MAPPING
     @Test
     @SneakyThrows
-    public void getAluno_testsMatriculaParameter_shouldReturnAlunoAndOK_NotFound() {
+    @DisplayName("Should return OK and a single student when exists in database")
+    public void getAluno_testsMatriculaParameter() {
         var parsedStudent = new AlunoDTO();
         modelMapper.map(aluno1,parsedStudent);
-
 
 
         mockMvc.perform(get("/aluno?matricula=100"))
                 .andExpect(content().json(toJson(parsedStudent,index.singleArray)))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/aluno?matricula=123"))
-                .andExpect(content().string(""))
-                .andExpect(status().isNotFound());
+
     }
 
     //GET MAPPING
     @Test
     @SneakyThrows
-    public void getAluno_testsCodigoParameter_shouldReturnAlunoAndOK_NotFound() {
+    @DisplayName("Should return NotFound when does not exist in database")
+    public void getAluno_testsNonexistentMatriculaParameter_shouldReturnNotFound() {
+
+        mockMvc.perform(get("/aluno?matricula=123"))
+                .andExpect(content().string(""))
+                .andExpect(status().isNotFound());
+    }
+
+
+
+    //GET MAPPING
+    @Test
+    @SneakyThrows
+    @DisplayName("Should return OK and all students assigned to this code if exists in database")
+    public void getAluno_testsCodigoParameter_shouldReturnAlunoAndOK() {
 
         var parsedStudent1 = new AlunoDTO();
         modelMapper.map(aluno1,parsedStudent1);
@@ -170,6 +184,15 @@ public class AlunoControllerTest {
         mockMvc.perform(get("/aluno?codigo=40"))
                 .andExpect(content().json(toJson(parsedStudent4, index.singleArray)))
                 .andExpect(status().isOk());
+
+
+    }
+
+    //GET MAPPING
+    @Test
+    @SneakyThrows
+    @DisplayName("Should return OK and an empty list if none is assigned")
+    public void getAluno_testsNonexistentCodigoParameter_shouldReturnNotFound() {
 
         mockMvc.perform(get("/aluno?codigo=50"))
                 .andExpect(content().json("[]"))
@@ -262,7 +285,8 @@ public class AlunoControllerTest {
     //DELETE MAPPING
     @Test
     @SneakyThrows
-    public void deleteByMatricula_shouldReturnNoContentAndNotFound() {
+    @DisplayName("Should return no content when successfully delete a student and notFound if there is none")
+    public void deleteByMatricula() {
 
         mockMvc.perform(delete("/aluno?matricula=100"))
                 .andExpect(status().isNoContent());
@@ -292,7 +316,8 @@ public class AlunoControllerTest {
     //PUT MAPPING
     @Test
     @SneakyThrows
-    public void updateAluno_shouldReturnOk_NotFound_NotFound() {
+    @DisplayName("Should return OK if successfully modify student and notFound if it is not there")
+    public void updateAluno() {
         final var studentModified = new Aluno();
         final var studentModifiedDTO = new AlunoDTO();
         final var idPassed = 23610349678341907L;
