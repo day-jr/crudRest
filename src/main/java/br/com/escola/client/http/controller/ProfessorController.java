@@ -1,11 +1,13 @@
 package br.com.escola.client.http.controller;
 
 
+import br.com.escola.client.dto.professor.ProfWithClassesGetMappingDTO;
 import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Professor;
 import br.com.escola.client.service.ProfTurmaService;
 import br.com.escola.client.service.ProfessorService;
 import br.com.escola.client.dto.professor.ProfessorDTO;
+import br.com.escola.client.dto.profTurma.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,6 @@ public class ProfessorController {
     ProfTurmaService profTurmaService;
 
 
-
     ///////////////////////////////////CREATE
     ////////////////////////////////////////////////////////////////////
     @PostMapping
@@ -42,15 +43,39 @@ public class ProfessorController {
     ///////////////////////////////////GET
     ////////////////////////////////////////////////////////////////////
     @GetMapping
-    public ResponseEntity<List<ProfessorDTO>> getProfessor(
+    public ResponseEntity<List<ProfessorDTO>> getProfessor (
             @RequestParam(required = false, name = "codigo") Optional<String> codigo,
-            @RequestParam(required = false, name = "cpf") Optional<String> cpf) {
+            @RequestParam(required = false, name = "cpf") Optional<String> cpf,
+            @RequestParam(required = false, name = "numberMinOfClasses") Optional<Long> amountMin,
+            @RequestParam(required = false, name = "numberMaxOfClasses") Optional<Long> amountMax,
+            @RequestParam(required = false, name = "classes") Optional<Long> exactClass
+    ) {
 
-        if(cpf.isPresent()&&codigo.isPresent()){
+
+        if (cpf.isPresent() && codigo.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        if (cpf.isEmpty()&& codigo.isEmpty()) {
+        if ((cpf.isPresent() || codigo.isPresent()) && (amountMin.isPresent() || amountMax.isPresent())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        if ((cpf.isPresent() || codigo.isPresent()) && exactClass.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+
+
+        if(amountMin.isPresent() || amountMax.isPresent() || exactClass.isPresent()){
+            var professorList =
+                            profTurmaService.filterByNumberOfClasses(amountMin, amountMax, exactClass);
+
+            return new ResponseEntity(professorList, HttpStatus.OK);
+
+        }
+
+
+        if (cpf.isEmpty() && codigo.isEmpty()) {
             var profsList = ProfessorDTO.parseList(Optional.of(professorService.getAllProfessores()));
             return new ResponseEntity<>(profsList, HttpStatus.OK);
         }
@@ -65,7 +90,7 @@ public class ProfessorController {
                     HttpStatus.OK);
         }
 
-        if(professorService.findByCpf(cpf.get()).isEmpty()){
+        if (professorService.findByCpf(cpf.get()).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         var prof = new ProfessorDTO(professorService.findByCpf(cpf.get()));
@@ -121,7 +146,7 @@ public class ProfessorController {
     public ResponseEntity<Void> updateProfessor(@RequestParam("cpf") String cpf,
                                                 @RequestBody ProfessorDTO incomingBody) {
 
-        if (professorService.update(incomingBody,cpf).isEmpty()) {
+        if (professorService.update(incomingBody, cpf).isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(HttpStatus.OK);

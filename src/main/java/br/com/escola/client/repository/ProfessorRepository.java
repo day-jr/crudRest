@@ -17,6 +17,11 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
             value = "SELECT p FROM Professor p WHERE p.cpf = :cpf ")
     Optional<Professor> findByCpf(@Param("cpf") String cpf);
 
+    @Transactional
+    @Query(
+            value = "SELECT p FROM Professor p WHERE p.id = :id ")
+    Optional<Professor> findById(@Param("id") Long id);
+
 
     @Transactional
     @Modifying
