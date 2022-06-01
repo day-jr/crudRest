@@ -1,6 +1,7 @@
 package br.com.escola.client.service;
 
 
+import br.com.escola.client.dto.professor.ProfWithClassesGetMappingDTO;
 import br.com.escola.client.entity.ProfTurma;
 import br.com.escola.client.entity.Professor;
 import br.com.escola.client.repository.ProfTurmaRepository;
@@ -32,7 +33,10 @@ public class ProfTurmaService {
         return profTurmaRepository.findByTurma(codigo.get());
     }
 
-    public Optional<List<ProfTurma>> filterByNumberOfProfessors(Optional<Long> classesMin, Optional<Long> classesMax) {
+    public ArrayList<Optional<ProfWithClassesGetMappingDTO>> filterByNumberOfClasses(
+            Optional<Long> classesMin,
+            Optional<Long> classesMax,
+            Optional<Long> exactClass) {
         var allClassesAssigned = getAll();
         Set<Long> allProfessorsAssigned = new HashSet<>();
         final Map<Long, Long> amountOfClasses = new HashMap<>();
@@ -51,27 +55,23 @@ public class ProfTurmaService {
 
 
         Set<Long> keys = amountOfClasses.keySet();
-        List<ProfTurma> professorsToShow = new ArrayList<>();
+        var professorsToShow = new ArrayList<Optional<ProfWithClassesGetMappingDTO>>();
 
         //Filter by user preference (Just min param present)
         if (classesMin.isPresent() && classesMax.isEmpty()) {
             for (Long key : keys) {
                 if (amountOfClasses.get(key) >= classesMin.get()) {
-                    System.out.println(amountOfClasses.get(key)+"< amount of class "+classesMin.get()+"< classesmin");
-                    for (ProfTurma element : findByProf(key).get()) {
-                        professorsToShow.add(element);
-                    }
+                    professorsToShow.add(Optional.of(ProfWithClassesGetMappingDTO.parseList(findByProf(key))));
+
                 }
             }
         }
 
         //Filter by user preference (Just max param present)
-        if (classesMax.isPresent()) {
+        if (classesMax.isPresent() && classesMin.isEmpty()) {
             for (Long key : keys) {
                 if (amountOfClasses.get(key) <= classesMax.get()) {
-                    for (ProfTurma element : findByProf(key).get()) {
-                        professorsToShow.add(element);
-                    }
+                    professorsToShow.add(Optional.of(ProfWithClassesGetMappingDTO.parseList(findByProf(key))));
                 }
             }
         }
@@ -80,15 +80,21 @@ public class ProfTurmaService {
         if (classesMin.isPresent() && classesMax.isPresent()) {
             for (Long key : keys) {
                 if (amountOfClasses.get(key) >= classesMin.get() && amountOfClasses.get(key) <= classesMax.get()) {
-                    for (ProfTurma element : findByProf(key).get()) {
-                        professorsToShow.add(element);
-                    }
+                    professorsToShow.add(Optional.of(ProfWithClassesGetMappingDTO.parseList(findByProf(key))));
                 }
             }
         }
 
+        //Filter by user preference (Exact number of classes)
+        if (exactClass.isPresent()) {
+            for (Long key : keys) {
+                if (amountOfClasses.get(key).equals(exactClass.get())) {
+                    professorsToShow.add(Optional.of(ProfWithClassesGetMappingDTO.parseList(findByProf(key))));
+                }
+            }
+        }
 
-        return Optional.of(professorsToShow);
+        return professorsToShow;
     }
 
 
@@ -97,7 +103,7 @@ public class ProfTurmaService {
         var professor = professorRepository.findByCpf(cpf);
         var turma = turmaRepository.findByCodigo(codigo);
 
-        if (turma.isEmpty()|| professor.isEmpty())return;
+        if (turma.isEmpty() || professor.isEmpty()) return;
 
         profTurma.setTurma(turma.get());
         profTurma.setProfessor(professor.get());
@@ -111,10 +117,9 @@ public class ProfTurmaService {
 
     }
 
-    public Optional<List<ProfTurma>> getClassAssignedByClassCode(String codigo){
+    public Optional<List<ProfTurma>> getClassAssignedByClassCode(String codigo) {
         return profTurmaRepository.getProfTurmaByClassCode(codigo);
     }
-
 
 
     public Optional<ProfTurma> find(String cpf, String codigo) {

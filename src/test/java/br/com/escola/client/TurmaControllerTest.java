@@ -1,7 +1,7 @@
 package br.com.escola.client;
 
 
-import br.com.escola.client.dto.aluno.AlunoDTO;
+
 import br.com.escola.client.dto.turma.TurmaDTO;
 import br.com.escola.client.entity.*;
 
@@ -126,8 +126,9 @@ public class TurmaControllerTest {
 
     //POST MAPPING
     @Test
+    @SneakyThrows
     @DisplayName("Should return Created when successfully creating a class in database")
-    public void saveTurma_testsPostMapping() throws Exception {
+    public void saveTurma_testsPostMapping() {
 
         mockMvc.perform(post("/turma")
                         .content(toJson(turma5))

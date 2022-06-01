@@ -2,6 +2,7 @@ package br.com.escola.client.http.controller;
 
 
 import br.com.escola.client.dto.profTurma.*;
+import br.com.escola.client.dto.professor.ProfWithClassesGetMappingDTO;
 import br.com.escola.client.entity.*;
 import br.com.escola.client.service.ProfTurmaService;
 import org.modelmapper.ModelMapper;
@@ -36,24 +37,7 @@ public class ProfTurmaController {
 
     ////////////////////////////////SHOW ALL////////////////////////////////////
     @GetMapping
-    public ResponseEntity<List<ProfTurmaDTO>> getProfTurma(
-            @RequestParam(required = false, name = "numberMinOfClasses") Optional<Long> amountMin,
-            @RequestParam(required = false, name = "numberMaxOfClasses") Optional<Long> amountMax) {
-
-        //Prevents exceptions
-        if (amountMin.isEmpty() && amountMax.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        //Search by min/max classes assigned to a professor
-        if (amountMin.isPresent()) {
-            var professorsFiltered =
-                    ProfTurmaDTO.parseList(profTurmaService.filterByNumberOfProfessors(amountMin, amountMax));
-
-            return new ResponseEntity<>(
-                    professorsFiltered,
-                    HttpStatus.OK);
-        }
+    public ResponseEntity<List<ProfTurmaDTO>> getProfTurma() {
 
 
         var profTurmasFound = profTurmaService.getAll();
